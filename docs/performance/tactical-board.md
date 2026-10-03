@@ -1,6 +1,6 @@
 # Rendimiento de la pizarra táctica
 
-Estado: **MEDICIÓN PENDIENTE.** El medidor está implementado y verificado por tipos y empaquetado, pero **no se ha ejecutado en un teléfono** (no hay dispositivo accesible desde la sesión de desarrollo). Los campos de resultado están vacíos a propósito: no hay cifras inventadas en este documento.
+Estado: **MEDIDO POR EL USUARIO, resultado resumido.** El usuario ejecutó la medición en su teléfono y reportó **60 FPS estables**. No facilitó las cifras exactas del chip ni el modelo, así que esos campos dicen "no reportado": no se inventan.
 
 ## Qué se mide
 
@@ -8,7 +8,7 @@ Arrastrar fichas de la pizarra durante 30 s seguidos (de una a otra zona del cam
 
 | Campo | Valor |
 |---|---|
-| Dispositivo | PENDIENTE (modelo, Android 14, tasa de refresco de la pantalla: 60 / 90 / 120 Hz) |
+| Dispositivo | Android 14 físico (modelo y tasa de refresco: no reportados) |
 | Entorno | Expo Go, bundle de **desarrollo** (`npx expo start`). Rinde menos que una build de producción: Hermes sin optimizar para release, validaciones de React y logs activos. |
 | Escenario | Pizarra 4-3-3 con 11 fichas; arrastre continuo de fichas durante 30 s |
 | Herramienta | Medidor propio de la pantalla (`src/features/tactics/FpsMeter.tsx`), ver abajo. Contraste opcional: monitor de rendimiento del menú de desarrollo de React Native (VERIFICAR nombre exacto en Expo Go; en el menú de desarrollo aparece como "Perf Monitor"/"Show Performance Monitor"). |
@@ -37,15 +37,15 @@ npx expo start --clear
 
 | Medida | Valor |
 |---|---|
-| Duración real | PENDIENTE |
-| FPS UI medio | PENDIENTE |
-| FPS UI mínimo (ventana de 1 s) | PENDIENTE |
-| Fotogramas > 25 ms | PENDIENTE |
-| Peor fotograma | PENDIENTE |
-| FPS JS medio | PENDIENTE |
-| ¿Llega a 60? | PENDIENTE |
+| Duración real | 30 s (según el procedimiento; no reportada) |
+| FPS UI medio | 60 (reportado: "60 FPS estables") |
+| FPS UI mínimo (ventana de 1 s) | no reportado |
+| Fotogramas > 25 ms | no reportado |
+| Peor fotograma | no reportado |
+| FPS JS medio | no reportado |
+| ¿Llega a 60? | Sí, según el usuario, en Expo Go (modo desarrollo) |
 
-Si no llega a 60, causas a descartar por orden de probabilidad (hipótesis, NO medidas):
+Como sí llega a 60, las causas siguientes no aplican; se conservan por si aparece una caída en otro dispositivo (hipótesis, NO medidas):
 1. Modo desarrollo en Expo Go (lo más probable): repetir con `npx expo start --no-dev --minify`.
 2. Sombras/`elevation` o `zIndex` animado en Android al levantar la ficha activa.
 3. 11 vistas con su propio `GestureDetector` y estilo animado: 11 callbacks por fotograma en el hilo de UI aunque solo se mueva una (se podría reducir moviendo una única ficha activa).

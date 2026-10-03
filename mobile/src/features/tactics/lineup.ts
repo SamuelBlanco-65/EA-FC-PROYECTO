@@ -70,8 +70,3 @@ export function tokenName(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
   return words.length > 0 ? words[words.length - 1] : name;
 }
-
-/** Shirt number inside the token; "?" when the data has none. */
-export function tokenNumber(player: Pick<Player, 'shirtNumber'>): string {
-  return player.shirtNumber === null ? '?' : String(player.shirtNumber);
-}

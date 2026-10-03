@@ -5,7 +5,7 @@ import type { Player } from '../src/api/types';
 import { addFrame, EMPTY_STATS, fpsOf } from '../src/features/tactics/frameStats';
 import { DEFAULT_FORMATION_ID, FORMATIONS, formationById } from '../src/features/tactics/formations';
 import { clamp, clampToField, dragTo, round4, toNormalized, toPixels } from '../src/features/tactics/geometry';
-import { buildSlots, signature, toPositions, tokenName, tokenNumber } from '../src/features/tactics/lineup';
+import { buildSlots, signature, toPositions, tokenName } from '../src/features/tactics/lineup';
 
 const FIELD = { width: 360, height: 600 };
 const R = 22;
@@ -237,11 +237,9 @@ describe('request body and change detection', () => {
 });
 
 describe('token labels', () => {
-  it('uses the last word of the name and the shirt number', () => {
+  it('uses the last word of the name', () => {
     assert.equal(tokenName('Rodrigo Hernández'), 'Hernández');
     assert.equal(tokenName('  Pedri  '), 'Pedri');
-    assert.equal(tokenNumber({ shirtNumber: 10 }), '10');
-    assert.equal(tokenNumber({ shirtNumber: null }), '?');
   });
 });
 

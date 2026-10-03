@@ -114,15 +114,18 @@ export function PlayerAvatar({
   name,
   size = 44,
   style,
+  dashed = true,
 }: {
   photoUrl?: string | null;
   name: string;
   size?: number;
   style?: StyleProp<ViewStyle>;
+  /** Dashed outline on the placeholder; off when the avatar already sits inside its own border. */
+  dashed?: boolean;
 }) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   const text = words.length > 1 ? initials(`${words[0]} ${words[words.length - 1]}`) : initials(name);
-  return <RemoteImage path={photoUrl} fallbackText={text} size={size} radius={size / 2} fit="cover" dashed style={style} />;
+  return <RemoteImage path={photoUrl} fallbackText={text} size={size} radius={size / 2} fit="cover" dashed={dashed} style={style} />;
 }
 
 const styles = StyleSheet.create({

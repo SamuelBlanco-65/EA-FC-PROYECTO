@@ -9,10 +9,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import { scheduleOnRN } from 'react-native-worklets';
 
+import { PlayerAvatar } from '@/components/ClubCrest';
 import { colors, fonts } from '@/theme';
 
 import { dragTo, toPixels } from './geometry';
-import { type BoardSlot, tokenName, tokenNumber } from './lineup';
+import { type BoardSlot, tokenName } from './lineup';
 
 export const TOKEN_RADIUS = 22;
 /** Space kept free under the token so its name label never leaves the field. */
@@ -91,9 +92,7 @@ export const PlayerToken = memo(function PlayerToken({ slot, index, fieldWidth, 
       <GestureDetector gesture={pan}>
         <Animated.View style={[styles.holder, tokenStyle]}>
           <View style={[styles.disc, keeper && styles.discKeeper]}>
-            <Text style={[styles.number, keeper && styles.numberKeeper]} allowFontScaling={false}>
-              {tokenNumber(slot.player)}
-            </Text>
+            <PlayerAvatar photoUrl={slot.player.photoUrl} name={slot.player.name} size={D - 2 * BORDER} dashed={false} />
           </View>
           <View style={styles.labelWrap} pointerEvents="none">
             <Text style={styles.label} numberOfLines={1} allowFontScaling={false}>
@@ -107,6 +106,7 @@ export const PlayerToken = memo(function PlayerToken({ slot, index, fieldWidth, 
 });
 
 const D = TOKEN_RADIUS * 2;
+const BORDER = 2;
 
 const styles = StyleSheet.create({
   holder: { position: 'absolute', left: 0, top: 0, width: D, height: D },
@@ -125,15 +125,13 @@ const styles = StyleSheet.create({
     width: D,
     height: D,
     borderRadius: TOKEN_RADIUS,
-    backgroundColor: colors.bg,
-    borderWidth: 2,
+    backgroundColor: colors.surfaceRaised,
+    borderWidth: BORDER,
     borderColor: colors.onWhite,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  discKeeper: { backgroundColor: colors.warning, borderColor: colors.onWhite },
-  number: { fontFamily: fonts.display, fontSize: 22, lineHeight: 24, color: colors.textPrimary, fontVariant: ['tabular-nums'] },
-  numberKeeper: { color: colors.textOnAccent },
+  discKeeper: { borderColor: colors.warning },
   labelWrap: { position: 'absolute', top: D + 2, left: (D - LABEL_WIDTH) / 2, width: LABEL_WIDTH, alignItems: 'center' },
   label: {
     fontFamily: fonts.bold,

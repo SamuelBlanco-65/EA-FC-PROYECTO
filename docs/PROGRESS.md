@@ -1,20 +1,21 @@
 # Progreso del proyecto
 
-Fases 0-9 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 10 PARCIAL (sin prueba en teléfono ni FPS medidos).
+Fases 0-9 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 10 COMPLETA (probada por el usuario en el teléfono).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
 
 ## Fase 10 – Pizarra táctica – 2026-10-03
-Estado: PARCIAL (código y tests listos; falta probarla en el teléfono y medir FPS)
+Estado: COMPLETA
 Hecho (VERIFICADO por mí): `npx tsc --noEmit` limpio; `npm run test:logic` 48 passed (34 nuevos en `tests/tactics.test.ts`: conversión px<->normalizado, clamp con radio y hueco de nombre, arrastre, las 4 formaciones, reparto de 11 jugadores, firma de cambios, estadística de fotogramas); `npx expo export --platform android` empaqueta (Hermes). Backend intacto: 348 passed sin integración; `/lineups/me` ya estaba cubierto en `test_squad_endpoints.py` y no se tocó. BD sin tocar.
 - Hecho: `app/tactics.tsx` (4 formaciones, campo Skia, 11 fichas con Pan + Reanimated, Guardar con PUT /lineups/me, carga con GET; 404 = sin alineación), `features/tactics/{geometry,formations,lineup,frameStats}.ts` (puros), `Pitch.tsx`, `PlayerToken.tsx`, `FpsMeter.tsx` (mide FPS de UI y JS 30 s al tocar el chip), entrada "Pizarra táctica" en Perfil.
+Hecho (VERIFICADO por el usuario en Expo Go, Android): "comprobé todo", arrastre de fichas, guardar/cargar y **60 FPS estables** con el medidor de la pantalla. El usuario no pasó las cifras exactas del chip (mín., lentos, JS) ni el modelo del teléfono: `docs/performance/tactical-board.md` lo dice así, sin cifras inventadas.
+- Cambio posterior: las fichas muestran la foto del jugador (`PlayerAvatar`, iniciales si no hay foto) en vez del dorsal; portero con borde dorado.
+- BD (solo lectura, VERIFICADO): los 677 jugadores tienen overall y las seis estadísticas (`pace`..`physical`, 82 porteros con el significado de portero). El backend aún NO las expone (`PlayerResponse`): base para una futura tarjeta de jugador, no pedida en esta fase.
 No probado / pendiente:
-- NO PROBADO en Expo Go: gestos, long-press de 120 ms, `zIndex` animado en Android, apariencia del campo/fichas, guardar y recargar. Nada se ha visto en pantalla.
-- **FPS NO MEDIDOS**: no tengo acceso al teléfono. `docs/performance/tactical-board.md` tiene el escenario, la herramienta y el procedimiento, con los resultados en PENDIENTE. No hay cifra de 60 FPS.
 - Diferencias con el diseño: chips de formación rectangulares (sin paralelogramo), sin línea discontinua de la posición original (solo círculo fantasma), sin cambiar jugadores por suplentes, botón atrás dice "Perfil" (no existe pestaña Plantilla), el chip FPS es interactivo.
 Decisiones clave: posición en SharedValues (hilo de UI) y estado de React solo al soltar; fichas como vistas sobre un Skia estático; normalizado 0..1; guardar solo online con botón.
 Archivos principales: `mobile/app/tactics.tsx`, `mobile/src/features/tactics/*`, `mobile/tests/tactics.test.ts`, `docs/defense/canvas.md`, `docs/performance/tactical-board.md`.
 Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear`, Expo Go -> Perfil -> Pizarra táctica; arrastrar, cambiar formación, Guardar, salir y volver. FPS: tocar el chip y arrastrar 30 s. Tests: `npm run test:logic; npx tsc --noEmit`.
-Siguiente paso: probar en el teléfono, rellenar la tabla de `docs/performance/tactical-board.md` y pasar la fase a COMPLETA; luego Fase 11 (la define el usuario).
+Siguiente paso: Fase 11 (la define el usuario).
 
 ## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
 Estado: COMPLETA

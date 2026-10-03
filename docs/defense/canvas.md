@@ -11,7 +11,7 @@
 
 ## Decisiones
 - **Coordenadas normalizadas 0..1** en vez de píxeles: la alineación guardada vale en cualquier teléfono y orientación. Coste: hay que convertir (`toPixels`/`toNormalized`) y el clamp con radio fijo en px se vuelve un margen normalizado que depende del tamaño del campo.
-- **Fichas como vistas animadas sobre un Skia estático**, no dibujadas en Skia: texto, dorsal y gestos son más simples y fiables con vistas; Skia solo hace lo que hace bien (líneas y franjas). Alternativa descartada: todo en un Canvas con fuentes de Skia y un solo gesto con hit-testing manual (más control, bastante más código). Coste: 11 vistas animadas en vez de 1 canvas.
+- **Fichas como vistas animadas sobre un Skia estático**, no dibujadas en Skia: foto, nombre y gestos son más simples y fiables con vistas; Skia solo hace lo que hace bien (líneas y franjas). Alternativa descartada: todo en un Canvas con fuentes de Skia y un solo gesto con hit-testing manual (más control, bastante más código). Coste: 11 vistas animadas en vez de 1 canvas.
 - **Posición en hilo de UI, estado de React solo al soltar**: sin `setState` por fotograma. Alternativa descartada: guardar x/y en `useState` y re-renderizar al mover (JS en el camino crítico del arrastre).
 
 ## Preguntas probables
@@ -19,7 +19,7 @@
 2. *¿Qué corre en cada hilo?* Gesto, `dragTo` y estilo animado en el hilo de UI (funciones marcadas `'worklet'`); estado, red y guardado en JS.
 3. *¿Cómo evitas que la ficha salga del campo?* `clampToField`: el centro se limita a `[r/ancho, 1-r/ancho]` (y análogo en y, con hueco inferior para el nombre). Test: cualquier entrada, hasta ±1e9, cae en [0,1].
 4. *¿Qué pasa si guardas sin red?* El botón se deshabilita ("Sin conexión"); la alineación no entra en la cola offline (la cola es solo de eventos de partido).
-5. *Difícil: ¿cómo sabes que va a 60 FPS?* Todavía no lo sé: el medidor existe (`FpsMeter.tsx`) pero la medición en el teléfono está PENDIENTE (`docs/performance/tactical-board.md`). Lo que sí puedo defender es el diseño (sin `setState` por fotograma, campo estático) y que el modo desarrollo de Expo Go rinde menos que una build de producción.
+5. *Difícil: ¿cómo sabes que va a 60 FPS?* Lo medí con un medidor propio (`FpsMeter.tsx`, `useFrameCallback` en el hilo de UI) arrastrando fichas 30 s en un Android físico con Expo Go en modo desarrollo: 60 FPS estables (`docs/performance/tactical-board.md`). Matiz honesto: es un resultado resumido, sin el mínimo por ventana ni el peor fotograma anotados, y no es una captura de GPU. Y una build de producción solo puede rendir igual o mejor. El diseño lo explica: sin `setState` por fotograma y campo estático.
 
 ## Errores típicos
 - 404 `LINEUP_NOT_FOUND` al cargar: es el estado "vacío", se muestra la formación por defecto.
