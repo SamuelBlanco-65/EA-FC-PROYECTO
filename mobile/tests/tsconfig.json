@@ -11,5 +11,5 @@
     "paths": { "@/*": ["../src/*"] },
     "types": ["node"]
   },
-  "include": ["logic.test.ts", "tactics.test.ts"]
+  "include": ["logic.test.ts", "tactics.test.ts", "admin.test.ts"]
 }

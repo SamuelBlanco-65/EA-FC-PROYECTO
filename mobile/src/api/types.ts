@@ -152,6 +152,32 @@ export interface MatchDetail {
   events: MatchEvent[];
 }
 
+export interface AdminParticipant {
+  id: string;
+  userId: string;
+  displayName: string;
+  club: FixtureTeam;
+  joinedAt: string;
+}
+
+export interface StartTournamentResponse {
+  tournament: Tournament;
+  participantCount: number;
+  roundCount: number;
+  matchCount: number;
+}
+
+export interface ActivateRoundResponse {
+  currentRound: number;
+  activatedMatches: number;
+}
+
+export interface ResolveBody {
+  homeScore: number;
+  awayScore: number;
+  note: string | null;
+}
+
 export interface Fixture {
   id: string;
   round: number;

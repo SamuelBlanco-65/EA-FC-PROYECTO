@@ -1,5 +1,7 @@
 import { apiFetch } from './client';
 import type {
+  ActivateRoundResponse,
+  AdminParticipant,
   AssignClubResponse,
   EventPayload,
   Fixture,
@@ -9,8 +11,10 @@ import type {
   MyParticipation,
   Player,
   RecordEventResponse,
+  ResolveBody,
   SessionResponse,
   StandingRow,
+  StartTournamentResponse,
   Tournament,
 } from './types';
 
@@ -41,4 +45,12 @@ export const api = {
   finishMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/finish`, { method: 'POST' }),
   confirmMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/confirm`, { method: 'POST' }),
   rejectMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/reject`, { method: 'POST' }),
+
+  // Admin (the server answers 403 FORBIDDEN to anyone else; the app only hides the entry point).
+  adminParticipants: () => apiFetch<AdminParticipant[]>('/admin/participants'),
+  adminMatches: () => apiFetch<Fixture[]>('/admin/matches'),
+  startTournament: () => apiFetch<StartTournamentResponse>('/admin/tournament/start', { method: 'POST' }),
+  activateNextRound: () => apiFetch<ActivateRoundResponse>('/admin/rounds/next/activate', { method: 'POST' }),
+  resolveMatch: (id: string, body: ResolveBody) =>
+    apiFetch<MatchDetail>(`/admin/matches/${id}/resolve`, { method: 'POST', body }),
 };

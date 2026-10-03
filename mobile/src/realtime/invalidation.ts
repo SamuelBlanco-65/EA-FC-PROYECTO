@@ -19,10 +19,10 @@ export function invalidateFor(queryClient: QueryClient, message: ServerMessage, 
       void queryClient.invalidateQueries();
       return;
     case 'ROUND_ACTIVATED':
-      invalidate(queryKeys.tournament, queryKeys.fixtures);
+      invalidate(queryKeys.tournament, queryKeys.fixtures, queryKeys.adminMatches);
       return;
     case 'STANDINGS_UPDATED':
-      invalidate(queryKeys.standings, queryKeys.fixtures, queryKeys.tournament);
+      invalidate(queryKeys.standings, queryKeys.fixtures, queryKeys.tournament, queryKeys.adminMatches);
       return;
     case 'MATCH_RESULT_PENDING':
     case 'MATCH_CONFIRMED':

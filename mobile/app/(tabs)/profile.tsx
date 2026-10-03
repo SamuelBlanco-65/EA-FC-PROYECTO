@@ -42,6 +42,11 @@ export default function Profile() {
           <Button label="Pizarra táctica" variant="secondary" icon="target" onPress={() => router.push('/tactics')} />
         </View>
       ) : null}
+      {user?.role === 'admin' ? (
+        <View style={styles.tactics}>
+          <Button label="Administración" variant="secondary" icon="shield" onPress={() => router.push('/admin')} />
+        </View>
+      ) : null}
       <View style={styles.logout}>
         <Button label="Cerrar sesión" variant="dangerOutline" icon="log-out" onPress={() => void signOut()} />
       </View>

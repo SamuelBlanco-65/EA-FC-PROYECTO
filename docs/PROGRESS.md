@@ -1,7 +1,24 @@
 # Progreso del proyecto
 
-Fases 0-9 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 10 COMPLETA (probada por el usuario en el teléfono).
+Fases 0-10 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 11 PARCIAL: todo hecho y verificado salvo la prueba de las pantallas admin en el teléfono.
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
+
+## Fase 11 – Admin en la app, prueba integral y defensa – 2026-10-03
+Estado: PARCIAL (pantallas admin NO probadas en el teléfono; el resto VERIFICADO)
+Hecho (VERIFICADO por mí):
+- Tests: backend `pytest` completo **392 passed** (348 herméticos + 44 de integración, 3 min 33 s); `npx tsc --noEmit` limpio; `npm run test:logic` **57 passed** (9 nuevos en `tests/admin.test.ts`); `npx expo export --platform android` empaqueta con las rutas `admin/*`. BD tras los tests de integración: solo `Torneo de prueba` (ACTIVE) y 0 usuarios `it-*`.
+- `scripts/demo/setup_demo.py` ejecutado contra el Supabase REAL con el backend local (uvicorn, `API_URL=http://127.0.0.1:8000`): 4 bots, iniciar (12 partidos, 6 fechas), 2 fechas jugadas, 1 disputa y 1 pendiente. Luego `--teardown --yes`: borró eventos y torneo sin error y `Torneo de prueba` volvió a ser el actual (autorizado por el usuario).
+- Flujo admin por API (mismo backend): participante en `/admin/matches` -> 403 `FORBIDDEN`; activar con fecha abierta -> 409 `ROUND_NOT_CLOSED`; iniciar otra vez -> 409 `TOURNAMENT_ALREADY_STARTED`; resolver disputa y pendiente -> RESOLVED; resolver dos veces -> 409 `INVALID_TRANSITION`; marcador 100 -> 422; activar siguiente fecha -> ronda 4 (2 partidos); tabla coincide con el cálculo a mano (PTS 6/5/4/1).
+- App: `mobile/app/admin/index.tsx` (estado del torneo, participantes, iniciar torneo, activar fecha, cola de pendientes y disputas), `mobile/app/admin/matches/[id].tsx` (resolver: marcador calculado, versión del local, estado del visitante, marcador oficial y nota), entrada "Administración" en Perfil solo con rol admin, `features/admin/{derive,hooks}.ts`, `components/BackHeader.tsx`. Backend sin cambios.
+- Docs: `docs/defense/INDEX.md` (arquitectura, recorrido de un evento, 20 preguntas), `docs/defense/admin.md`, `README.md` (Windows + aviso de derechos y fuente de datos).
+No probado / pendiente:
+- Las pantallas admin NO se han visto en Expo Go (no hay diseño `13-admin.png`/`14-disputa.png`: seguí `design-system.md`). La "prueba manual completa" fue por API/scripts, no con el teléfono.
+- Sin pestaña Plantilla (pendiente de fases anteriores). El admin no recibe por WebSocket los rechazos del visitante (van a los 2 jugadores): su cola de pendientes se refresca con sondeo de 10 s y al tirar para refrescar.
+- La instalación desde cero (README) no se probó en otra máquina. `setup_demo.py` con `--yes` sin `--start` (solo DRAFT) no se ejecutó.
+Decisiones clave: el servidor decide y la app solo refleja (botones deshabilitados como pista; 409 se muestra tal cual); `setup_demo.py` es plan-por-defecto y exige `--yes`, solo borra el torneo con nombre exacto; reutiliza `room_helper` y `create_users`.
+Archivos principales: `mobile/app/admin/*`, `mobile/src/features/admin/*`, `scripts/demo/setup_demo.py`, `docs/defense/INDEX.md`, `README.md`.
+Cómo probarlo (PowerShell, raíz): `cd backend; .\venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000`; en otra ventana `$env:API_URL="http://127.0.0.1:8000"; backend\venv\Scripts\python.exe scripts\demo\setup_demo.py 4 --yes --start --play-rounds 2 --dispute`; `cd mobile; npx expo start --clear` (con `EXPO_PUBLIC_API_URL` = IP del PC), entrar como `admin@example.com` -> Perfil -> Administración. Al terminar: `setup_demo.py --teardown --yes`. Tests: `cd mobile; npx tsc --noEmit; npm run test:logic`.
+Siguiente paso: probar las pantallas admin en el teléfono (y corregir lo que salga); entrega 6 de octubre de 2026.
 
 ## Fase 10 – Pizarra táctica – 2026-10-03
 Estado: COMPLETA
@@ -16,18 +33,3 @@ Decisiones clave: posición en SharedValues (hilo de UI) y estado de React solo 
 Archivos principales: `mobile/app/tactics.tsx`, `mobile/src/features/tactics/*`, `mobile/tests/tactics.test.ts`, `docs/defense/canvas.md`, `docs/performance/tactical-board.md`.
 Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear`, Expo Go -> Perfil -> Pizarra táctica; arrastrar, cambiar formación, Guardar, salir y volver. FPS: tocar el chip y arrastrar 30 s. Tests: `npm run test:logic; npx tsc --noEmit`.
 Siguiente paso: Fase 11 (la define el usuario). Idea pendiente de decidir: pestaña Plantilla + tarjeta de jugador con las 6 estadísticas (677/677 jugadores las tienen); ver `docs/design/player-cards-plan.md`.
-
-## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
-Estado: COMPLETA
-Hecho (VERIFICADO por el usuario en Expo Go, Android): giro a horizontal, registrar goles/tarjetas, caso aprobado, caso rechazado, modal del visitante y prueba en modo avión con los 2 goles; "todo funciona". Corregido tras la prueba: en partidos de visitante el gol subía la casilla de la derecha del marcador (orden local:visitante) y parecía del rival; ahora el marcador de arriba muestra MI número a la izquierda, con el club bajo cada casilla (NO PROBADO visualmente tras el cambio; solo `tsc`).
-Hecho (VERIFICADO por mí):
-- `npx tsc --noEmit` limpio; `npx expo export --platform android` empaqueta; `npm run test:logic` 14 passed (cola: persistencia y recuperación, orden, fallo transitorio, rechazo definitivo sin bloquear, ráfagas concurrentes, caída entre "servidor aceptó" y "cola olvidó" sin duplicar contra un servidor simulado idempotente; derivaciones de la sala). Backend intacto: 348 passed sin integración. BD sin tocar (0 tests de integración ejecutados; sigue el `Torneo de prueba` DRAFT con 1 participante).
-- Hecho: `app/match/[id].tsx` (marcador, eventos en vivo, TU EQUIPO / OPONENTE, Gol/Amarilla/Roja con jugador + minuto, Finalizar del local con confirmación, `ResultModal` Confirmar/Rechazar del visitante, barra "Sin conexión – N eventos pendientes"), `offline/eventQueue.ts` + `queue.ts` (cola en AsyncStorage, envío en orden, backoff), disparadores en `useAppRuntime.ts` (red, WebSocket, primer plano), botón "Entrar a la sala" en Inicio y Calendario, `scripts/demo/room_helper.py` para la prueba guiada (solo `status` ejecutado, lectura).
-No probado / pendiente:
-- El usuario no reportó fallos de orientación, modales ni escudos; no detalló el teclado del minuto. No guardé la salida de `room_helper.py events` (conteo de ids en el servidor): el "llegan 1 vez" es lo que el usuario vio.
-- Diferencia con el diseño: el chip "Ahora" del minuto se llama "Último" (no hay reloj de partido; vale el último minuto registrado). Sin pestaña Plantilla. Un envío tras dormir Render puede tardar hasta 60 s. La cola se borra al cerrar sesión.
-Decisiones clave: siempre encolar (con y sin red) para un único camino y orden garantizado; idempotencia por UUID del cliente en el servidor; AsyncStorage en vez de SQLite; 4xx definitivo = "rechazado" visible, no bloquea la cola.
-Archivos principales: `mobile/app/match/[id].tsx`, `mobile/src/features/match/*`, `mobile/src/offline/*`, `mobile/tests/logic.test.ts`, `scripts/demo/room_helper.py`, `docs/defense/offline.md`.
-Cómo probarlo (PowerShell, raíz del repo; guion completo en el último mensaje de la sesión):
-`$env:API_URL="https://ea-fc-api.onrender.com"; backend\venv\Scripts\python.exe scripts\demo\room_helper.py setup` (inscribe participant02/03, inicia el torneo, activa la fecha 1), luego `status`, `advance`, `play-home`, `resolve`, `events`; bot: `backend\venv\Scripts\python.exe scripts\demo\visitor_bot.py --email participant02@example.com --approve`. Tests: `cd mobile; npm run test:logic; npx tsc --noEmit`.
-Siguiente paso: Fase 10 (la define el usuario). Los partidos de la prueba quedan en el `Torneo de prueba` (ahora ACTIVE, con bots participant02/03 inscritos).
