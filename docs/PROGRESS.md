@@ -1,7 +1,20 @@
 # Progreso del proyecto
 
-Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 9 COMPLETA (probada por el usuario en el teléfono).
+Fases 0-9 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 10 PARCIAL (sin prueba en teléfono ni FPS medidos).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
+
+## Fase 10 – Pizarra táctica – 2026-10-03
+Estado: PARCIAL (código y tests listos; falta probarla en el teléfono y medir FPS)
+Hecho (VERIFICADO por mí): `npx tsc --noEmit` limpio; `npm run test:logic` 48 passed (34 nuevos en `tests/tactics.test.ts`: conversión px<->normalizado, clamp con radio y hueco de nombre, arrastre, las 4 formaciones, reparto de 11 jugadores, firma de cambios, estadística de fotogramas); `npx expo export --platform android` empaqueta (Hermes). Backend intacto: 348 passed sin integración; `/lineups/me` ya estaba cubierto en `test_squad_endpoints.py` y no se tocó. BD sin tocar.
+- Hecho: `app/tactics.tsx` (4 formaciones, campo Skia, 11 fichas con Pan + Reanimated, Guardar con PUT /lineups/me, carga con GET; 404 = sin alineación), `features/tactics/{geometry,formations,lineup,frameStats}.ts` (puros), `Pitch.tsx`, `PlayerToken.tsx`, `FpsMeter.tsx` (mide FPS de UI y JS 30 s al tocar el chip), entrada "Pizarra táctica" en Perfil.
+No probado / pendiente:
+- NO PROBADO en Expo Go: gestos, long-press de 120 ms, `zIndex` animado en Android, apariencia del campo/fichas, guardar y recargar. Nada se ha visto en pantalla.
+- **FPS NO MEDIDOS**: no tengo acceso al teléfono. `docs/performance/tactical-board.md` tiene el escenario, la herramienta y el procedimiento, con los resultados en PENDIENTE. No hay cifra de 60 FPS.
+- Diferencias con el diseño: chips de formación rectangulares (sin paralelogramo), sin línea discontinua de la posición original (solo círculo fantasma), sin cambiar jugadores por suplentes, botón atrás dice "Perfil" (no existe pestaña Plantilla), el chip FPS es interactivo.
+Decisiones clave: posición en SharedValues (hilo de UI) y estado de React solo al soltar; fichas como vistas sobre un Skia estático; normalizado 0..1; guardar solo online con botón.
+Archivos principales: `mobile/app/tactics.tsx`, `mobile/src/features/tactics/*`, `mobile/tests/tactics.test.ts`, `docs/defense/canvas.md`, `docs/performance/tactical-board.md`.
+Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear`, Expo Go -> Perfil -> Pizarra táctica; arrastrar, cambiar formación, Guardar, salir y volver. FPS: tocar el chip y arrastrar 30 s. Tests: `npm run test:logic; npx tsc --noEmit`.
+Siguiente paso: probar en el teléfono, rellenar la tabla de `docs/performance/tactical-board.md` y pasar la fase a COMPLETA; luego Fase 11 (la define el usuario).
 
 ## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
 Estado: COMPLETA
@@ -17,20 +30,3 @@ Archivos principales: `mobile/app/match/[id].tsx`, `mobile/src/features/match/*`
 Cómo probarlo (PowerShell, raíz del repo; guion completo en el último mensaje de la sesión):
 `$env:API_URL="https://ea-fc-api.onrender.com"; backend\venv\Scripts\python.exe scripts\demo\room_helper.py setup` (inscribe participant02/03, inicia el torneo, activa la fecha 1), luego `status`, `advance`, `play-home`, `resolve`, `events`; bot: `backend\venv\Scripts\python.exe scripts\demo\visitor_bot.py --email participant02@example.com --approve`. Tests: `cd mobile; npm run test:logic; npx tsc --noEmit`.
 Siguiente paso: Fase 10 (la define el usuario). Los partidos de la prueba quedan en el `Torneo de prueba` (ahora ACTIVE, con bots participant02/03 inscritos).
-
-## Fase 8 – App: base, auth, ruleta, home, tabla, calendario – 2026-10-03
-Estado: COMPLETA
-Hecho (VERIFICADO):
-- Backend: `GET /participants/me` (solo lectura, no inscribe) y `GET /media/crests/{id}` + `/media/players/{id}` (JWT, PNG del bucket privado, ETag/304, `Cache-Control: private`). 348 passed sin integración; `tests/integration/test_app_flow_real.py` 6 passed contra Supabase real. Desplegado en Render y comprobado en la URL pública: login, `/participants/me` 403, `/tournament`, escudo 200 + 304 + anónimo 401, refresh, wss `AUTH_OK` (1,3 s).
-- App: `npx tsc --noEmit` limpio; `npx expo export --platform android` empaqueta (Hermes); lógica pura (`derive.ts`, `validation.ts`, `events.ts`) ejecutada con aserciones. Paquetes con `expo install` (ver `docs/VERSIONES.md`).
-- Hecho: tema desde `design-system.md`, cliente API con refresh en 401, sesión en SecureStore, caché persistida (AsyncStorage), Zustand (sesión/conexión), Login, Registro, Ruleta (Skia+Reanimated, el servidor elige), Home, Tabla, Calendario, Perfil mínimo (solo cerrar sesión), `RealtimeService` + banner, `ClubCrest`/`PlayerAvatar` (expo-image, caché en disco, iniciales).
-- BD: creé a propósito 1 torneo `Torneo de prueba` (era DRAFT; desde la Fase 9 está ACTIVE, ver `CLAUDE.md`); 0 usuarios `it-*` huérfanos.
-- VERIFICADO por el usuario en Expo Go (Android): registro -> ruleta -> club asignado -> vistas; escudos reales en Inicio, Tabla y Perfil; modo avión: tabla y calendario desde caché tras cerrar y reabrir; banner "Sin conexión" y chip "En línea" al volver la red.
-- Corregido tras la prueba: aviso de Skia (`SkPath.moveTo` obsoleto -> `Skia.PathBuilder`) y escudos invisibles (el contenedor con `overflow: hidden` + borde discontinuo recortaba la imagen en Android; ahora el placeholder es un hermano y no hay recortes). Perfil: añadida tarjeta "Mi club" con escudo.
-No probado / pendiente:
-- NO PROBADO: Calendario con partidos (eres el único inscrito, no hay fixtures), WebSocket recibiendo avisos reales en la app, arranque en frío de Render (el cliente espera hasta 60 s). Quedan logs `[media]` solo en desarrollo (`__DEV__`) en `ClubCrest.tsx`; quitarlos cuando no hagan falta.
-- Hex y fuentes del diseño siguen siendo estimaciones (no muestreados). Sin: pestaña Plantilla, botón "Entrar a la sala" (Fase 9), "¿Olvidaste tu contraseña?" (no hay endpoint), confeti. Aún no hay endpoint para crear torneos (el `Torneo de prueba` DRAFT lo creé por SQL y sigue en la BD); la clave secreta de Supabase sigue pendiente de rotar (decisión tuya).
-Decisiones clave: caché de TanStack Query persistida (no copiar datos a Zustand); `/participants/me` aparte de `assign-club`; `/media` con JWT y caché por URL sin token; Home compuesto en cliente con funciones puras (sin `/home`).
-Archivos principales: `mobile/app/**`, `mobile/src/{api,stores,realtime,theme,components,features}`, `backend/app/{api/media.py,services/media_service.py,repositories/media_repository.py}`, `docs/defense/app-base.md`.
-Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear` y abrir con Expo Go (la URL está en `mobile/.env`: `EXPO_PUBLIC_API_URL=https://ea-fc-api.onrender.com`). Tests: `cd backend; .\venv\Scripts\python.exe -m pytest -m "not integration"`; `cd mobile; npx tsc --noEmit`.
-Siguiente paso: Fase 9 (la define el usuario).

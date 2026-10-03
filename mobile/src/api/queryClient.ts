@@ -33,5 +33,6 @@ export const queryKeys = {
   standings: ['standings'] as const,
   fixtures: ['fixtures'] as const,
   squad: ['squad'] as const,
+  lineup: ['lineup'] as const,
   match: (id: string) => ['match', id] as const,
 };

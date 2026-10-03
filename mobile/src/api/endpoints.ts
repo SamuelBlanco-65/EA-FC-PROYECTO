@@ -3,6 +3,8 @@ import type {
   AssignClubResponse,
   EventPayload,
   Fixture,
+  Lineup,
+  LineupSlot,
   MatchDetail,
   MyParticipation,
   Player,
@@ -30,6 +32,9 @@ export const api = {
   fixtures: () => apiFetch<Fixture[]>('/tournament/fixtures'),
 
   mySquad: () => apiFetch<Player[]>('/me/squad'),
+  lineup: () => apiFetch<Lineup>('/lineups/me'),
+  saveLineup: (formation: string, positions: LineupSlot[]) =>
+    apiFetch<Lineup>('/lineups/me', { method: 'PUT', body: { formation, positions } }),
   match: (id: string) => apiFetch<MatchDetail>(`/matches/${id}`),
   recordEvent: (matchId: string, event: EventPayload) =>
     apiFetch<RecordEventResponse>(`/matches/${matchId}/events`, { method: 'POST', body: event }),

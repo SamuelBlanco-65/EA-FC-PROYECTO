@@ -99,6 +99,20 @@ export interface Player {
   photoUrl: string;
 }
 
+/** One token of the tactical board; x/y are normalized 0..1 (own goal at the bottom). */
+export interface LineupSlot {
+  playerId: string;
+  x: number;
+  y: number;
+}
+
+export interface Lineup {
+  participantId: string;
+  formation: string;
+  positions: LineupSlot[];
+  updatedAt: string;
+}
+
 export interface MatchEvent {
   id: string;
   matchId: string;

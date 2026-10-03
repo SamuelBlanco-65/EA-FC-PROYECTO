@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -13,6 +14,7 @@ import { colors, type } from '@/theme';
 export default function Profile() {
   const user = useSessionStore((s) => s.user);
   const participation = useMyParticipation();
+  const router = useRouter();
 
   return (
     <Screen glow="blue">
@@ -35,6 +37,11 @@ export default function Profile() {
           </View>
         </Card>
       ) : null}
+      {participation.data ? (
+        <View style={styles.tactics}>
+          <Button label="Pizarra táctica" variant="secondary" icon="target" onPress={() => router.push('/tactics')} />
+        </View>
+      ) : null}
       <View style={styles.logout}>
         <Button label="Cerrar sesión" variant="dangerOutline" icon="log-out" onPress={() => void signOut()} />
       </View>
@@ -50,5 +57,6 @@ const styles = StyleSheet.create({
   club: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
   clubText: { flex: 1, gap: 4 },
   clubName: { ...type.titleCard, color: colors.textPrimary },
+  tactics: { marginTop: 12 },
   logout: { marginTop: 24 },
 });
