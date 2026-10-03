@@ -11,6 +11,7 @@ import { colors } from '@/theme';
 /** Entry gate: signed out -> login; signed in -> home if I already have a club, otherwise the roulette. */
 export default function Gate() {
   const status = useSessionStore((s) => s.status);
+  const role = useSessionStore((s) => s.user?.role);
   const participation = useMyParticipation();
 
   if (status !== 'signedIn') return <Redirect href="/login" />;
@@ -18,7 +19,10 @@ export default function Gate() {
 
   const error = participation.error;
   // 403 NOT_A_PARTICIPANT: not enrolled yet, which is the normal state before the roulette.
-  if (isApiError(error) && error.code === 'NOT_A_PARTICIPANT') return <Redirect href="/roulette" />;
+  // An admin who does not play has nothing to draw (and may find the enrolment closed): straight to the profile.
+  if (isApiError(error) && error.code === 'NOT_A_PARTICIPANT') {
+    return <Redirect href={role === 'admin' ? '/profile' : '/roulette'} />;
+  }
 
   if (participation.isError) {
     const message = isApiError(error) ? error.message : 'No se pudo cargar tu información.';

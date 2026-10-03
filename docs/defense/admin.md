@@ -22,4 +22,4 @@
 ## Errores típicos
 - `setup_demo.py` falla al iniciar sesión: faltan cuentas (`create_users.py N+1`) o contraseñas (`demo.env`); falla ANTES de borrar nada.
 - Tras `setup_demo.py --yes` la app del teléfono muestra el torneo nuevo; `--teardown --yes` devuelve el anterior.
-- Pantallas admin: NO probadas en el teléfono (solo API, `tsc` y empaquetado).
+- Un admin que no juega no debe pasar por la ruleta: `app/index.tsx` lo manda a Perfil (la prueba en el teléfono lo destapó: con el torneo iniciado la ruleta daba "inscripción cerrada").

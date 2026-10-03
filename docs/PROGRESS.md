@@ -1,10 +1,13 @@
 # Progreso del proyecto
 
-Fases 0-10 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 11 PARCIAL: todo hecho y verificado salvo la prueba de las pantallas admin en el teléfono.
+Fases 0-11 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 11 COMPLETA (probada por el usuario en el teléfono).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
 
 ## Fase 11 – Admin en la app, prueba integral y defensa – 2026-10-03
-Estado: PARCIAL (pantallas admin NO probadas en el teléfono; el resto VERIFICADO)
+Estado: COMPLETA
+Hecho (VERIFICADO por el usuario en Expo Go, Android): "probé todo" (pantallas admin con el torneo de demo). La prueba destapó 2 fallos, ya corregidos (tras corregirlos solo se volvió a ejecutar `tsc`, sin tests nuevos):
+- `TextField`: al enfocar añadía sombra/`elevation` al contenedor y en Android el campo perdía el foco (el teclado se abría y se cerraba; login y registro inservibles). Causa NO confirmada con certeza, pero quitar el brillo al enfocar lo arregló (el usuario confirmó que ya escribe). Ahora solo cambia el borde.
+- `app/index.tsx`: mandaba a la ruleta a todo no participante, también al admin, que nunca llegaba a Administración (con el torneo ya iniciado: "inscripción cerrada"). Ahora el admin que no juega va a Perfil e Inicio le ofrece el botón Administración.
 Hecho (VERIFICADO por mí):
 - Tests: backend `pytest` completo **392 passed** (348 herméticos + 44 de integración, 3 min 33 s); `npx tsc --noEmit` limpio; `npm run test:logic` **57 passed** (9 nuevos en `tests/admin.test.ts`); `npx expo export --platform android` empaqueta con las rutas `admin/*`. BD tras los tests de integración: solo `Torneo de prueba` (ACTIVE) y 0 usuarios `it-*`.
 - `scripts/demo/setup_demo.py` ejecutado contra el Supabase REAL con el backend local (uvicorn, `API_URL=http://127.0.0.1:8000`): 4 bots, iniciar (12 partidos, 6 fechas), 2 fechas jugadas, 1 disputa y 1 pendiente. Luego `--teardown --yes`: borró eventos y torneo sin error y `Torneo de prueba` volvió a ser el actual (autorizado por el usuario).
@@ -12,13 +15,13 @@ Hecho (VERIFICADO por mí):
 - App: `mobile/app/admin/index.tsx` (estado del torneo, participantes, iniciar torneo, activar fecha, cola de pendientes y disputas), `mobile/app/admin/matches/[id].tsx` (resolver: marcador calculado, versión del local, estado del visitante, marcador oficial y nota), entrada "Administración" en Perfil solo con rol admin, `features/admin/{derive,hooks}.ts`, `components/BackHeader.tsx`. Backend sin cambios.
 - Docs: `docs/defense/INDEX.md` (arquitectura, recorrido de un evento, 20 preguntas), `docs/defense/admin.md`, `README.md` (Windows + aviso de derechos y fuente de datos).
 No probado / pendiente:
-- Las pantallas admin NO se han visto en Expo Go (no hay diseño `13-admin.png`/`14-disputa.png`: seguí `design-system.md`). La "prueba manual completa" fue por API/scripts, no con el teléfono.
+- No hay diseño `13-admin.png`/`14-disputa.png`: las pantallas admin siguen `design-system.md`. El usuario no detalló qué pasos concretos probó ni si anotó diferencias visuales.
 - Sin pestaña Plantilla (pendiente de fases anteriores). El admin no recibe por WebSocket los rechazos del visitante (van a los 2 jugadores): su cola de pendientes se refresca con sondeo de 10 s y al tirar para refrescar.
 - La instalación desde cero (README) no se probó en otra máquina. `setup_demo.py` con `--yes` sin `--start` (solo DRAFT) no se ejecutó.
 Decisiones clave: el servidor decide y la app solo refleja (botones deshabilitados como pista; 409 se muestra tal cual); `setup_demo.py` es plan-por-defecto y exige `--yes`, solo borra el torneo con nombre exacto; reutiliza `room_helper` y `create_users`.
 Archivos principales: `mobile/app/admin/*`, `mobile/src/features/admin/*`, `scripts/demo/setup_demo.py`, `docs/defense/INDEX.md`, `README.md`.
 Cómo probarlo (PowerShell, raíz): `cd backend; .\venv\Scripts\python.exe -m uvicorn app.main:app --host 0.0.0.0 --port 8000`; en otra ventana `$env:API_URL="http://127.0.0.1:8000"; backend\venv\Scripts\python.exe scripts\demo\setup_demo.py 4 --yes --start --play-rounds 2 --dispute`; `cd mobile; npx expo start --clear` (con `EXPO_PUBLIC_API_URL` = IP del PC), entrar como `admin@example.com` -> Perfil -> Administración. Al terminar: `setup_demo.py --teardown --yes`. Tests: `cd mobile; npx tsc --noEmit; npm run test:logic`.
-Siguiente paso: probar las pantallas admin en el teléfono (y corregir lo que salga); entrega 6 de octubre de 2026.
+Siguiente paso: repaso de defensa con `docs/defense/INDEX.md`; entrega 6 de octubre de 2026. `Torneo de demo` puede seguir en la BD real y ser el torneo actual: `setup_demo.py --teardown --yes` devuelve `Torneo de prueba` (confirmar con el usuario antes).
 
 ## Fase 10 – Pizarra táctica – 2026-10-03
 Estado: COMPLETA

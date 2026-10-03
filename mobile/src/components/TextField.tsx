@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { forwardRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { colors, radii, shadows, type } from '@/theme';
+import { colors, radii, type } from '@/theme';
 
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
 
@@ -33,7 +33,8 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
       <View
         style={[
           styles.field,
-          focused && !hasError && [styles.focused, shadows.glowAccent],
+          // No shadow/elevation here: adding it on focus made Android drop the focus right after the keyboard opened.
+          focused && !hasError && styles.focused,
           hasError && styles.errored,
         ]}
       >

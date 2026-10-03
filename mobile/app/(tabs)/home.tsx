@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { isApiError } from '@/api/errors';
 import type { Fixture, StandingRow, Tournament } from '@/api/types';
 import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
@@ -29,8 +30,25 @@ export default function Home() {
   const queries = [participation, tournament, standings, fixtures];
   const refreshing = queries.some((q) => q.isFetching && !q.isPending);
 
+  const router = useRouter();
+
   const refresh = () => queries.forEach((q) => void q.refetch());
   const firstName = user?.displayName.split(/\s+/)[0] ?? '';
+
+  const adminNotPlaying =
+    user?.role === 'admin' && isApiError(participation.error) && participation.error.code === 'NOT_A_PARTICIPANT';
+  if (adminNotPlaying) {
+    return (
+      <Screen glow="blue">
+        <Card variant="dashed" style={styles.waiting}>
+          <Feather name="shield" size={28} color={colors.textSecondary} />
+          <Text style={styles.waitingTitle}>Eres administrador</Text>
+          <Text style={styles.waitingText}>No juegas en este torneo. Gestiónalo desde Administración.</Text>
+          <Button label="Administración" icon="shield" onPress={() => router.push('/admin')} />
+        </Card>
+      </Screen>
+    );
+  }
 
   return (
     <Screen glow="blue" onRefresh={refresh} refreshing={refreshing}>
