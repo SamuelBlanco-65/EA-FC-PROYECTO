@@ -140,3 +140,20 @@ Fase 11. Tareas:
 5. README.md con cómo ejecutar todo en Windows y un aviso: escudos, nombres y datos pertenecen a sus titulares; uso académico no comercial; fuente de los datos.
 Cierra con cerrar-fase.
 ```
+
+## Fase 12 – Rediseño visual (solo presentación)
+```
+Fase 12. Usa la skill mobile-expo (la skill sistema-diseno no existe en .claude/skills: la fuente de tokens será docs/design/design-system-v2.md). Es un REDISEÑO VISUAL: no cambies funcionalidad.
+0. Crea y trabaja en la rama `design-v2` (master queda intacto y es la versión defendible). Haz commit en esa rama, un commit por paso. No hagas merge a master ni push de master sin que yo lo diga.
+1. Abre UNA sola vez las imágenes de design/reference-v2/ (las que tengo en esa carpeta; la carpeta v1 design/reference/ se queda como está) y conviértelas a texto en archivos NUEVOS: docs/design/design-system-v2.md (paleta, tipografías y cómo cargarlas, espaciado, radios, sombras, componentes, iconos, navegación, movimiento) y docs/design/screens-v2.md (mapa de pantallas v2 con qué imagen corresponde a qué ruta). NO edites design-system.md ni screens.md (v1): son el historial y el respaldo de master. Valores ESTIMADOS salvo que los muestree; márcalos. Si el v2 no cubre una pantalla, dímelo en vez de inventar. Pregúntame lo que no se pueda deducir de las imágenes (qué pantallas son prioritarias, si reemplaza todo el diseño actual).
+2. Implementa por capas: primero mobile/src/theme/, luego mobile/src/components/, luego pantalla por pantalla (empezando por las más usadas: Login, Registro, Inicio, Tabla, Calendario, Perfil; después sala de partido, admin y pizarra).
+REGLAS DURAS:
+- Solo capa de presentación: estilos, tokens, componentes visuales. NO toques backend/, supabase/, scripts/, mobile/src/api, hooks, stores, offline, realtime ni tests existentes (salvo que un cambio visual los rompa y lo explicas).
+- Tras cada paso: `npx tsc --noEmit`, `npm run test:logic` (deben seguir pasando los 65 tests) y `npx expo export --platform android`. Yo pruebo cada pantalla en el teléfono; no digas "funciona" sin que yo lo haya visto.
+- Peligro conocido: una sombra/`elevation` añadida al enfocar un campo de texto hizo que Android le quitara el foco y no se pudiera escribir (arreglado en TextField). No pongas sombra, elevation ni cambios estructurales en el contenedor de un TextInput al enfocar; solo borde/color.
+- Pizarra táctica y sala de partido: si cambias el Canvas de Skia, hay que volver a medir los 60 FPS (docs/performance/tactical-board.md). Si no hay tiempo, déjalas como están.
+- Fuentes nuevas: `npx expo install` y comprueba que funcionan en Expo Go; si hace falta development build, avísame antes.
+- Skew (paralelogramos) y brillos: verifica rendimiento y nitidez en Android antes de adoptarlos; si fallan, usa la alternativa simple.
+Entrega: 6 de octubre de 2026. Si el tiempo no alcanza, priorizo estabilidad sobre estética: dime qué pantallas quedaron sin rediseñar.
+Cierra con cerrar-fase (actualiza docs/PROGRESS.md; ficha corta en docs/defense/ solo si cambia algo que haya que defender).
+```
