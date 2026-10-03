@@ -1,12 +1,14 @@
 from datetime import datetime
 from uuid import UUID
 
-from app.domain.tournament import Assignment, Club, ClubRef, Match, MatchStatus, StandingRow, Tournament, TournamentStatus
+from app.domain.tournament import (
+    Assignment, Club, ClubRef, Match, MatchStatus, Participant, StandingRow, Tournament, TournamentStatus,
+)
 from app.schemas.common import CamelModel
 
 
 def crest_url(club_id: UUID) -> str:
-    # Served by the backend (never Supabase directly). The /media route itself is a later phase.
+    # Served by the backend (never Supabase directly): see api/media.py.
     return f"/media/crests/{club_id}"
 
 
@@ -49,6 +51,19 @@ class ParticipantResponse(CamelModel):
     id: UUID
     tournament_id: UUID
     joined_at: datetime
+
+
+class MyParticipationResponse(CamelModel):
+    participant: ParticipantResponse
+    club: ClubResponse
+
+    @classmethod
+    def from_domain(cls, participant: Participant, club: Club) -> "MyParticipationResponse":
+        return cls(
+            participant=ParticipantResponse(
+                id=participant.id, tournament_id=participant.tournament_id, joined_at=participant.joined_at),
+            club=ClubResponse.from_domain(club),
+        )
 
 
 class AssignClubResponse(CamelModel):

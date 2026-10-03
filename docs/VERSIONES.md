@@ -119,3 +119,20 @@ Pendiente / NO PROBADO:
 - Caso EMAIL_CONFIRMATION_REQUIRED (proyecto con "Confirm email" ON): solo probado con repositorio simulado.
 
 Cerrado después: `POST /auth/register` VERIFICADO contra el proyecto real con "Confirm email" OFF (con ON, Supabase devolvía 429 `over_email_send_rate_limit` por el SMTP integrado). Con el proveedor Email desactivado, Supabase responde `email_provider_disabled` (400/422) y rompe también el login.
+
+
+## Fase 8 – paquetes móviles añadidos (2026-10-03)
+
+Instalados con `npx expo install` (versiones que fija el SDK 57). Todos figuran como "Included in Expo Go" según la documentación de Expo (NO PROBADO en el teléfono hasta que el usuario lo abra).
+
+| Paquete | Versión | Uso |
+|---|---|---|
+| expo-image | ~57.0.5 | `ClubCrest` / `PlayerAvatar`: caché en disco (`cachePolicy="disk"`, `cacheKey`, `headers`) |
+| expo-font, @expo-google-fonts/barlow, @expo-google-fonts/barlow-condensed | ~57.0.4 / ^0.4.1 | Tipografía candidata del sistema de diseño |
+| expo-linear-gradient | ~57.0.2 | Botón primario, logo |
+| @expo/vector-icons | ^15.0.2 | Iconos Feather |
+| @react-native-async-storage/async-storage | 2.2.0 | Almacén de la caché de TanStack Query |
+| @react-native-community/netinfo | 12.0.1 | Estado de red -> `onlineManager` y banner |
+| @tanstack/react-query-persist-client, @tanstack/query-async-storage-persister | ^5.104.1 | Caché persistida |
+
+Verificado: `npx tsc --noEmit` sin errores; `npx expo export --platform android` empaqueta (Hermes, 5,1 MB); `npx expo install --check` sin cambios. `expo-doctor`: 20/21, el que falla es la consulta de red al directorio de React Native ("unexpected server response"), no el proyecto.

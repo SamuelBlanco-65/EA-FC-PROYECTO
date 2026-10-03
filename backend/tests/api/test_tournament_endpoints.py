@@ -199,3 +199,30 @@ def test_assign_errors_keep_stable_codes(client, tournaments, participants, user
     response = client.post("/participants/me/assign-club", headers=user[1])
     assert response.status_code == status
     assert response.json()["error"]["code"] == code
+
+
+def test_my_participation_requires_authentication(client, tournaments, participants):
+    assert client.get("/participants/me").status_code == 401
+
+
+def test_my_participation_without_club_is_403_and_does_not_enrol(client, tournaments, participants, user):
+    response = client.get("/participants/me", headers=user[1])
+    assert response.status_code == 403
+    assert response.json()["error"]["code"] == "NOT_A_PARTICIPANT"
+    assert participants.rpc_calls == 0  # read-only: it must never assign a club
+
+
+def test_my_participation_returns_my_club_after_assignment(client, tournaments, participants, user):
+    assigned = client.post("/participants/me/assign-club", headers=user[1]).json()
+    body = client.get("/participants/me", headers=user[1]).json()
+    assert body["participant"]["id"] == assigned["participant"]["id"]
+    assert body["club"]["id"] == assigned["club"]["id"]
+    assert body["club"]["crestUrl"] == f"/media/crests/{body['club']['id']}"
+    assert participants.rpc_calls == 1
+
+
+def test_my_participation_without_tournament_is_404(client, tournaments, participants, user):
+    tournaments.tournament = None
+    response = client.get("/participants/me", headers=user[1])
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "TOURNAMENT_NOT_FOUND"

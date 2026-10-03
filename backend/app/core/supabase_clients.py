@@ -21,7 +21,7 @@ def new_auth_client(settings: Settings) -> Client:
 
 
 @lru_cache
-def _shared_http() -> httpx.Client:
+def shared_http() -> httpx.Client:
     # One pooled connection set for PostgREST: the profile lookup runs on every authenticated request.
     # HTTP/1.1 on purpose. With http2=True every thread shared ONE multiplexed connection; when the server
     # dropped it ("RemoteProtocolError: Server disconnected") all in-flight requests died together (9 of 15
@@ -36,7 +36,7 @@ def service_postgrest(settings: Settings) -> SyncPostgrestClient:
     return SyncPostgrestClient(
         settings.rest_url,
         headers={"apikey": key, "Authorization": f"Bearer {key}"},
-        http_client=_shared_http(),
+        http_client=shared_http(),
     )
 
 
@@ -48,5 +48,5 @@ def user_postgrest(settings: Settings, access_token: str) -> SyncPostgrestClient
             "apikey": settings.supabase_publishable_key.get_secret_value(),
             "Authorization": f"Bearer {access_token}",
         },
-        http_client=_shared_http(),
+        http_client=shared_http(),
     )

@@ -3,12 +3,12 @@
 Layers: the router parses the request, this service decides, repositories talk to Supabase.
 """
 from app.core.errors import AppError
-from app.domain.tournament import Assignment, Match, StandingRow, Tournament
+from app.domain.tournament import Assignment, Club, Match, Participant, StandingRow, Tournament
 from app.domain.user import CurrentUser
 from app.repositories.club_repository import ClubRepository
 from app.repositories.participant_repository import ParticipantRepository
 from app.repositories.tournament_repository import TournamentRepository
-from app.services.common import current_tournament
+from app.services.common import current_tournament, own_participant
 
 
 class TournamentService:
@@ -33,6 +33,15 @@ class TournamentService:
         tournament = self.current(user)
         refs = self._participants.club_refs(tournament.id, user.access_token)
         return self._tournaments.get_matches(tournament.id, refs, user.access_token)
+
+    def my_participation(self, user: CurrentUser) -> tuple[Participant, Club]:
+        """Read-only: who am I in the current tournament? Unlike assign_club it never enrols anyone."""
+        tournament = self.current(user)
+        participant = own_participant(self._participants, tournament.id, user)
+        club = next((c for c in self._clubs.list_all(user.access_token) if c.id == participant.club_id), None)
+        if club is None:
+            raise AppError("UPSTREAM_ERROR", "No se pudo leer el club asignado.", 502)
+        return participant, club
 
     def assign_club(self, user: CurrentUser) -> Assignment:
         """Idempotent. The club is chosen by the SQL function, never by the client."""

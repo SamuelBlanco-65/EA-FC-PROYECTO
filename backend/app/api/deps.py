@@ -9,6 +9,7 @@ from app.repositories.auth_repository import AuthRepository
 from app.repositories.club_repository import ClubRepository
 from app.repositories.lineup_repository import LineupRepository
 from app.repositories.match_repository import MatchRepository
+from app.repositories.media_repository import MediaRepository
 from app.repositories.participant_repository import ParticipantRepository
 from app.repositories.player_repository import PlayerRepository
 from app.repositories.profile_repository import ProfileRepository
@@ -16,6 +17,7 @@ from app.repositories.tournament_repository import TournamentRepository
 from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
 from app.services.match_service import MatchService
+from app.services.media_service import MediaService
 from app.services.squad_service import SquadService
 from app.services.tournament_service import TournamentService
 
@@ -87,6 +89,14 @@ def get_squad_service(
     lineups: LineupRepository = Depends(get_lineup_repository),
 ) -> SquadService:
     return SquadService(tournaments, participants, players, lineups)
+
+
+def get_media_repository(settings: Settings = Depends(get_settings)) -> MediaRepository:
+    return MediaRepository(settings)
+
+
+def get_media_service(media: MediaRepository = Depends(get_media_repository)) -> MediaService:
+    return MediaService(media)
 
 
 def get_auth_service(

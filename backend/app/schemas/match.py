@@ -10,7 +10,7 @@ from app.schemas.tournament import FixtureTeam, TournamentResponse
 
 
 def player_photo_url(player_id: UUID) -> str:
-    # Served by the backend (never Supabase directly). The /media route itself is a later phase.
+    # Served by the backend (never Supabase directly): see api/media.py.
     return f"/media/players/{player_id}"
 
 
