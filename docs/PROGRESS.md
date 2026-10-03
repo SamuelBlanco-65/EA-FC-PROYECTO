@@ -1,21 +1,22 @@
 # Progreso del proyecto
 
-Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 9 PARCIAL: código y lógica verificados, faltan las pruebas en el teléfono (abajo).
+Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 9 COMPLETA (probada por el usuario en el teléfono).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
 
 ## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
-Estado: PARCIAL (falta la prueba guiada en el teléfono; la haces tú)
-Hecho (VERIFICADO):
+Estado: COMPLETA
+Hecho (VERIFICADO por el usuario en Expo Go, Android): giro a horizontal, registrar goles/tarjetas, caso aprobado, caso rechazado, modal del visitante y prueba en modo avión con los 2 goles; "todo funciona". Corregido tras la prueba: en partidos de visitante el gol subía la casilla de la derecha del marcador (orden local:visitante) y parecía del rival; ahora el marcador de arriba muestra MI número a la izquierda, con el club bajo cada casilla (NO PROBADO visualmente tras el cambio; solo `tsc`).
+Hecho (VERIFICADO por mí):
 - `npx tsc --noEmit` limpio; `npx expo export --platform android` empaqueta; `npm run test:logic` 14 passed (cola: persistencia y recuperación, orden, fallo transitorio, rechazo definitivo sin bloquear, ráfagas concurrentes, caída entre "servidor aceptó" y "cola olvidó" sin duplicar contra un servidor simulado idempotente; derivaciones de la sala). Backend intacto: 348 passed sin integración. BD sin tocar (0 tests de integración ejecutados; sigue el `Torneo de prueba` DRAFT con 1 participante).
 - Hecho: `app/match/[id].tsx` (marcador, eventos en vivo, TU EQUIPO / OPONENTE, Gol/Amarilla/Roja con jugador + minuto, Finalizar del local con confirmación, `ResultModal` Confirmar/Rechazar del visitante, barra "Sin conexión – N eventos pendientes"), `offline/eventQueue.ts` + `queue.ts` (cola en AsyncStorage, envío en orden, backoff), disparadores en `useAppRuntime.ts` (red, WebSocket, primer plano), botón "Entrar a la sala" en Inicio y Calendario, `scripts/demo/room_helper.py` para la prueba guiada (solo `status` ejecutado, lectura).
 No probado / pendiente:
-- NO PROBADO en el teléfono: giro a horizontal en Expo Go (con `orientation: "portrait"` en `app.json`; plan B en `docs/VERSIONES.md`), teclado numérico del minuto en horizontal, escudos/fotos en la sala, aspecto de los modales, caso aprobado, caso rechazado, modal del visitante, prueba en modo avión (2 goles, llegan 1 vez).
+- El usuario no reportó fallos de orientación, modales ni escudos; no detalló el teclado del minuto. No guardé la salida de `room_helper.py events` (conteo de ids en el servidor): el "llegan 1 vez" es lo que el usuario vio.
 - Diferencia con el diseño: el chip "Ahora" del minuto se llama "Último" (no hay reloj de partido; vale el último minuto registrado). Sin pestaña Plantilla. Un envío tras dormir Render puede tardar hasta 60 s. La cola se borra al cerrar sesión.
 Decisiones clave: siempre encolar (con y sin red) para un único camino y orden garantizado; idempotencia por UUID del cliente en el servidor; AsyncStorage en vez de SQLite; 4xx definitivo = "rechazado" visible, no bloquea la cola.
 Archivos principales: `mobile/app/match/[id].tsx`, `mobile/src/features/match/*`, `mobile/src/offline/*`, `mobile/tests/logic.test.ts`, `scripts/demo/room_helper.py`, `docs/defense/offline.md`.
 Cómo probarlo (PowerShell, raíz del repo; guion completo en el último mensaje de la sesión):
 `$env:API_URL="https://ea-fc-api.onrender.com"; backend\venv\Scripts\python.exe scripts\demo\room_helper.py setup` (inscribe participant02/03, inicia el torneo, activa la fecha 1), luego `status`, `advance`, `play-home`, `resolve`, `events`; bot: `backend\venv\Scripts\python.exe scripts\demo\visitor_bot.py --email participant02@example.com --approve`. Tests: `cd mobile; npm run test:logic; npx tsc --noEmit`.
-Siguiente paso: tu prueba en el teléfono; con el resultado actualizo esta fase a COMPLETA (o corrijo). Después, Fase 10.
+Siguiente paso: Fase 10 (la define el usuario). Los partidos de la prueba quedan en el `Torneo de prueba` (ahora ACTIVE, con bots participant02/03 inscritos).
 
 ## Fase 8 – App: base, auth, ruleta, home, tabla, calendario – 2026-10-03
 Estado: COMPLETA

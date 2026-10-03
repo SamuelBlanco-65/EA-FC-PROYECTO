@@ -102,6 +102,11 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
   const official = match.homeScore !== null && match.awayScore !== null && status !== 'SCHEDULED' && status !== 'ACTIVE';
   const score = official ? { home: match.homeScore as number, away: match.awayScore as number } : live;
   const pendingCount = pending.length;
+  // The header shows MY number on the left (same side as the "Tu equipo" panel), whatever my side is.
+  const mineFirst = (home: number, away: number) => (side === 'home' ? { mine: home, theirs: away } : { mine: away, theirs: home });
+  const shown = mineFirst(score.home, score.away);
+  const finalPair = mineFirst(match.homeScore ?? 0, match.awayScore ?? 0);
+  const finalText = `${finalPair.mine} - ${finalPair.theirs} (tú - rival)`;
 
   const submitEvent = async (e: { type: EventType; playerId: string; minute: number }) => {
     try {
@@ -126,7 +131,7 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
   const askFinish = () =>
     Alert.alert(
       'Finalizar partido',
-      `El marcador se calculará con los goles registrados (${live.home} - ${live.away}) y el visitante deberá confirmarlo. No se puede deshacer.`,
+      `El marcador se calculará con los goles registrados (${mineFirst(live.home, live.away).mine} - ${mineFirst(live.home, live.away).theirs}, tú - rival) y el visitante deberá confirmarlo. No se puede deshacer.`,
       [
         { text: 'Cancelar', style: 'cancel' },
         {
@@ -164,9 +169,9 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
           <MatchStatusBadge status={status} compact />
         )}
         <View style={styles.score}>
-          <ScoreBox value={score.home} />
+          <ScoreBox value={shown.mine} label={mine.shortName} mine />
           <Text style={styles.colon}>:</Text>
-          <ScoreBox value={score.away} />
+          <ScoreBox value={shown.theirs} label={other.shortName} />
         </View>
         <ConnectionChip online={online} socket={socket} />
         <View style={styles.rolePill}>
@@ -196,6 +201,7 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
           side={side}
           offline={offline}
           pendingCount={pendingCount}
+          scoreText={finalText}
           finishing={finish.isPending}
           onFinish={askFinish}
         />
@@ -232,6 +238,7 @@ function Footer({
   side,
   offline,
   pendingCount,
+  scoreText: score,
   finishing,
   onFinish,
 }: {
@@ -239,10 +246,10 @@ function Footer({
   side: 'home' | 'away';
   offline: boolean;
   pendingCount: number;
+  scoreText: string;
   finishing: boolean;
   onFinish: () => void;
 }) {
-  const score = `${match.homeScore ?? 0} - ${match.awayScore ?? 0}`;
 
   if (match.status === 'ACTIVE') {
     // The server decides who may finish; this only mirrors it so the button is not offered to the visitor.
@@ -326,9 +333,14 @@ function ConnectionChip({ online, socket }: { online: boolean | null; socket: st
   );
 }
 
-const ScoreBox = ({ value }: { value: number }) => (
-  <View style={styles.scoreBox}>
-    <Text style={styles.scoreDigit}>{value}</Text>
+const ScoreBox = ({ value, label, mine }: { value: number; label: string; mine?: boolean }) => (
+  <View style={styles.scoreCell}>
+    <View style={[styles.scoreBox, mine && { borderColor: colors.accent }]}>
+      <Text style={styles.scoreDigit}>{value}</Text>
+    </View>
+    <Text style={[styles.scoreLabel, mine && { color: colors.accent }]} numberOfLines={1}>
+      {label}
+    </Text>
   </View>
 );
 
@@ -365,6 +377,8 @@ const styles = StyleSheet.create({
   liveText: { fontFamily: fonts.displayItalic, fontSize: 18, lineHeight: 20, color: colors.textOnAccent, textTransform: 'uppercase', letterSpacing: 1 },
   score: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   colon: { ...type.scoreDigit, fontSize: 28, color: colors.textSecondary },
+  scoreCell: { alignItems: 'center', gap: 2, maxWidth: 70 },
+  scoreLabel: { fontFamily: fonts.bold, fontSize: 10, lineHeight: 12, letterSpacing: 1, color: colors.textSecondary, textTransform: 'uppercase' },
   scoreBox: {
     width: 44,
     height: 52,
