@@ -15,7 +15,7 @@ No probado / pendiente:
 Decisiones clave: posición en SharedValues (hilo de UI) y estado de React solo al soltar; fichas como vistas sobre un Skia estático; normalizado 0..1; guardar solo online con botón.
 Archivos principales: `mobile/app/tactics.tsx`, `mobile/src/features/tactics/*`, `mobile/tests/tactics.test.ts`, `docs/defense/canvas.md`, `docs/performance/tactical-board.md`.
 Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear`, Expo Go -> Perfil -> Pizarra táctica; arrastrar, cambiar formación, Guardar, salir y volver. FPS: tocar el chip y arrastrar 30 s. Tests: `npm run test:logic; npx tsc --noEmit`.
-Siguiente paso: Fase 11 (la define el usuario).
+Siguiente paso: Fase 11 (la define el usuario). Idea pendiente de decidir: pestaña Plantilla + tarjeta de jugador con las 6 estadísticas (677/677 jugadores las tienen); ver `docs/design/player-cards-plan.md`.
 
 ## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
 Estado: COMPLETA
