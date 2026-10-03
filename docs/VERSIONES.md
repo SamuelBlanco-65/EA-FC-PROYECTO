@@ -81,3 +81,15 @@ Propuesta: **expo-sqlite** para la cola de eventos. Motivo: orden garantizado, t
 - `npm audit` reporta hallazgos en dependencias transitivas de la plantilla; no se ejecutó `npm audit fix` (podría romper versiones fijadas por Expo).
 - `mobile/app.json` tiene `orientation: "portrait"`; la sala en vivo necesita landscape. VERIFICAR con `expo-screen-orientation` en la fase de la sala.
 - El QR de `npx expo start` no se pudo imprimir en un terminal sin TTY: se verificó el manifiesto y el bundle por HTTP. Ver el QR y escanearlo lo hace el usuario.
+
+## Fase 1 – Base de datos (2026-10-03)
+
+| Paquete / servicio | Versión | Nota |
+|---|---|---|
+| psycopg + psycopg-binary | 3.3.6 | Driver de Postgres para `scripts/db/*` (migraciones y pruebas). Añadido a `requirements.txt` junto con `tzdata` 2026.4. Elegido en vez de `psycopg2` por ser la versión actual (3.x) con ruedas para Windows |
+| PostgreSQL de Supabase | 17.11 | VERIFICADO con `select version()` |
+
+Cerrado en esta fase (antes era VERIFICAR):
+- VERIFICADO: supabase-py 2.32.0 funciona con las claves nuevas `sb_publishable_...` / `sb_secret_...` (login de usuarios, lecturas con JWT, escrituras y `rpc` con la clave secreta en `scripts/db/test_rls.py`).
+- VERIFICADO: la publicación `supabase_realtime` existe y ya contiene `matches` y `match_events` (`pg_publication_tables`). Se añadieron con `ALTER PUBLICATION ... ADD TABLE` (SQL estándar de Postgres; NO consulté la página de Supabase en esta fase). La ENTREGA de eventos al listener sigue NO PROBADA (fase de realtime).
+- Conexión: la `DATABASE_URL` usa la Session pooler (puerto 5432); la conexión directa es solo IPv6.

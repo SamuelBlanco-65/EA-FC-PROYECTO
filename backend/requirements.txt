@@ -22,6 +22,8 @@ packaging==26.3
 pluggy==1.6.0
 postgrest==2.32.0
 propcache==0.5.4
+psycopg==3.3.6
+psycopg-binary==3.3.6
 pycparser==3.0
 pydantic==2.13.5
 pydantic-settings==2.15.0
@@ -39,6 +41,7 @@ supabase-auth==2.32.0
 supabase-functions==2.32.0
 typing-inspection==0.4.4
 typing_extensions==4.16.0
+tzdata==2026.4
 uvicorn==0.54.0
 websockets==15.0.1
 yarl==1.25.1
