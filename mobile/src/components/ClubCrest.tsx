@@ -53,29 +53,31 @@ function RemoteImage({ path, fallbackText, size, radius, style, fit, dashed }: R
   }, [url]);
 
   const showPlaceholder = !loaded || failed || !source;
+  // No overflow:hidden anywhere: on Android it clipped the image (and the dashed placeholder) to nothing.
+  // The image rounds its own corners; the placeholder is a separate sibling that fills the box.
   return (
-    <View
-      style={[
-        { width: size, height: size, borderRadius: radius, overflow: 'hidden' },
-        showPlaceholder && dashed && styles.dashed,
-        showPlaceholder && styles.placeholder,
-        style,
-      ]}
-    >
+    <View style={[{ width: size, height: size }, style]}>
       {showPlaceholder ? (
-        <Text style={[styles.initials, { fontSize: Math.max(10, size * 0.32) }]} numberOfLines={1}>
-          {fallbackText}
-        </Text>
+        <View style={[styles.placeholder, { borderRadius: radius }, dashed && styles.dashed]}>
+          <Text style={[styles.initials, { fontSize: Math.max(10, size * 0.32) }]} numberOfLines={1}>
+            {fallbackText}
+          </Text>
+        </View>
       ) : null}
       {source && !failed ? (
         <Image
           source={source}
-          style={StyleSheet.absoluteFill}
+          style={{ position: 'absolute', top: 0, left: 0, width: size, height: size, borderRadius: radius }}
           contentFit={fit}
           cachePolicy="disk"
-          transition={150}
-          onLoad={() => setLoaded(true)}
-          onError={() => setFailed(true)}
+          onLoad={(e) => {
+            if (__DEV__) console.log('[media] loaded', url, `${e.source.width}x${e.source.height}`);
+            setLoaded(true);
+          }}
+          onError={(e) => {
+            if (__DEV__) console.warn('[media] FAILED', url, e.error);
+            setFailed(true);
+          }}
           accessibilityLabel={fallbackText}
         />
       ) : null}
@@ -124,7 +126,7 @@ export function PlayerAvatar({
 }
 
 const styles = StyleSheet.create({
-  placeholder: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surfaceSunken },
+  placeholder: { ...StyleSheet.absoluteFill, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surfaceSunken },
   dashed: { borderWidth: 1.5, borderStyle: 'dashed', borderColor: colors.borderDashed },
   initials: { fontFamily: fonts.bold, color: colors.textSecondary, letterSpacing: 1 },
 });

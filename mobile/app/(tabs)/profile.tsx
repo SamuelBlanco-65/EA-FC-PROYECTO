@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
+import { ClubCrest } from '@/components/ClubCrest';
 import { Screen } from '@/components/Screen';
 import { signOut } from '@/features/auth/useAuth';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
@@ -21,8 +22,19 @@ export default function Profile() {
         <Text style={styles.name}>{user?.displayName}</Text>
         <Text style={styles.meta}>{user?.email}</Text>
         <Text style={styles.meta}>{user?.role === 'admin' ? 'Administrador' : 'Participante'}</Text>
-        {participation.data ? <Text style={styles.meta}>Club: {participation.data.club.name}</Text> : null}
       </Card>
+      {participation.data ? (
+        <Card variant="raised" style={styles.club}>
+          <ClubCrest crestUrl={participation.data.club.crestUrl} name={participation.data.club.name} size={64} />
+          <View style={styles.clubText}>
+            <Eyebrow>Mi club</Eyebrow>
+            <Text style={styles.clubName}>{participation.data.club.name}</Text>
+            <Text style={styles.meta}>
+              {participation.data.club.league} · {participation.data.club.country}
+            </Text>
+          </View>
+        </Card>
+      ) : null}
       <View style={styles.logout}>
         <Button label="Cerrar sesión" variant="dangerOutline" icon="log-out" onPress={() => void signOut()} />
       </View>
@@ -35,5 +47,8 @@ const styles = StyleSheet.create({
   card: { gap: 6 },
   name: { ...type.titleCard, color: colors.textPrimary },
   meta: { ...type.body, color: colors.textSecondary },
+  club: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
+  clubText: { flex: 1, gap: 4 },
+  clubName: { ...type.titleCard, color: colors.textPrimary },
   logout: { marginTop: 24 },
 });

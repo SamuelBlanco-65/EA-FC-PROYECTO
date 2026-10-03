@@ -36,11 +36,12 @@ export const Wheel = memo(function Wheel({ size, sectors, rotation }: WheelProps
     const step = 360 / sectors.length;
     const rect = Skia.XYWHRect(centre - inner, centre - inner, inner * 2, inner * 2);
     return sectors.map((sector, i) => {
-      const path = Skia.Path.Make();
-      path.moveTo(centre, centre);
       // Skia angles start at 3 o'clock and grow clockwise; sector 0 starts at the top (-90).
-      path.arcToOval(rect, -90 + i * step, step, false);
-      path.close();
+      const path = Skia.PathBuilder.Make()
+        .moveTo(centre, centre)
+        .arcToOval(rect, -90 + i * step, step, false)
+        .close()
+        .build();
       return { path, color: leagueColors[sector.league] ?? leagueColorFallback, dim: i % 2 === 1 };
     });
   }, [sectors, centre, inner]);
