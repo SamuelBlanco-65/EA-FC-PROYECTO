@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/api/endpoints';
 import { isApiError } from '@/api/errors';
-import { queryKeys } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 import type { LineupSlot } from '@/api/types';
 import { useSessionStore } from '@/stores/sessionStore';
 

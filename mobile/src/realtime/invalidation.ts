@@ -1,6 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query';
 
-import { queryKeys } from '@/api/queryClient';
+import { queryKeys } from '../api/queryKeys';
 
 import type { ServerMessage } from './events';
 

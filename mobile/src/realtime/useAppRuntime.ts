@@ -3,7 +3,8 @@ import { onlineManager, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 
-import { persister, queryKeys } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
+import { persister } from '@/api/queryClient';
 import type { MatchDetail } from '@/api/types';
 import { eventQueue, flushQueue, stopQueueRetries } from '@/offline/queue';
 import { useConnectionStore } from '@/stores/connectionStore';

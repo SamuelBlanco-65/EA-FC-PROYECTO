@@ -22,7 +22,7 @@ Uso **académico, no comercial**. Los escudos, nombres y fotos de clubes y jugad
 - Un proyecto de Supabase con las migraciones aplicadas (más abajo).
 - Un teléfono Android con **Expo Go**, en la misma red Wi-Fi que el PC (no se usa Android Studio ni development build).
 
-Los comandos son los que se usan en este repositorio; la instalación desde cero en otra máquina NO se ha probado.
+Probado en un clon limpio del repositorio (misma máquina, carpeta nueva): `venv` + `pip install`, tests herméticos, `npm install`, `tsc` y tests de la app. NO probado: arrancar el backend y la app contra un proyecto de Supabase nuevo, ni en otra máquina.
 
 ## 1. Backend
 
@@ -118,7 +118,7 @@ npx tsc --noEmit
 npm run test:logic
 ```
 
-Los tests de integración crean y borran sus propios torneos y usuarios `it-*`. Comprueba después que no queden huérfanos.
+Los tests herméticos funcionan en un clon nuevo **sin** `backend\.env` (usan valores falsos y no tocan la red); sin `.env` los de integración se saltan. Los de integración crean y borran sus propios torneos y usuarios `it-*`: comprueba después que no queden huérfanos.
 
 ## Estructura
 

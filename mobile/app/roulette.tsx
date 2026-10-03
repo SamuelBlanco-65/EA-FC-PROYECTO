@@ -6,7 +6,7 @@ import { cancelAnimation, Easing, useSharedValue, withRepeat, withTiming } from 
 
 import { api } from '@/api/endpoints';
 import { errorMessage } from '@/api/errors';
-import { queryKeys } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 import type { AssignClubResponse, Club } from '@/api/types';
 import { Button } from '@/components/Button';
 import { Card } from '@/components/Card';

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 import { api } from '@/api/endpoints';
-import { queryKeys } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 import { useSessionStore } from '@/stores/sessionStore';
 
 function useSignedIn() {

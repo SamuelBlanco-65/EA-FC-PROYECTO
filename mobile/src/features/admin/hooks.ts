@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api } from '@/api/endpoints';
-import { queryKeys } from '@/api/queryClient';
+import { queryKeys } from '@/api/queryKeys';
 import type { MatchDetail, ResolveBody } from '@/api/types';
 import { useSessionStore } from '@/stores/sessionStore';
 
