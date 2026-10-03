@@ -13,6 +13,7 @@ Prioridad absoluta: correcto, estable y EXPLICABLE antes que grande o bonito. Na
 - Los tests `-m integration` escriben en el Supabase REAL (el mismo de desarrollo). Deben borrar lo que crean en un `finally`, y cada paso del borrado independiente: si uno falla, los demás deben seguir. Antes de dar una fase por cerrada, comprueba 0 torneos y 0 usuarios `it-*` huérfanos.
 - "Torneo actual" = el creado más recientemente. Un torneo de prueba huérfano cambia el comportamiento de TODOS los endpoints siguientes.
 - Borrar un torneo que ya tiene eventos falla: `match_events.participant_id` no tiene `ON DELETE CASCADE`. Borra primero los `match_events` de sus partidos.
+- El `Torneo de prueba` de la BD real YA ESTÁ INICIADO (ACTIVE, desde la Fase 9): usuario del teléfono "d" (Bayern) + bots participant02/03, calendario de 6 fechas con partidos ya jugados. No hay endpoint para crear/reiniciar torneos; reiniciarlo es por SQL y lo decide el usuario. Los tests de integración deben seguir creando su propio torneo y borrándolo (ver arriba), sin tocar este. Pregunta al usuario antes de borrarlo o de asumir que está en DRAFT.
 - Los flujos autenticados se prueban con el TestClient de FastAPI, no con uvicorn: no digas "probado con uvicorn" salvo que se haya hecho.
 - Los fakes de `backend/tests/api/fake_world.py` NO imitan la RLS; lo que decide Postgres se prueba en `tests/integration/`.
 
