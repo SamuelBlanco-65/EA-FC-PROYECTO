@@ -1,0 +1,495 @@
+{
+  "club": {
+    "external_source_id": "sofifa-team-52",
+    "name": "Roma",
+    "short_name": "ROM",
+    "league": "Serie A",
+    "country": "Italy",
+    "league_rank": 3,
+    "primary_color": null,
+    "secondary_color": null,
+    "crest_file": "crests/sofifa-team-52.png"
+  },
+  "players": [
+    {
+      "external_source_id": "sofifa-player-230872",
+      "name": "Mile Svilar",
+      "position": "GK",
+      "overall_rating": 85,
+      "age": 26,
+      "nationality": "Serbia",
+      "shirt_number": 99,
+      "pace": 79,
+      "shooting": 81,
+      "passing": 78,
+      "dribbling": 86,
+      "defending": 58,
+      "physical": 85,
+      "photo_file": "players/sofifa-player-230872.png"
+    },
+    {
+      "external_source_id": "sofifa-player-229582",
+      "name": "Gianluca Mancini",
+      "position": "CB",
+      "overall_rating": 84,
+      "age": 30,
+      "nationality": "Italy",
+      "shirt_number": 23,
+      "pace": 69,
+      "shooting": 50,
+      "passing": 61,
+      "dribbling": 66,
+      "defending": 85,
+      "physical": 82,
+      "photo_file": "players/sofifa-player-229582.png"
+    },
+    {
+      "external_source_id": "sofifa-player-242835",
+      "name": "Leonardo Balerdi",
+      "position": "CB",
+      "overall_rating": 79,
+      "age": 27,
+      "nationality": "Argentina",
+      "shirt_number": 26,
+      "pace": 74,
+      "shooting": 46,
+      "passing": 65,
+      "dribbling": 69,
+      "defending": 80,
+      "physical": 79,
+      "photo_file": "players/sofifa-player-242835.png"
+    },
+    {
+      "external_source_id": "sofifa-player-229668",
+      "name": "Mario Hermoso Canseco",
+      "position": "CB",
+      "overall_rating": 81,
+      "age": 31,
+      "nationality": "Spain",
+      "shirt_number": 22,
+      "pace": 71,
+      "shooting": 49,
+      "passing": 72,
+      "dribbling": 69,
+      "defending": 82,
+      "physical": 80,
+      "photo_file": "players/sofifa-player-229668.png"
+    },
+    {
+      "external_source_id": "sofifa-player-82942",
+      "name": "Emanuele Lulli",
+      "position": "RB",
+      "overall_rating": 67,
+      "age": 18,
+      "nationality": "Italy",
+      "shirt_number": 77,
+      "pace": 72,
+      "shooting": 41,
+      "passing": 58,
+      "dribbling": 58,
+      "defending": 64,
+      "physical": 63,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-208268",
+      "name": "Bryan Cristante",
+      "position": "CM",
+      "overall_rating": 81,
+      "age": 31,
+      "nationality": "Italy",
+      "shirt_number": 4,
+      "pace": 54,
+      "shooting": 74,
+      "passing": 79,
+      "dribbling": 76,
+      "defending": 79,
+      "physical": 82,
+      "photo_file": "players/sofifa-player-208268.png"
+    },
+    {
+      "external_source_id": "sofifa-player-250723",
+      "name": "Kouadio Manu Koné",
+      "position": "CM",
+      "overall_rating": 81,
+      "age": 25,
+      "nationality": "France",
+      "shirt_number": 17,
+      "pace": 74,
+      "shooting": 74,
+      "passing": 77,
+      "dribbling": 83,
+      "defending": 77,
+      "physical": 83,
+      "photo_file": "players/sofifa-player-250723.png"
+    },
+    {
+      "external_source_id": "sofifa-player-80170",
+      "name": "Wesley Vinícius França Lima",
+      "position": "LB",
+      "overall_rating": 80,
+      "age": 22,
+      "nationality": "Brazil",
+      "shirt_number": 43,
+      "pace": 90,
+      "shooting": 63,
+      "passing": 75,
+      "dribbling": 81,
+      "defending": 75,
+      "physical": 77,
+      "photo_file": "players/sofifa-player-80170.png"
+    },
+    {
+      "external_source_id": "sofifa-player-265695",
+      "name": "Matías Soulé",
+      "position": "CAM",
+      "overall_rating": 80,
+      "age": 23,
+      "nationality": "Argentina",
+      "shirt_number": 18,
+      "pace": 82,
+      "shooting": 76,
+      "passing": 79,
+      "dribbling": 81,
+      "defending": 48,
+      "physical": 66,
+      "photo_file": "players/sofifa-player-265695.png"
+    },
+    {
+      "external_source_id": "sofifa-player-211110",
+      "name": "Paulo Dybala",
+      "position": "CAM",
+      "overall_rating": 85,
+      "age": 32,
+      "nationality": "Argentina",
+      "shirt_number": 21,
+      "pace": 77,
+      "shooting": 84,
+      "passing": 85,
+      "dribbling": 86,
+      "defending": 42,
+      "physical": 62,
+      "photo_file": "players/sofifa-player-211110.png"
+    },
+    {
+      "external_source_id": "sofifa-player-231447",
+      "name": "Donyell Malen",
+      "position": "ST",
+      "overall_rating": 84,
+      "age": 27,
+      "nationality": "Netherlands",
+      "shirt_number": 14,
+      "pace": 86,
+      "shooting": 85,
+      "passing": 71,
+      "dribbling": 84,
+      "defending": 38,
+      "physical": 68,
+      "photo_file": "players/sofifa-player-231447.png"
+    },
+    {
+      "external_source_id": "sofifa-player-267861",
+      "name": "Santiago Castro",
+      "position": "ST",
+      "overall_rating": 77,
+      "age": 21,
+      "nationality": "Argentina",
+      "shirt_number": 9,
+      "pace": 78,
+      "shooting": 77,
+      "passing": 64,
+      "dribbling": 77,
+      "defending": 43,
+      "physical": 74,
+      "photo_file": "players/sofifa-player-267861.png"
+    },
+    {
+      "external_source_id": "sofifa-player-208461",
+      "name": "Marten de Roon",
+      "position": "CM",
+      "overall_rating": 80,
+      "age": 35,
+      "nationality": "Netherlands",
+      "shirt_number": 15,
+      "pace": 52,
+      "shooting": 73,
+      "passing": 78,
+      "dribbling": 76,
+      "defending": 83,
+      "physical": 78,
+      "photo_file": "players/sofifa-player-208461.png"
+    },
+    {
+      "external_source_id": "sofifa-player-72997",
+      "name": "Rodrigo Mora de Carvalho",
+      "position": "CAM",
+      "overall_rating": 77,
+      "age": 19,
+      "nationality": "Portugal",
+      "shirt_number": 86,
+      "pace": 76,
+      "shooting": 66,
+      "passing": 75,
+      "dribbling": 80,
+      "defending": 40,
+      "physical": 41,
+      "photo_file": "players/sofifa-player-72997.png"
+    },
+    {
+      "external_source_id": "sofifa-player-275291",
+      "name": "Niccolò Pisilli",
+      "position": "CM",
+      "overall_rating": 74,
+      "age": 21,
+      "nationality": "Italy",
+      "shirt_number": 61,
+      "pace": 69,
+      "shooting": 67,
+      "passing": 70,
+      "dribbling": 75,
+      "defending": 72,
+      "physical": 67,
+      "photo_file": "players/sofifa-player-275291.png"
+    },
+    {
+      "external_source_id": "sofifa-player-236403",
+      "name": "Evan Ndicka",
+      "position": "CB",
+      "overall_rating": 83,
+      "age": 26,
+      "nationality": "Côte d'Ivoire",
+      "shirt_number": 5,
+      "pace": 74,
+      "shooting": 53,
+      "passing": 69,
+      "dribbling": 70,
+      "defending": 83,
+      "physical": 84,
+      "photo_file": "players/sofifa-player-236403.png"
+    },
+    {
+      "external_source_id": "sofifa-player-233084",
+      "name": "Nahuel Molina",
+      "position": "RB",
+      "overall_rating": 77,
+      "age": 28,
+      "nationality": "Argentina",
+      "shirt_number": 20,
+      "pace": 80,
+      "shooting": 72,
+      "passing": 73,
+      "dribbling": 74,
+      "defending": 73,
+      "physical": 70,
+      "photo_file": "players/sofifa-player-233084.png"
+    },
+    {
+      "external_source_id": "sofifa-player-211515",
+      "name": "Pierluigi Gollini",
+      "position": "GK",
+      "overall_rating": 74,
+      "age": 31,
+      "nationality": "Italy",
+      "shirt_number": 95,
+      "pace": 74,
+      "shooting": 72,
+      "passing": 71,
+      "dribbling": 76,
+      "defending": 47,
+      "physical": 74,
+      "photo_file": "players/sofifa-player-211515.png"
+    },
+    {
+      "external_source_id": "sofifa-player-277695",
+      "name": "Daniele Ghilardi",
+      "position": "CB",
+      "overall_rating": 74,
+      "age": 23,
+      "nationality": "Italy",
+      "shirt_number": 87,
+      "pace": 61,
+      "shooting": 42,
+      "passing": 49,
+      "dribbling": 54,
+      "defending": 76,
+      "physical": 73,
+      "photo_file": "players/sofifa-player-277695.png"
+    },
+    {
+      "external_source_id": "sofifa-player-228251",
+      "name": "Lorenzo Pellegrini",
+      "position": "CAM",
+      "overall_rating": 78,
+      "age": 30,
+      "nationality": "Italy",
+      "shirt_number": 7,
+      "pace": 72,
+      "shooting": 77,
+      "passing": 79,
+      "dribbling": 78,
+      "defending": 71,
+      "physical": 71,
+      "photo_file": "players/sofifa-player-228251.png"
+    },
+    {
+      "external_source_id": "sofifa-player-76164",
+      "name": "Giorgio De Marzi",
+      "position": "GK",
+      "overall_rating": 60,
+      "age": 19,
+      "nationality": "United States",
+      "shirt_number": 70,
+      "pace": 56,
+      "shooting": 59,
+      "passing": 61,
+      "dribbling": 61,
+      "defending": 23,
+      "physical": 62,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-233189",
+      "name": "Devis Vásquez",
+      "position": "GK",
+      "overall_rating": 72,
+      "age": 28,
+      "nationality": "Colombia",
+      "shirt_number": 1,
+      "pace": 72,
+      "shooting": 68,
+      "passing": 71,
+      "dribbling": 75,
+      "defending": 38,
+      "physical": 70,
+      "photo_file": "players/sofifa-player-233189.png"
+    },
+    {
+      "external_source_id": "sofifa-player-270077",
+      "name": "Konstantinos Koulierakis",
+      "position": "CB",
+      "overall_rating": 76,
+      "age": 22,
+      "nationality": "Greece",
+      "shirt_number": 3,
+      "pace": 66,
+      "shooting": 44,
+      "passing": 57,
+      "dribbling": 65,
+      "defending": 76,
+      "physical": 78,
+      "photo_file": "players/sofifa-player-270077.png"
+    },
+    {
+      "external_source_id": "sofifa-player-258826",
+      "name": "Devyne Rensch",
+      "position": "RM",
+      "overall_rating": 75,
+      "age": 23,
+      "nationality": "Netherlands",
+      "shirt_number": 2,
+      "pace": 79,
+      "shooting": 59,
+      "passing": 70,
+      "dribbling": 73,
+      "defending": 74,
+      "physical": 66,
+      "photo_file": "players/sofifa-player-258826.png"
+    },
+    {
+      "external_source_id": "sofifa-player-79095",
+      "name": "Antonio Arena",
+      "position": "ST",
+      "overall_rating": 63,
+      "age": 17,
+      "nationality": "Italy",
+      "shirt_number": 68,
+      "pace": 62,
+      "shooting": 60,
+      "passing": 50,
+      "dribbling": 61,
+      "defending": 24,
+      "physical": 62,
+      "photo_file": "players/sofifa-player-79095.png"
+    }
+  ],
+  "rejected": [
+    {
+      "external_source_id": "sofifa-player-278966",
+      "name": "Luigi Cherubini",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-276680",
+      "name": "Jan Ziółkowski",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-269312",
+      "name": "Tommaso Baldanzi",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-262745",
+      "name": "Neil El Aynaoui",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-245426",
+      "name": "Marash Kumbulla",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-242458",
+      "name": "Artem Dovbyk",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-220651",
+      "name": "José Ángel Esmoris Tasende",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-80076",
+      "name": "Filippo Reale",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-80075",
+      "name": "Mattia Mannini",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-76431",
+      "name": "Alessandro Romano",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-76410",
+      "name": "Robinio Vaz",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    }
+  ],
+  "players_found": 36
+}

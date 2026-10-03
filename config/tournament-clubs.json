@@ -1,0 +1,44 @@
+{
+  "criterion": "Top 5 of the final 2025-26 league table of each league (Premier League, LaLiga, Serie A, Bundesliga, Ligue 1), ranked by final position.",
+  "season": "2025-26",
+  "tie_note": "Ligue 1: Marseille (5th) and Rennes (6th) both finished on 59 points; Marseille is ahead on goal difference (+18 vs +9).",
+  "sources": [
+    "https://en.wikipedia.org/wiki/2025%E2%80%9326_Premier_League",
+    "https://en.wikipedia.org/wiki/2025%E2%80%9326_La_Liga",
+    "https://en.wikipedia.org/wiki/2025%E2%80%9326_Serie_A",
+    "https://en.wikipedia.org/wiki/2025%E2%80%9326_Bundesliga",
+    "https://en.wikipedia.org/wiki/2025%E2%80%9326_Ligue_1"
+  ],
+  "retrieved_on": "2026-10-03",
+  "clubs": [
+    {"league": "Premier League", "country": "England", "league_rank": 1, "name": "Arsenal", "short_name": "ARS", "points": 85},
+    {"league": "Premier League", "country": "England", "league_rank": 2, "name": "Manchester City", "short_name": "MCI", "points": 78},
+    {"league": "Premier League", "country": "England", "league_rank": 3, "name": "Manchester United", "short_name": "MUN", "points": 71},
+    {"league": "Premier League", "country": "England", "league_rank": 4, "name": "Aston Villa", "short_name": "AVL", "points": 65},
+    {"league": "Premier League", "country": "England", "league_rank": 5, "name": "Liverpool", "short_name": "LIV", "points": 60},
+
+    {"league": "LaLiga", "country": "Spain", "league_rank": 1, "name": "Barcelona", "short_name": "BAR", "points": 94},
+    {"league": "LaLiga", "country": "Spain", "league_rank": 2, "name": "Real Madrid", "short_name": "RMA", "points": 86},
+    {"league": "LaLiga", "country": "Spain", "league_rank": 3, "name": "Villarreal", "short_name": "VIL", "points": 72},
+    {"league": "LaLiga", "country": "Spain", "league_rank": 4, "name": "Atlético Madrid", "short_name": "ATM", "points": 69},
+    {"league": "LaLiga", "country": "Spain", "league_rank": 5, "name": "Real Betis", "short_name": "BET", "points": 60},
+
+    {"league": "Serie A", "country": "Italy", "league_rank": 1, "name": "Inter Milan", "short_name": "INT", "points": 87},
+    {"league": "Serie A", "country": "Italy", "league_rank": 2, "name": "Napoli", "short_name": "NAP", "points": 76},
+    {"league": "Serie A", "country": "Italy", "league_rank": 3, "name": "Roma", "short_name": "ROM", "points": 73},
+    {"league": "Serie A", "country": "Italy", "league_rank": 4, "name": "Como", "short_name": "COM", "points": 71},
+    {"league": "Serie A", "country": "Italy", "league_rank": 5, "name": "AC Milan", "short_name": "MIL", "points": 70},
+
+    {"league": "Bundesliga", "country": "Germany", "league_rank": 1, "name": "Bayern Munich", "short_name": "BAY", "points": 89},
+    {"league": "Bundesliga", "country": "Germany", "league_rank": 2, "name": "Borussia Dortmund", "short_name": "BVB", "points": 73},
+    {"league": "Bundesliga", "country": "Germany", "league_rank": 3, "name": "RB Leipzig", "short_name": "RBL", "points": 65},
+    {"league": "Bundesliga", "country": "Germany", "league_rank": 4, "name": "VfB Stuttgart", "short_name": "VFB", "points": 62},
+    {"league": "Bundesliga", "country": "Germany", "league_rank": 5, "name": "TSG Hoffenheim", "short_name": "HOF", "points": 61},
+
+    {"league": "Ligue 1", "country": "France", "league_rank": 1, "name": "Paris Saint-Germain", "short_name": "PSG", "points": 76},
+    {"league": "Ligue 1", "country": "France", "league_rank": 2, "name": "Lens", "short_name": "LEN", "points": 70},
+    {"league": "Ligue 1", "country": "France", "league_rank": 3, "name": "Lille", "short_name": "LIL", "points": 61},
+    {"league": "Ligue 1", "country": "France", "league_rank": 4, "name": "Lyon", "short_name": "LYO", "points": 60},
+    {"league": "Ligue 1", "country": "France", "league_rank": 5, "name": "Marseille", "short_name": "MAR", "points": 59}
+  ]
+}

@@ -1,6 +1,24 @@
 # Progreso del proyecto
 
-Fase actual: 2 completada y verificada contra Supabase real. Fase 0 sigue PARCIAL en dos comprobaciones manuales (QR y Expo Go). Siguiente: Fase 3 (cuando el usuario la indique).
+Fase actual: 3 completada y verificada contra Supabase real (25 clubes, 677 jugadores sembrados). Fase 0 sigue PARCIAL en dos comprobaciones manuales (QR y Expo Go). Siguiente: Fase 4 (cuando el usuario la indique).
+
+## Fase 3 – Scraper y seed – 2026-10-03
+Estado: COMPLETA
+Hecho (VERIFICADO):
+- Fuente: páginas SoFIFA (FC27) guardadas a mano y parseadas sin red (`ScrapingSource` + parser puro). 25 clubes, 863 jugadores encontrados, 677 válidos, 186 rechazados (todos cedidos), 25 escudos, 663 fotos, 14 fotos faltantes = NULL. `overall_rating` viene de la fuente (0 NULL).
+- `seed.py` ejecutado dos veces: 25 clubes / 677 jugadores / 688 objetos en el bucket `media` y mismo hash de UUID antes y después.
+- Migraciones 0008 (bucket privado `media`) y 0009 (6 estadísticas de carta). Tests: `pytest` 55 passed (6 del scraper); `test_schema` 26/26 (1 caso se salta con clubes reales), `test_assign_club` 3/3, `test_rls` 48/48.
+- Bug real corregido: overall NULL cuando la celda traía `+1` (23 jugadores); ahora con test.
+No probado / pendiente:
+- Servir las imágenes por `/media` (fase del backend de media). Ningún acceso HTTP a SoFIFA (robots ilegible por Cloudflare, términos no concluyentes): no se automatiza.
+- Bundesliga y Ligue 1: top 5 verificado solo con Wikipedia (campeones con otras fuentes). Jugadores que desaparecen de la fuente no se borran. Fotos de 60x60 px.
+Decisiones clave: guardado manual vs scraping automático; 13 campos (7 del proyecto + 6 de carta, a petición del usuario); stats de portero con otro significado (se etiquetan por `position`); parser por `data-col`.
+Archivos principales: `scraper/{settings,normalize,validate,media,pipeline,seed}.py`, `scraper/{sources,parsers}/`, `config/tournament-clubs.json`, `supabase/migrations/{0008,0009}_*.sql`, `docs/scraping/scraping.md`, `docs/defense/scraper.md`, `README.md`.
+Cómo probarlo (PowerShell, desde la raíz):
+- `.\backend\venv\Scripts\python.exe -m pytest scraper\tests`
+- `.\backend\venv\Scripts\python.exe -m scraper.pipeline` y luego `-m scraper.seed` (dos veces: los totales no cambian)
+Siguiente paso: Fase 4 (la define el usuario).
+
 
 ## Fase 2 – Autenticación – 2026-10-03
 Estado: COMPLETA

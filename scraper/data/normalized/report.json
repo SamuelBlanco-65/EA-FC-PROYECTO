@@ -1,0 +1,1489 @@
+{
+  "summary": {
+    "clubs_requested": 25,
+    "clubs_processed": 25,
+    "crests_ok": 25,
+    "players_found": 863,
+    "players_valid": 677,
+    "players_rejected": 186,
+    "photos_ok": 663,
+    "overall_rating_null": 0,
+    "issues_by_type": {
+      "rejected:LOANED_OUT": 186,
+      "warning:PHOTO_IMAGE_PLACEHOLDER": 14,
+      "warning:CLUB_NAME_MISMATCH": 10
+    }
+  },
+  "issues": [
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Arsenal",
+      "player": "Charles Sagoe Jr",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Arsenal",
+      "player": "Ethan Nwaneri",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Arsenal",
+      "player": "Ismeal Kabia",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Arsenal",
+      "player": "Tommy Setford",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Manchester City",
+      "player": "Allan Andrade Elias",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Manchester City",
+      "player": "Ryan McAidoo",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Manchester City",
+      "player": "Kaden Braithwaite",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Manchester City",
+      "player": "Floyd Samba",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Claudio Echeverri",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Pierce Charles",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Divin Mubama",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Sverre Nypan",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Christian McFarlane",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Omar Marmoush",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Kalvin Phillips",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Jack Grealish",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Isaiah Dada-Mascoll",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Oliver Whatmuff",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Jaden Heskey",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Emilio Lawrence",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Charlie Gray",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Divine Mukasa",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Stephen Mfuni",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Jeremy Monga",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Mathys Detourbet",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Max Alleyne",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester City",
+      "player": "Juma Bah",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Daniel Gore",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Altay Bayındır",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "André Onana",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Jacob Devaney",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Jack Moorhouse",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Sékou Koné",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Chido Obi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Jayce Fitzgerald",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Manchester United",
+      "player": "Ethan Wheatley",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Aston Villa",
+      "player": "James Wright",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Andrés García Robledo",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Kadan Young",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Samuel Iling-Junior",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Lino Sousa",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Oliwier Zych",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Yasin Özcan",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Josh Feeney",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Tommi O'Reilly",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Evann Guessand",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Joe Gauci",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Luka Lynch",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Kane Taylor",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Brad Burrowes",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Triston Rowe",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Ben Broggio",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Zépiqueno Redmond",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Aston Villa",
+      "player": "Kosta Nedeljković",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Calum Scanlon",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Calvin Ramsay",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Harvey Elliott",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Keyrol Figueroa",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Kieran Morrison",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Ármin Pécsi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Ifeanyi Ndukwe",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Liverpool",
+      "player": "Lucca Brughmans",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Barcelona",
+      "player": null,
+      "detail": "page says 'FC Barcelona', config says 'Barcelona'"
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Barcelona",
+      "player": "Brian Fariñas Pérez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Diego Kochen",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Áron Yaakobishvili",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Marc Casadó Torras",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Ronald Araujo",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Marc-André ter Stegen",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Barcelona",
+      "player": "Antonio Fernández Casino",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Real Madrid",
+      "player": "Franco Mastantuono",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Villarreal",
+      "player": null,
+      "detail": "page says 'Villarreal CF', config says 'Villarreal'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Daniel Requena Sánchez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Thiago Fernández",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Willy Kambwala",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Arnau Tenas Ureña",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Diego José Conde Alcolado",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Hugo López Cortés",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Jean Ives Valou",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Villarreal",
+      "player": "Daniel Budesca López",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Atlético Madrid",
+      "player": "Horațiu Moldovan",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Atlético Madrid",
+      "player": "José María Giménez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Atlético Madrid",
+      "player": "Thomas Lemar",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Real Betis",
+      "player": null,
+      "detail": "page says 'Real Betis Balompié', config says 'Real Betis'"
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Real Betis",
+      "player": "Daniel Ceballos Fernández",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Real Betis",
+      "player": "José Antonio Morante Antúnez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Real Betis",
+      "player": "Gonzalo Petit",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Inter Milan",
+      "player": null,
+      "detail": "page says 'Inter', config says 'Inter Milan'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Giacomo Stabile",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Valentín Carboni",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Yanis Massolin",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Tomás Palacios",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Davide Frattesi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Dilan Andrés Zárate Hidalgo",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Yvan Maye",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Matteo Spinaccè",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Matteo Cocchi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Giacomo De Pieri",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Luka Topalovič",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Thomas Berenbruch",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Inter Milan",
+      "player": "Ebenezer Akinsanmiro",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Giuseppe Ambrosino",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Michael Folorunsho",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Cyril Ngonge",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Jesper Lindstrøm",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Jens-Lys Cajuste",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Pasquale Mazzocchi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Emanuele Rao",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "José Dinis Rodrigues",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Napoli",
+      "player": "Nosa Obaretin",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Roma",
+      "player": "Emanuele Lulli",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Roma",
+      "player": "Giorgio De Marzi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Luigi Cherubini",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Jan Ziółkowski",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Tommaso Baldanzi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Neil El Aynaoui",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Marash Kumbulla",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Artem Dovbyk",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "José Ángel Esmoris Tasende",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Filippo Reale",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Mattia Mannini",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Alessandro Romano",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Roma",
+      "player": "Robinio Vaz",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Federico Chinetti",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Fabio Rispoli",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Alessandro Gabrielloni",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Alieu Fadera",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Iván Azón Monzón",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Noel Törnqvist",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Ignace Van der Brempt",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Nicolas Kühn",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Emil Audero",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Álvaro Borja Morata Martín",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Andréa Le Borgne",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Fellipe Moreira Pacheco",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Como",
+      "player": "Andrés Cuenca Cejudo",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "AC Milan",
+      "player": "Valeri Ivanov Vladimirov",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Zachary Athekame",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Kevin Zeroli",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Samuele Ricci",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Youssouf Fofana",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Santiago Giménez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Christopher Nkunku",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "Andrej Kostić",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "AC Milan",
+      "player": "David Odogu",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Bayern Munich",
+      "player": null,
+      "detail": "page says 'FC Bayern München', config says 'Bayern Munich'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Javier Fernández González",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Bryan Zaragoza Martínez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Arijon Ibrahimović",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Felipe Chávez",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Deniz Ofli",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Bayern Munich",
+      "player": "Julien Yanda",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Borussia Dortmund",
+      "player": "Almugera Kabar",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Borussia Dortmund",
+      "player": "Yan Bueno Couto",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Borussia Dortmund",
+      "player": "Diant Ramaj",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Borussia Dortmund",
+      "player": "Elias Benkara",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Conrad Harder",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Timo Schlieck",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Arthur Vermeeren",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "El Chadaille Bitshiabu",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Eljif Elmas",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Lutsharel Geertruida",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "RB Leipzig",
+      "player": "Joyeux Masanka Bungi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Jeremy Arévalo Mera",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Noah Darvich",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Laurin Ulrich",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Badredine Bouanani",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Yannik Keitel",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "VfB Stuttgart",
+      "player": "Florian Hellstern",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "TSG Hoffenheim",
+      "player": null,
+      "detail": "page says 'TSG 1899 Hoffenheim', config says 'TSG Hoffenheim'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Deniz Zeitler",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Gift Orban",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Umut Tohumcu",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Nahuel Noll",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Erencan Yardımcı",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Precious Benjamin",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Kelven Frees",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Alessandro Vogt",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "TSG Hoffenheim",
+      "player": "Yannick Eduardo",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Paris Saint-Germain",
+      "player": "Renato Bellucci Marin",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Paris Saint-Germain",
+      "player": "Gabriel Silva Moscardo de Salles",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Paris Saint-Germain",
+      "player": "Khalil Ayari",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Paris Saint-Germain",
+      "player": "Naoufel El Hannach",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Lens",
+      "player": null,
+      "detail": "page says 'RC Lens', config says 'Lens'"
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Lens",
+      "player": "Moussa Diarra",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Rémy Labeau Lascary",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Goduine Koyalipou",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Hervé Koffi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Mattia Fortin",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Rayan Fofana",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Jeremy Agbonifo",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lens",
+      "player": "Anthony Bermont",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Lille",
+      "player": null,
+      "detail": "page says 'Lille OSC', config says 'Lille'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Ousmane Touré",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Noah Edjouma",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Rafael Tavares Gomes Fernandes",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Marius Broholm",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Ignacio Miramón",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lille",
+      "player": "Félix Alexandre A. Sanches Correia",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Lyon",
+      "player": null,
+      "detail": "page says 'Olympique Lyonnais', config says 'Lyon'"
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lyon",
+      "player": "Mahamadou Diawara",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lyon",
+      "player": "Orel Mangala",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lyon",
+      "player": "Matt Turner",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lyon",
+      "player": "Daryll Benlahlou",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Lyon",
+      "player": "Enzo Molebe",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "CLUB_NAME_MISMATCH",
+      "club": "Marseille",
+      "player": null,
+      "detail": "page says 'Olympique de Marseille', config says 'Marseille'"
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Marseille",
+      "player": "Kelyann Bezahaf",
+      "detail": ""
+    },
+    {
+      "level": "warning",
+      "code": "PHOTO_IMAGE_PLACEHOLDER",
+      "club": "Marseille",
+      "player": "Alexi Koum",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Marseille",
+      "player": "Leonardo Balerdi",
+      "detail": ""
+    },
+    {
+      "level": "rejected",
+      "code": "LOANED_OUT",
+      "club": "Marseille",
+      "player": "Hamed Junior Traoré",
+      "detail": ""
+    }
+  ]
+}

@@ -27,6 +27,7 @@ ios/
 
 # Scraper raw downloads (large, reproducible, third-party content)
 scraper/data/raw/
+scraper/data/normalized/media/
 
 # OS / editor
 .DS_Store

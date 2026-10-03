@@ -1,0 +1,567 @@
+{
+  "club": {
+    "external_source_id": "sofifa-team-10",
+    "name": "Manchester City",
+    "short_name": "MCI",
+    "league": "Premier League",
+    "country": "England",
+    "league_rank": 2,
+    "primary_color": null,
+    "secondary_color": null,
+    "crest_file": "crests/sofifa-team-10.png"
+  },
+  "players": [
+    {
+      "external_source_id": "sofifa-player-230621",
+      "name": "Gianluigi Donnarumma",
+      "position": "GK",
+      "overall_rating": 89,
+      "age": 27,
+      "nationality": "Italy",
+      "shirt_number": 1,
+      "pace": 90,
+      "shooting": 83,
+      "passing": 72,
+      "dribbling": 90,
+      "defending": 46,
+      "physical": 88,
+      "photo_file": "players/sofifa-player-230621.png"
+    },
+    {
+      "external_source_id": "sofifa-player-253124",
+      "name": "Matheus Luiz Nunes",
+      "position": "RB",
+      "overall_rating": 83,
+      "age": 27,
+      "nationality": "Portugal",
+      "shirt_number": 27,
+      "pace": 87,
+      "shooting": 70,
+      "passing": 80,
+      "dribbling": 79,
+      "defending": 78,
+      "physical": 75,
+      "photo_file": "players/sofifa-player-253124.png"
+    },
+    {
+      "external_source_id": "sofifa-player-239818",
+      "name": "Rúben Santos Gato Alves Dias",
+      "position": "CB",
+      "overall_rating": 87,
+      "age": 29,
+      "nationality": "Portugal",
+      "shirt_number": 3,
+      "pace": 58,
+      "shooting": 44,
+      "passing": 69,
+      "dribbling": 69,
+      "defending": 87,
+      "physical": 83,
+      "photo_file": "players/sofifa-player-239818.png"
+    },
+    {
+      "external_source_id": "sofifa-player-241159",
+      "name": "Marc Guéhi",
+      "position": "CB",
+      "overall_rating": 85,
+      "age": 25,
+      "nationality": "England",
+      "shirt_number": 6,
+      "pace": 69,
+      "shooting": 46,
+      "passing": 70,
+      "dribbling": 72,
+      "defending": 85,
+      "physical": 82,
+      "photo_file": "players/sofifa-player-241159.png"
+    },
+    {
+      "external_source_id": "sofifa-player-251517",
+      "name": "Joško Gvardiol",
+      "position": "CB",
+      "overall_rating": 85,
+      "age": 24,
+      "nationality": "Croatia",
+      "shirt_number": 24,
+      "pace": 78,
+      "shooting": 70,
+      "passing": 76,
+      "dribbling": 77,
+      "defending": 85,
+      "physical": 82,
+      "photo_file": "players/sofifa-player-251517.png"
+    },
+    {
+      "external_source_id": "sofifa-player-247090",
+      "name": "Enzo Fernández",
+      "position": "CM",
+      "overall_rating": 86,
+      "age": 25,
+      "nationality": "Argentina",
+      "shirt_number": 17,
+      "pace": 68,
+      "shooting": 78,
+      "passing": 86,
+      "dribbling": 83,
+      "defending": 74,
+      "physical": 76,
+      "photo_file": "players/sofifa-player-247090.png"
+    },
+    {
+      "external_source_id": "sofifa-player-254243",
+      "name": "Elliot Anderson",
+      "position": "CDM",
+      "overall_rating": 84,
+      "age": 23,
+      "nationality": "England",
+      "shirt_number": 5,
+      "pace": 68,
+      "shooting": 71,
+      "passing": 83,
+      "dribbling": 82,
+      "defending": 81,
+      "physical": 78,
+      "photo_file": "players/sofifa-player-254243.png"
+    },
+    {
+      "external_source_id": "sofifa-player-241236",
+      "name": "Antoine Semenyo",
+      "position": "RW",
+      "overall_rating": 85,
+      "age": 26,
+      "nationality": "Ghana",
+      "shirt_number": 42,
+      "pace": 82,
+      "shooting": 85,
+      "passing": 79,
+      "dribbling": 84,
+      "defending": 46,
+      "physical": 80,
+      "photo_file": "players/sofifa-player-241236.png"
+    },
+    {
+      "external_source_id": "sofifa-player-261188",
+      "name": "Iliman Ndiaye",
+      "position": "LM",
+      "overall_rating": 82,
+      "age": 26,
+      "nationality": "Senegal",
+      "shirt_number": 7,
+      "pace": 86,
+      "shooting": 77,
+      "passing": 74,
+      "dribbling": 86,
+      "defending": 44,
+      "physical": 65,
+      "photo_file": "players/sofifa-player-261188.png"
+    },
+    {
+      "external_source_id": "sofifa-player-251570",
+      "name": "Rayan Cherki",
+      "position": "RW",
+      "overall_rating": 86,
+      "age": 22,
+      "nationality": "France",
+      "shirt_number": 10,
+      "pace": 74,
+      "shooting": 79,
+      "passing": 85,
+      "dribbling": 91,
+      "defending": 41,
+      "physical": 67,
+      "photo_file": "players/sofifa-player-251570.png"
+    },
+    {
+      "external_source_id": "sofifa-player-239085",
+      "name": "Erling Haaland",
+      "position": "ST",
+      "overall_rating": 91,
+      "age": 25,
+      "nationality": "Norway",
+      "shirt_number": 9,
+      "pace": 87,
+      "shooting": 92,
+      "passing": 71,
+      "dribbling": 80,
+      "defending": 47,
+      "physical": 89,
+      "photo_file": "players/sofifa-player-239085.png"
+    },
+    {
+      "external_source_id": "sofifa-player-207410",
+      "name": "Mateo Kovačić",
+      "position": "CM",
+      "overall_rating": 81,
+      "age": 32,
+      "nationality": "Croatia",
+      "shirt_number": 8,
+      "pace": 57,
+      "shooting": 74,
+      "passing": 80,
+      "dribbling": 81,
+      "defending": 73,
+      "physical": 68,
+      "photo_file": "players/sofifa-player-207410.png"
+    },
+    {
+      "external_source_id": "sofifa-player-278901",
+      "name": "Ayyoub Bouaddi",
+      "position": "CDM",
+      "overall_rating": 80,
+      "age": 18,
+      "nationality": "Morocco",
+      "shirt_number": 32,
+      "pace": 75,
+      "shooting": 56,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 75,
+      "physical": 76,
+      "photo_file": "players/sofifa-player-278901.png"
+    },
+    {
+      "external_source_id": "sofifa-player-277427",
+      "name": "Nico O'Reilly",
+      "position": "LB",
+      "overall_rating": 83,
+      "age": 21,
+      "nationality": "England",
+      "shirt_number": 33,
+      "pace": 83,
+      "shooting": 70,
+      "passing": 78,
+      "dribbling": 79,
+      "defending": 81,
+      "physical": 81,
+      "photo_file": "players/sofifa-player-277427.png"
+    },
+    {
+      "external_source_id": "sofifa-player-277031",
+      "name": "Abdukodir Khusanov",
+      "position": "CB",
+      "overall_rating": 82,
+      "age": 22,
+      "nationality": "Uzbekistan",
+      "shirt_number": 45,
+      "pace": 88,
+      "shooting": 39,
+      "passing": 64,
+      "dribbling": 68,
+      "defending": 83,
+      "physical": 80,
+      "photo_file": "players/sofifa-player-277031.png"
+    },
+    {
+      "external_source_id": "sofifa-player-242641",
+      "name": "Rayan Aït-Nouri",
+      "position": "LB",
+      "overall_rating": 81,
+      "age": 25,
+      "nationality": "Algeria",
+      "shirt_number": 21,
+      "pace": 84,
+      "shooting": 52,
+      "passing": 76,
+      "dribbling": 84,
+      "defending": 77,
+      "physical": 69,
+      "photo_file": "players/sofifa-player-242641.png"
+    },
+    {
+      "external_source_id": "sofifa-player-271574",
+      "name": "Rico Lewis",
+      "position": "RB",
+      "overall_rating": 77,
+      "age": 21,
+      "nationality": "England",
+      "shirt_number": 82,
+      "pace": 75,
+      "shooting": 55,
+      "passing": 74,
+      "dribbling": 79,
+      "defending": 74,
+      "physical": 58,
+      "photo_file": "players/sofifa-player-271574.png"
+    },
+    {
+      "external_source_id": "sofifa-player-215316",
+      "name": "Gerónimo Rulli",
+      "position": "GK",
+      "overall_rating": 80,
+      "age": 34,
+      "nationality": "Argentina",
+      "shirt_number": 28,
+      "pace": 81,
+      "shooting": 77,
+      "passing": 80,
+      "dribbling": 85,
+      "defending": 54,
+      "physical": 75,
+      "photo_file": "players/sofifa-player-215316.png"
+    },
+    {
+      "external_source_id": "sofifa-player-237692",
+      "name": "Phil Foden",
+      "position": "CAM",
+      "overall_rating": 84,
+      "age": 26,
+      "nationality": "England",
+      "shirt_number": 47,
+      "pace": 77,
+      "shooting": 82,
+      "passing": 82,
+      "dribbling": 88,
+      "defending": 57,
+      "physical": 53,
+      "photo_file": "players/sofifa-player-237692.png"
+    },
+    {
+      "external_source_id": "sofifa-player-89738",
+      "name": "Allan Andrade Elias",
+      "position": "RW",
+      "overall_rating": 77,
+      "age": 22,
+      "nationality": "Brazil",
+      "shirt_number": 37,
+      "pace": 82,
+      "shooting": 75,
+      "passing": 72,
+      "dribbling": 80,
+      "defending": 60,
+      "physical": 69,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-246420",
+      "name": "Jérémy Doku",
+      "position": "LW",
+      "overall_rating": 84,
+      "age": 24,
+      "nationality": "Belgium",
+      "shirt_number": 11,
+      "pace": 91,
+      "shooting": 75,
+      "passing": 78,
+      "dribbling": 88,
+      "defending": 40,
+      "physical": 72,
+      "photo_file": "players/sofifa-player-246420.png"
+    },
+    {
+      "external_source_id": "sofifa-player-76624",
+      "name": "Vitor Reis",
+      "position": "CB",
+      "overall_rating": 76,
+      "age": 20,
+      "nationality": "Brazil",
+      "shirt_number": 22,
+      "pace": 73,
+      "shooting": 33,
+      "passing": 60,
+      "dribbling": 68,
+      "defending": 76,
+      "physical": 75,
+      "photo_file": "players/sofifa-player-76624.png"
+    },
+    {
+      "external_source_id": "sofifa-player-81685",
+      "name": "Ryan McAidoo",
+      "position": "RW",
+      "overall_rating": 66,
+      "age": 18,
+      "nationality": "England",
+      "shirt_number": 56,
+      "pace": 83,
+      "shooting": 62,
+      "passing": 58,
+      "dribbling": 70,
+      "defending": 32,
+      "physical": 55,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-88560",
+      "name": "Kaden Braithwaite",
+      "position": "CB",
+      "overall_rating": 65,
+      "age": 18,
+      "nationality": "England",
+      "shirt_number": 61,
+      "pace": 68,
+      "shooting": 31,
+      "passing": 50,
+      "dribbling": 56,
+      "defending": 64,
+      "physical": 69,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-88662",
+      "name": "Floyd Samba",
+      "position": "CM",
+      "overall_rating": 64,
+      "age": 17,
+      "nationality": "England",
+      "shirt_number": 75,
+      "pace": 69,
+      "shooting": 62,
+      "passing": 64,
+      "dribbling": 67,
+      "defending": 57,
+      "physical": 62,
+      "photo_file": null
+    },
+    {
+      "external_source_id": "sofifa-player-204246",
+      "name": "Marcus Bettinelli",
+      "position": "GK",
+      "overall_rating": 69,
+      "age": 34,
+      "nationality": "England",
+      "shirt_number": 13,
+      "pace": 69,
+      "shooting": 69,
+      "passing": 69,
+      "dribbling": 69,
+      "defending": 30,
+      "physical": 70,
+      "photo_file": "players/sofifa-player-204246.png"
+    }
+  ],
+  "rejected": [
+    {
+      "external_source_id": "sofifa-player-276528",
+      "name": "Claudio Echeverri",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-273839",
+      "name": "Pierce Charles",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-271227",
+      "name": "Divin Mubama",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-268737",
+      "name": "Sverre Nypan",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-264744",
+      "name": "Christian McFarlane",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-256675",
+      "name": "Omar Marmoush",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-224081",
+      "name": "Kalvin Phillips",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-206517",
+      "name": "Jack Grealish",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-88099",
+      "name": "Isaiah Dada-Mascoll",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-85693",
+      "name": "Oliver Whatmuff",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-83205",
+      "name": "Jaden Heskey",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-83042",
+      "name": "Emilio Lawrence",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-82843",
+      "name": "Charlie Gray",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-81539",
+      "name": "Divine Mukasa",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-81538",
+      "name": "Stephen Mfuni",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-78106",
+      "name": "Jeremy Monga",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-76616",
+      "name": "Mathys Detourbet",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-76250",
+      "name": "Max Alleyne",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    },
+    {
+      "external_source_id": "sofifa-player-75148",
+      "name": "Juma Bah",
+      "reasons": [
+        "LOANED_OUT"
+      ]
+    }
+  ],
+  "players_found": 45
+}
