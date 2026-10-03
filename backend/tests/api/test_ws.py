@@ -14,8 +14,12 @@ def auth_msg(token):
 
 
 def expect_close(ws):
+    """The server announces the failure as an AUTH_ERROR data frame, then closes with code + the same reason."""
+    notice = ws.receive_json()
+    assert notice["type"] == "AUTH_ERROR"
     with pytest.raises(WebSocketDisconnect) as exc:
         ws.receive_text()
+    assert notice["code"] == exc.value.reason
     return exc.value.code, exc.value.reason
 
 

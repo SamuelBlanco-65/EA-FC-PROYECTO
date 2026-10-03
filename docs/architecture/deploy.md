@@ -64,7 +64,23 @@ Notas del panel de Render: `sync: false` solo se pregunta al CREAR el Blueprint;
 
 ## 5. Resultado del despliegue real
 
-PENDIENTE: se rellena tras ejecutar la guía (URL pública sin secretos, salida de `check_deploy.py`, tiempo de arranque en frío medido, comprobación de que se duerme).
+URL pública: `https://ea-fc-api.onrender.com` (sin secretos). Python 3.12.0 fue aceptado por Render, el listener de Supabase se suscribió y Render hace health checks a `/health` cada ~5 s.
+
+### Primera ejecución (2026-10-03, servicio despierto) — VERIFICADO
+- `GET /health` por HTTPS: 200 en 1,1 s (924 ms en la segunda; el borde de Cloudflare que atendió fue BOG según la cabecera `cf-ray`, y el servicio está en Fráncfort).
+- `wss://…/ws`: upgrade `101` vía Cloudflare; el log de Render muestra `"WebSocket /ws" [accepted]`.
+- Con login real: `AUTH_OK` a los 1,8 s y `PONG` 240 ms después. Los mensajes de datos servidor→cliente funcionan por wss.
+- Mensajes cliente→servidor llegan: el log registra `token rejected: DecodeError` con un token falso.
+
+### Hallazgo: la trama de cierre 4401 no llega al cliente — VERIFICADO (medido), causa NO DETERMINADA
+Sin AUTH, con un mensaje cualquiera o con token falso, el servidor decide cerrar con 4401 pero el cliente no recibe la trama de cierre: la conexión se corta de forma anormal (`rcvd=None`) a los ~21 s. En local (`uvicorn` directo) el cierre llega al instante. Entre la app y uvicorn hay Cloudflare + el balanceador de Render; no sé cuál de los dos pierde la trama ni por qué, y no lo he podido comprobar sin acceso a su infraestructura.
+Decisión (acordada con el usuario): el servidor envía `{"type":"AUTH_ERROR","code":"<razón>"}` como trama de datos justo antes de cerrar (`app/api/ws.py::_close`). 16 tests fallan si se quita ese envío (mutación). El código de cierre se mantiene.
+
+### Reverificación tras el cambio
+PENDIENTE: requiere commit, push y redespliegue; luego `check_deploy.py` debe terminar con `ALL CHECKS PASSED` (el paso anónimo ahora espera `AUTH_ERROR AUTH_REQUIRED`).
+
+### Arranque en frío y suspensión
+PENDIENTE: dejar 20 min sin tráfico y medir el primer `/health` (la doc dice ~1 min). Ojo: Render hace health checks a `/health` cada ~5 s (visto en el log); si esto cuenta como tráfico entrante, el servicio podría no dormirse nunca, lo que habría que comprobar y no asumir.
 
 ## 6. Fuentes
 

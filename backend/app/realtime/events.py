@@ -26,6 +26,14 @@ class Pong(WireMessage):
     type: Literal["PONG"] = "PONG"
 
 
+class AuthError(WireMessage):
+    """Sent right before the server closes /ws. `code` is the same stable reason as the close frame. Behind
+    Render's proxy the close frame never reached the client; data frames do."""
+
+    type: Literal["AUTH_ERROR"] = "AUTH_ERROR"
+    code: str
+
+
 class ResyncRequired(WireMessage):
     """Not one of the 8 domain events: sent when the backend lost its link to Supabase Realtime and may have
     missed changes. The app must refetch its REST state, same as after its own reconnection."""
@@ -87,6 +95,7 @@ ServerMessage = Annotated[
     Union[
         AuthOk,
         Pong,
+        AuthError,
         ResyncRequired,
         MatchEventCreated,
         MatchResultPending,

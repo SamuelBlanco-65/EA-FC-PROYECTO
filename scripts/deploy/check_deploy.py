@@ -42,18 +42,21 @@ def check_health(base: str) -> None:
 
 
 async def check_ws_auth_gate(url: str) -> None:
-    """No token: the server must accept the upgrade and then close with 4401 AUTH_REQUIRED."""
+    """No AUTH message: the server must accept the upgrade and answer AUTH_ERROR/AUTH_REQUIRED.
+
+    The notice is a data frame on purpose: Render's proxy does not deliver the close frame (4401), so the
+    script does not wait for it."""
     async with connect(url, open_timeout=WS_TIMEOUT) as ws:
         await ws.send(json.dumps({"type": "HELLO"}))
         try:
-            await asyncio.wait_for(ws.recv(), WS_TIMEOUT)
+            notice = json.loads(await asyncio.wait_for(ws.recv(), WS_TIMEOUT))
         except ConnectionClosed as closed:
-            frame = closed.rcvd
-            if frame is None or frame.code != 4401 or frame.reason != "AUTH_REQUIRED":
-                fail(f"unexpected close: {frame}")
-            say("wss", f"upgrade OK, anonymous client rejected with {frame.code} {frame.reason} (expected)")
-            return
-    fail("server kept an unauthenticated socket open")
+            fail(f"closed without an AUTH_ERROR notice: {closed.rcvd}")
+        except TimeoutError:
+            fail("no AUTH_ERROR within the timeout: the server kept an unauthenticated socket silent")
+    if notice != {"type": "AUTH_ERROR", "code": "AUTH_REQUIRED"}:
+        fail(f"unexpected answer to an anonymous client: {notice}")
+    say("wss", "upgrade OK, anonymous client got AUTH_ERROR AUTH_REQUIRED (expected)")
 
 
 async def check_ws_session(base: str, url: str, email: str) -> None:

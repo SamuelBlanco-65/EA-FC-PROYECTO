@@ -4,6 +4,8 @@ The token travels in a message, not in the URL: URLs end up in proxy and server 
 Close codes (application range 4000-4999): 4401 = not authenticated (the close reason is a stable code the
 app can switch on: AUTH_TIMEOUT, AUTH_REQUIRED, INVALID_TOKEN, TOKEN_EXPIRED, PROFILE_NOT_FOUND).
 1013 = "try again later" (Supabase unreachable while validating).
+Before every one of these closes the server sends {"type":"AUTH_ERROR","code":<same reason>} as a data frame,
+because the close frame did not survive Render's proxy; the app should switch on that message.
 """
 import asyncio
 import json
@@ -17,7 +19,7 @@ from app.api.deps import get_auth_service
 from app.core.errors import AppError
 from app.domain.user import CurrentUser
 from app.realtime.connection_manager import ConnectionManager
-from app.realtime.events import AuthOk, Pong
+from app.realtime.events import AuthError, AuthOk, Pong, to_wire
 from app.services.auth_service import AuthService
 
 logger = logging.getLogger(__name__)
@@ -123,7 +125,10 @@ def _is_ping(raw: str) -> bool:
 
 
 async def _close(websocket: WebSocket, code: int, reason: str) -> None:
+    # Data frame first: measured on Render, the close frame (code + reason) is not delivered to the client
+    # (it sees an abnormal closure ~20 s later) while data frames are.
     try:
+        await websocket.send_text(to_wire(AuthError(code=reason)))
         await websocket.close(code=code, reason=reason)
     except Exception:
         pass  # already closed by the peer

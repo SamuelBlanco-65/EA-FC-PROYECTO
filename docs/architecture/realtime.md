@@ -62,10 +62,12 @@ La notificación solo lleva ids y el marcador; la app, al recibirla, vuelve a pe
 | `ROUND_ACTIVATED` | `matches` -> `ACTIVE` | **todos** |
 | `TOURNAMENT_STARTED` | INSERT en `matches` | **todos** |
 | `AUTH_OK`, `PONG` | protocolo del socket | el propio socket |
+| `AUTH_ERROR` (`{"type":"AUTH_ERROR","code":"<razón>"}`) | justo antes de cada cierre del servidor (Fase 7) | el propio socket |
 | `RESYNC_REQUIRED` | el backend perdió y recuperó el enlace con Realtime | **todos** (añadido por mí, no estaba en la lista: ver "Si el listener se cae") |
 
 Cliente -> servidor: `{"type":"AUTH","token":"..."}` (obligatorio, primer mensaje, 5 s) y `{"type":"PING"}`.
 Cierres: `4401` + razón estable (`AUTH_TIMEOUT`, `AUTH_REQUIRED`, `INVALID_TOKEN`, `TOKEN_EXPIRED`, `PROFILE_NOT_FOUND`); `1013` si Supabase no responde al validar. El token **no** va en la URL (acabaría en logs). El socket se cierra al expirar el token (4401 `TOKEN_EXPIRED`): la app renueva la sesión y reconecta.
+**La app debe decidir por el mensaje `AUTH_ERROR`, no por el código de cierre.** Medido en Render (Fase 7, ver `deploy.md`): la trama de cierre con 4401 no llega al cliente, que ve un cierre anormal ~21 s después, mientras que las tramas de datos (`AUTH_OK`, `PONG`, `AUTH_ERROR`) sí llegan. Por eso el servidor envía `AUTH_ERROR` con la misma razón antes de cerrar. Con `1013` la razón es `UPSTREAM_UNAVAILABLE` (reintentar más tarde, no refrescar el token). El código de cierre se mantiene por si el cliente lo recibe (en local sí llega).
 
 Detalles que importan:
 - Una acción de varias filas (`start_tournament` inserta 600 partidos; `activate_round` actualiza una fecha entera) llega como una fila por mensaje. `dedup_key` (`started:<torneo>`, `round:<torneo>:<n>`) las convierte en **un** evento. `STANDINGS_UPDATED` no se deduplica a propósito: dos partidos confirmados seguidos son dos cambios de tabla.

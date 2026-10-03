@@ -16,7 +16,7 @@
 1. *¿Por qué no mandas el gol por el WebSocket directamente?* Porque el WebSocket solo notifica; la verdad es la BD. Si el mensaje se pierde, el dato no. La app, al recibir el aviso, relee por REST.
 2. *¿Qué pasa si el visitante está desconectado cuando el local finaliza?* No recibe el aviso; el partido queda `PENDING_CONFIRMATION` en la BD. Al reconectar pide `/tournament/fixtures` y lo ve (el bot lo hace así; probado). El admin también puede resolverlo si nunca responde.
 3. *¿Cómo evitas que un jugador reciba avisos de partidos ajenos?* El cliente no elige a qué suscribirse: el backend calcula el público desde la BD. Probado con 4 sockets reales y con sockets simulados.
-4. *¿Por qué el token va en el primer mensaje y no en la URL?* Las URLs acaban en logs de proxys y servidores. Sin AUTH en 5 s, o con token malo, se cierra con 4401.
+4. *¿Por qué el token va en el primer mensaje y no en la URL?* Las URLs acaban en logs de proxys y servidores. Sin AUTH en 5 s, o con token malo, se cierra con 4401, pero antes se envía `{"type":"AUTH_ERROR","code":...}`: en Render la trama de cierre no llegaba al cliente (lo medí) y las de datos sí.
 5. Difícil: *Si Supabase Realtime se cae 10 s, ¿pierdes eventos?* Sí, esos avisos se pierden (no hay cola). Al recuperar, el supervisor envía `RESYNC_REQUIRED` y la app refresca por REST; nada se pierde en la BD. NO probado contra una caída real de Supabase, solo con un cliente simulado (ver "No probado" en PROGRESS.md). Contra-contrapregunta: *¿y si el backend mismo se reinicia?* Los sockets se cierran, la app reconecta con backoff y vuelve a pedir el estado (probado con el bot).
 
 ## Errores típicos y manejo
