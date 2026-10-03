@@ -25,3 +25,4 @@ class CurrentUser:
     role: UserRole
     # Needed later to build a per-request Supabase client under RLS; kept out of repr/logs.
     access_token: str = field(repr=False)
+    token_expires_at: int | None = None

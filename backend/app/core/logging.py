@@ -45,5 +45,6 @@ def configure_logging(level: str = "INFO") -> None:
     )
     root.addHandler(handler)
     # httpx logs every outgoing URL at INFO (Supabase calls): noise, and ids in query strings.
-    for noisy in ("httpx", "httpcore", "hpack"):
+    # `realtime` logs its connect URL (it carries the secret key as ?apikey=) and every payload at DEBUG.
+    for noisy in ("httpx", "httpcore", "hpack", "realtime", "websockets"):
         logging.getLogger(noisy).setLevel(logging.WARNING)

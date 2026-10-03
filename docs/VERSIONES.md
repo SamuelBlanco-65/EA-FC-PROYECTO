@@ -73,7 +73,14 @@ Propuesta: **expo-sqlite** para la cola de eventos. Motivo: orden garantizado, t
 
 - Claves nuevas `sb_publishable_...` y `sb_secret_...`: se envían en el encabezado `apikey` (no como Bearer). Las legacy `anon` / `service_role` quedarán deprecadas a finales de 2026. Fuente: documentación de Supabase (API keys). Que supabase-py 2.32.0 acepte las claves `sb_` sin cambios es VERIFICAR.
 - Validación del JWT hoy: claves de firma asimétricas publicadas en `https://<proyecto>.supabase.co/auth/v1/.well-known/jwks.json` (ES256 o RS256); se verifica la firma con la clave pública, y se comprueban `exp`, `iss` y `aud`. El método `get_claims` del cliente Python existe según la documentación, pero la forma exacta de su retorno y su comportamiento con HS256 son VERIFICAR. HS256 con secreto compartido está desaconsejado. Fuente: página de signing keys de Supabase + búsqueda. La página específica de validación de JWT NO se pudo descargar (error de conexión). La decisión final (JWKS con PyJWT o consulta a Auth) se toma en la fase de autenticación y se vuelve a verificar.
-- Cliente realtime de Python: API consultada `AsyncRealtimeClient`, `channel(...).on_postgres_changes(...)`, `subscribe`. NO VERIFICADO: requisitos de publicación (`supabase_realtime`) y de RLS para que `postgres_changes` entregue filas al listener con la clave secreta (la página no cargó). Se prueba en la fase de realtime.
+- Cliente realtime de Python (`realtime` 2.32.0) – VERIFICADO en la Fase 6 leyendo el código instalado y ejecutándolo contra Supabase real:
+  - `AsyncRealtimeClient(f"{SUPABASE_URL}/realtime/v1", token=<clave secreta sb_secret_...>, auto_reconnect=False)`; `client.channel(nombre)`, `channel.on_postgres_changes(RealtimePostgresChangesListenEvent.All, callback, table=..., schema="public")`, `await channel.subscribe(callback_estado)` con `RealtimeSubscribeStates.SUBSCRIBED/CHANNEL_ERROR/TIMED_OUT/CLOSED`.
+  - Los callbacks son SÍNCRONOS y se ejecutan en la tarea de lectura de la librería: el listener solo encola (`put_nowait`) y procesa en otra tarea.
+  - La clave `sb_secret_...` se acepta como token del websocket y entrega TODAS las filas pese a la RLS (probado en `tests/integration/test_realtime_real.py`). Las tablas ya estaban publicadas (migración 0007).
+  - `payload["data"]` trae `table`, `type` (INSERT/UPDATE/DELETE) y `record` (fila nueva completa; `old_record` solo trae la clave primaria con la identidad de réplica por defecto, por eso el traductor usa solo el estado NUEVO).
+  - Límite de la librería: solo reconecta tras `ConnectionClosedError` (por eso el supervisor propio de `app/realtime/listener.py`). La URL de conexión lleva la clave como `?apikey=` y se registra en DEBUG: los loggers `realtime` y `websockets` se fijan en WARNING.
+  - Atributo privado usado: `client._ws_connection.state` (protegido con `getattr`); si una versión futura lo quita, solo se pierde esa comprobación.
+- `/ws` (Starlette `WebSocket`, uvicorn 0.54 con `websockets` 15.0.1): VERIFICADO con uvicorn real y clientes `websockets.asyncio.client.connect`.
 
 ## Otros pendientes detectados
 

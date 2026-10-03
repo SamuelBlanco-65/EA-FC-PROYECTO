@@ -23,6 +23,8 @@ class Settings(BaseSettings):
     supabase_secret_key: SecretStr
     cors_origins: str = ""
     log_level: str = "INFO"
+    # False = do not start the Supabase Realtime listener (hermetic runs). /ws still accepts connections.
+    realtime_listener_enabled: bool = True
 
     @field_validator("supabase_url", "supabase_publishable_key", "supabase_secret_key", mode="after")
     @classmethod
@@ -47,6 +49,10 @@ class Settings(BaseSettings):
     @property
     def jwks_url(self) -> str:
         return f"{self.auth_issuer}/.well-known/jwks.json"
+
+    @property
+    def realtime_url(self) -> str:
+        return f"{self.supabase_url}/realtime/v1"
 
     @property
     def rest_url(self) -> str:

@@ -28,6 +28,7 @@ class AuthService:
             display_name=profile.display_name,
             role=profile.role,
             access_token=access_token,
+            token_expires_at=claims.expires_at,
         )
 
     def register(self, email: str, password: str, display_name: str) -> SessionResponse:

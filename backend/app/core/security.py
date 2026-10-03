@@ -31,6 +31,7 @@ class SigningKeyProvider(Protocol):
 class TokenClaims:
     user_id: UUID
     email: str | None
+    expires_at: int  # unix seconds (`exp`); the WebSocket closes itself when it passes
 
 
 class JwtVerifier:
@@ -63,7 +64,9 @@ class JwtVerifier:
             logger.info("token rejected: %s", type(exc).__name__)
             raise AppError("INVALID_TOKEN", "Token inválido.", 401, headers=_WWW_AUTH)
         email = claims.get("email")
-        return TokenClaims(user_id=user_id, email=email if isinstance(email, str) else None)
+        return TokenClaims(
+            user_id=user_id, email=email if isinstance(email, str) else None, expires_at=int(claims["exp"])
+        )
 
 
 @lru_cache
