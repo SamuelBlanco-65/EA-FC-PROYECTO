@@ -76,11 +76,16 @@ URL pública: `https://ea-fc-api.onrender.com` (sin secretos). Python 3.12.0 fue
 Sin AUTH, con un mensaje cualquiera o con token falso, el servidor decide cerrar con 4401 pero el cliente no recibe la trama de cierre: la conexión se corta de forma anormal (`rcvd=None`) a los ~21 s. En local (`uvicorn` directo) el cierre llega al instante. Entre la app y uvicorn hay Cloudflare + el balanceador de Render; no sé cuál de los dos pierde la trama ni por qué, y no lo he podido comprobar sin acceso a su infraestructura.
 Decisión (acordada con el usuario): el servidor envía `{"type":"AUTH_ERROR","code":"<razón>"}` como trama de datos justo antes de cerrar (`app/api/ws.py::_close`). 16 tests fallan si se quita ese envío (mutación). El código de cierre se mantiene.
 
-### Reverificación tras el cambio
-PENDIENTE: requiere commit, push y redespliegue; luego `check_deploy.py` debe terminar con `ALL CHECKS PASSED` (el paso anónimo ahora espera `AUTH_ERROR AUTH_REQUIRED`).
+### Reverificación tras el cambio (commit `4bc1a2b`, 2026-10-03) — VERIFICADO
+`check_deploy.py` con login contra `https://ea-fc-api.onrender.com`: `/health` 200 en 0,8 s por HTTPS, upgrade wss, anónimo recibe `AUTH_ERROR AUTH_REQUIRED`, `AUTH_OK` y `PING -> PONG` en 252 ms: `ALL CHECKS PASSED`. Con un token falso, `AUTH_ERROR INVALID_TOKEN` llega a +1,2 s; la trama de cierre sigue sin llegar (cierre anormal a los 21 s), como se había medido. El servicio pasó a la versión nueva unos 2-3 min después del push (el verificador falló 2 veces con la versión vieja y pasó a la tercera, con 15 s entre intentos).
 
-### Arranque en frío y suspensión
-PENDIENTE: dejar 20 min sin tráfico y medir el primer `/health` (la doc dice ~1 min). Ojo: Render hace health checks a `/health` cada ~5 s (visto en el log); si esto cuenta como tráfico entrante, el servicio podría no dormirse nunca, lo que habría que comprobar y no asumir.
+### Arranque en frío y suspensión — VERIFICADO (una sola muestra)
+Último tráfico mío a las 07:42:45; a las 08:06:21 (~23,5 min después) una sola petición: `GET /health` tardó **24,2 s** (`cold start: the service was asleep`), y la siguiente 685 ms. Conclusiones:
+- El servicio SÍ se duerme por inactividad. Los health checks que Render hace a `/health` cada ~5 s (visibles en el log, desde una IP interna 10.200.x) no cuentan como tráfico entrante.
+- El arranque en frío fue de ~24 s, menos que el "aproximadamente un minuto" de la documentación. Es una sola medición: puede variar; planificar para ~1 min.
+- Tras despertar, `/ws` funciona de inmediato (`AUTH_ERROR AUTH_REQUIRED` a los 2 s).
+- NO PROBADO: que un `PING` de aplicación cada pocos minutos mantenga despierto el servicio con un WebSocket abierto (la doc dice que un "mensaje WebSocket entrante" cuenta; no lo medí). Para la app: probar en la Fase 8 con el móvil.
+- NO PROBADO: qué pasa con un WebSocket abierto cuando el servicio se duerme (supuesto: el cliente ve cierre anormal y debe reconectar y volver a pedir el estado por REST).
 
 ## 6. Fuentes
 
