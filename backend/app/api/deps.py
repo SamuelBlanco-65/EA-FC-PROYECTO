@@ -6,8 +6,12 @@ from app.core.errors import AppError
 from app.core.security import JwtVerifier, get_jwt_verifier
 from app.domain.user import CurrentUser, UserRole
 from app.repositories.auth_repository import AuthRepository
+from app.repositories.club_repository import ClubRepository
+from app.repositories.participant_repository import ParticipantRepository
 from app.repositories.profile_repository import ProfileRepository
+from app.repositories.tournament_repository import TournamentRepository
 from app.services.auth_service import AuthService
+from app.services.tournament_service import TournamentService
 
 # auto_error=False: a missing header must produce OUR error body (401), not FastAPI's default 403.
 bearer_scheme = HTTPBearer(auto_error=False, description="Access token devuelto por /auth/login")
@@ -19,6 +23,26 @@ def get_auth_repository(settings: Settings = Depends(get_settings)) -> AuthRepos
 
 def get_profile_repository(settings: Settings = Depends(get_settings)) -> ProfileRepository:
     return ProfileRepository(settings)
+
+
+def get_tournament_repository(settings: Settings = Depends(get_settings)) -> TournamentRepository:
+    return TournamentRepository(settings)
+
+
+def get_participant_repository(settings: Settings = Depends(get_settings)) -> ParticipantRepository:
+    return ParticipantRepository(settings)
+
+
+def get_club_repository(settings: Settings = Depends(get_settings)) -> ClubRepository:
+    return ClubRepository(settings)
+
+
+def get_tournament_service(
+    tournaments: TournamentRepository = Depends(get_tournament_repository),
+    participants: ParticipantRepository = Depends(get_participant_repository),
+    clubs: ClubRepository = Depends(get_club_repository),
+) -> TournamentService:
+    return TournamentService(tournaments, participants, clubs)
 
 
 def get_auth_service(

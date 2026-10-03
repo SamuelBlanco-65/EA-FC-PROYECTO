@@ -19,10 +19,12 @@ class Settings(BaseSettings):
 
     supabase_url: str
     supabase_publishable_key: SecretStr
+    # Bypasses RLS: only for admin work and the atomic club assignment, never for plain reads.
+    supabase_secret_key: SecretStr
     cors_origins: str = ""
     log_level: str = "INFO"
 
-    @field_validator("supabase_url", "supabase_publishable_key", mode="after")
+    @field_validator("supabase_url", "supabase_publishable_key", "supabase_secret_key", mode="after")
     @classmethod
     def _reject_placeholders(cls, value):
         raw = value.get_secret_value() if isinstance(value, SecretStr) else value

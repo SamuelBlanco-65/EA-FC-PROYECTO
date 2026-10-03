@@ -23,7 +23,21 @@ def new_auth_client(settings: Settings) -> Client:
 @lru_cache
 def _shared_http() -> httpx.Client:
     # One pooled connection set for PostgREST: the profile lookup runs on every authenticated request.
-    return httpx.Client(timeout=httpx.Timeout(10.0), http2=True, follow_redirects=True)
+    # HTTP/1.1 on purpose. With http2=True every thread shared ONE multiplexed connection; when the server
+    # dropped it ("RemoteProtocolError: Server disconnected") all in-flight requests died together (9 of 15
+    # simultaneous assign-club calls, 2 of 3 runs). With HTTP/1.1 a drop only hits one request.
+    return httpx.Client(timeout=httpx.Timeout(10.0), http2=False, follow_redirects=True)
+
+
+def service_postgrest(settings: Settings) -> SyncPostgrestClient:
+    """PostgREST client with the SECRET key (role=service_role, bypasses RLS). Callers must have
+    already authorised the request themselves."""
+    key = settings.supabase_secret_key.get_secret_value()
+    return SyncPostgrestClient(
+        settings.rest_url,
+        headers={"apikey": key, "Authorization": f"Bearer {key}"},
+        http_client=_shared_http(),
+    )
 
 
 def user_postgrest(settings: Settings, access_token: str) -> SyncPostgrestClient:
