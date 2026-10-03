@@ -8,6 +8,7 @@ from app.domain.user import CurrentUser
 from app.repositories.club_repository import ClubRepository
 from app.repositories.participant_repository import ParticipantRepository
 from app.repositories.tournament_repository import TournamentRepository
+from app.services.common import current_tournament
 
 
 class TournamentService:
@@ -22,10 +23,7 @@ class TournamentService:
         self._clubs = clubs
 
     def current(self, user: CurrentUser) -> Tournament:
-        tournament = self._tournaments.get_current(user.access_token)
-        if tournament is None:
-            raise AppError("TOURNAMENT_NOT_FOUND", "No hay un torneo disponible.", 404)
-        return tournament
+        return current_tournament(self._tournaments, user)
 
     def standings(self, user: CurrentUser) -> list[StandingRow]:
         tournament = self.current(user)

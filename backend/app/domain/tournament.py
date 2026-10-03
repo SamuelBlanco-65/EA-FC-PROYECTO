@@ -76,6 +76,15 @@ class ClubRef:
 
 
 @dataclass(frozen=True)
+class AdminParticipant:
+    id: UUID
+    user_id: UUID
+    display_name: str
+    club: ClubRef
+    joined_at: datetime
+
+
+@dataclass(frozen=True)
 class Match:
     id: UUID
     round: int

@@ -14,7 +14,7 @@ from postgrest.exceptions import APIError
 from app.core.config import Settings
 from app.core.errors import AppError
 from app.core.supabase_clients import service_postgrest, user_postgrest
-from app.domain.tournament import ClubRef, Participant
+from app.domain.tournament import AdminParticipant, ClubRef, Participant
 from app.repositories._postgrest import upstream_error
 
 logger = logging.getLogger(__name__)
@@ -81,6 +81,33 @@ class ParticipantRepository:
             )
             for r in rows
         }
+
+    def list_for_admin(self, tournament_id: UUID) -> list[AdminParticipant]:
+        """Secret key: the display name lives in `profiles`, where RLS only lets each user read their OWN row.
+        The caller (admin endpoint) has already been authorised."""
+        try:
+            rows = (
+                service_postgrest(self._settings)
+                .from_("tournament_participants")
+                .select("id,user_id,club_id,joined_at,profiles(display_name),clubs(name,short_name)")
+                .eq("tournament_id", str(tournament_id))
+                .order("joined_at")
+                .execute()
+                .data
+            )
+        except APIError as exc:
+            logger.error("list participants failed: code=%s", exc.code)
+            raise AppError("UPSTREAM_ERROR", "No se pudo leer los participantes.", 502) from None
+        return [
+            AdminParticipant(
+                id=UUID(r["id"]),
+                user_id=UUID(r["user_id"]),
+                display_name=r["profiles"]["display_name"],
+                club=ClubRef(UUID(r["id"]), UUID(r["club_id"]), r["clubs"]["name"], r["clubs"]["short_name"]),
+                joined_at=datetime.fromisoformat(r["joined_at"]),
+            )
+            for r in rows
+        ]
 
     def assign_random_club(self, tournament_id: UUID, user_id: UUID) -> Participant:
         try:

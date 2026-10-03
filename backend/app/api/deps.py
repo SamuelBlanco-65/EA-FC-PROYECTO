@@ -7,10 +7,16 @@ from app.core.security import JwtVerifier, get_jwt_verifier
 from app.domain.user import CurrentUser, UserRole
 from app.repositories.auth_repository import AuthRepository
 from app.repositories.club_repository import ClubRepository
+from app.repositories.lineup_repository import LineupRepository
+from app.repositories.match_repository import MatchRepository
 from app.repositories.participant_repository import ParticipantRepository
+from app.repositories.player_repository import PlayerRepository
 from app.repositories.profile_repository import ProfileRepository
 from app.repositories.tournament_repository import TournamentRepository
+from app.services.admin_service import AdminService
 from app.services.auth_service import AuthService
+from app.services.match_service import MatchService
+from app.services.squad_service import SquadService
 from app.services.tournament_service import TournamentService
 
 # auto_error=False: a missing header must produce OUR error body (401), not FastAPI's default 403.
@@ -43,6 +49,44 @@ def get_tournament_service(
     clubs: ClubRepository = Depends(get_club_repository),
 ) -> TournamentService:
     return TournamentService(tournaments, participants, clubs)
+
+
+def get_match_repository(settings: Settings = Depends(get_settings)) -> MatchRepository:
+    return MatchRepository(settings)
+
+
+def get_player_repository(settings: Settings = Depends(get_settings)) -> PlayerRepository:
+    return PlayerRepository(settings)
+
+
+def get_lineup_repository(settings: Settings = Depends(get_settings)) -> LineupRepository:
+    return LineupRepository(settings)
+
+
+def get_match_service(
+    matches: MatchRepository = Depends(get_match_repository),
+    participants: ParticipantRepository = Depends(get_participant_repository),
+    tournaments: TournamentRepository = Depends(get_tournament_repository),
+    players: PlayerRepository = Depends(get_player_repository),
+) -> MatchService:
+    return MatchService(matches, participants, tournaments, players)
+
+
+def get_admin_service(
+    tournaments: TournamentRepository = Depends(get_tournament_repository),
+    participants: ParticipantRepository = Depends(get_participant_repository),
+    matches: MatchRepository = Depends(get_match_repository),
+) -> AdminService:
+    return AdminService(tournaments, participants, matches)
+
+
+def get_squad_service(
+    tournaments: TournamentRepository = Depends(get_tournament_repository),
+    participants: ParticipantRepository = Depends(get_participant_repository),
+    players: PlayerRepository = Depends(get_player_repository),
+    lineups: LineupRepository = Depends(get_lineup_repository),
+) -> SquadService:
+    return SquadService(tournaments, participants, players, lineups)
 
 
 def get_auth_service(

@@ -88,6 +88,14 @@ def app(jwks, profiles):
 
 
 @pytest.fixture
+def world(app, profiles, make_token, auth_header):
+    """ACTIVE tournament at round 1 with in-memory repositories (see fake_world.py)."""
+    from fake_world import World
+
+    return World(app, profiles, make_token, auth_header)
+
+
+@pytest.fixture
 def client(app):
     return TestClient(app)
 

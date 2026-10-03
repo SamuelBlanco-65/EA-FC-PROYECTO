@@ -1,17 +1,33 @@
 """Reads tournament, standings and matches.
 
-Client used: the USER'S JWT (RLS: authenticated users may SELECT these tables and the `standings`
-view, which is `security_invoker`). Nothing here needs the secret key.
+READS use the USER'S JWT (RLS: authenticated users may SELECT these tables and the `standings` view,
+which is `security_invoker`). `start` and `activate_round` use the SECRET key: the SQL functions are
+revoked from anon/authenticated (migration 0010) and the admin role is checked by the service first.
 """
+import logging
 from datetime import datetime
 from uuid import UUID
 
 from postgrest.exceptions import APIError
 
 from app.core.config import Settings
-from app.core.supabase_clients import user_postgrest
+from app.core.errors import AppError
+from app.core.supabase_clients import service_postgrest, user_postgrest
+from app.domain.round_robin import Fixture
 from app.domain.tournament import ClubRef, Match, MatchStatus, StandingRow, Tournament, TournamentStatus
 from app.repositories._postgrest import upstream_error
+
+logger = logging.getLogger(__name__)
+
+# Stable codes raised by the SQL functions (message of `raise exception`) -> HTTP error.
+_START_ERRORS: dict[str, tuple[int, str]] = {
+    "TOURNAMENT_NOT_DRAFT": (409, "El torneo ya inició."),
+    "PARTICIPANTS_CHANGED": (409, "Cambiaron los inscritos mientras se generaba el calendario. Intenta de nuevo."),
+}
+_ACTIVATE_ERRORS: dict[str, tuple[int, str]] = {
+    "ROUND_CHANGED": (409, "La fecha activa cambió. Vuelve a consultar el torneo."),
+    "ROUND_NOT_CLOSED": (409, "Hay partidos sin confirmar o resolver en la fecha actual."),
+}
 
 
 class TournamentRepository:
@@ -44,6 +60,33 @@ class TournamentRepository:
             participant_count=r["tournament_participants"][0]["count"],
             started_at=datetime.fromisoformat(r["started_at"]) if r["started_at"] else None,
         )
+
+    def start(self, tournament_id: UUID, fixtures: list[Fixture[UUID]]) -> None:
+        """SECRET key: atomic SQL function (migration 0010) that flips DRAFT -> ACTIVE and inserts every match."""
+        payload = [
+            {"round": f.round, "leg": f.leg, "home": str(f.home), "away": str(f.away)} for f in fixtures
+        ]
+        self._rpc("start_tournament", {"p_tournament": str(tournament_id), "p_fixtures": payload}, _START_ERRORS)
+
+    def activate_round(self, tournament_id: UUID, expected_round: int) -> int:
+        """SECRET key: atomic SQL function. Succeeds only if the tournament is still at `expected_round`."""
+        data = self._rpc(
+            "activate_round",
+            {"p_tournament": str(tournament_id), "p_expected_round": expected_round},
+            _ACTIVATE_ERRORS,
+        )
+        return int(data)
+
+    def _rpc(self, name: str, params: dict, errors: dict[str, tuple[int, str]]):
+        try:
+            return service_postgrest(self._settings).rpc(name, params).execute().data
+        except APIError as exc:
+            mapped = errors.get(exc.message)
+            if mapped is not None:
+                status, message = mapped
+                raise AppError(exc.message, message, status) from None
+            logger.error("%s failed: code=%s", name, exc.code)
+            raise AppError("UPSTREAM_ERROR", "No se pudo completar la operación.", 502) from None
 
     def get_standings(self, tournament_id: UUID, access_token: str) -> list[StandingRow]:
         try:
