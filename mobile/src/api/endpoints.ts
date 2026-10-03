@@ -1,8 +1,12 @@
 import { apiFetch } from './client';
 import type {
   AssignClubResponse,
+  EventPayload,
   Fixture,
+  MatchDetail,
   MyParticipation,
+  Player,
+  RecordEventResponse,
   SessionResponse,
   StandingRow,
   Tournament,
@@ -24,4 +28,12 @@ export const api = {
   tournament: () => apiFetch<Tournament>('/tournament'),
   standings: () => apiFetch<StandingRow[]>('/tournament/standings'),
   fixtures: () => apiFetch<Fixture[]>('/tournament/fixtures'),
+
+  mySquad: () => apiFetch<Player[]>('/me/squad'),
+  match: (id: string) => apiFetch<MatchDetail>(`/matches/${id}`),
+  recordEvent: (matchId: string, event: EventPayload) =>
+    apiFetch<RecordEventResponse>(`/matches/${matchId}/events`, { method: 'POST', body: event }),
+  finishMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/finish`, { method: 'POST' }),
+  confirmMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/confirm`, { method: 'POST' }),
+  rejectMatch: (id: string) => apiFetch<MatchDetail>(`/matches/${id}/reject`, { method: 'POST' }),
 };

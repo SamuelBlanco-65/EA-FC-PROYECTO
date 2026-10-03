@@ -30,7 +30,10 @@ export function summarizeRounds(fixtures: Fixture[]): RoundSummary[] {
   }));
 }
 
-export const isMine = (fixture: Fixture, participantId: string) =>
+/** The room is offered while there is something to do in it: record events (ACTIVE) or answer the result. */
+export const canEnterRoom = (status: MatchStatus) => status === 'ACTIVE' || status === 'PENDING_CONFIRMATION';
+
+export const isMine =(fixture: Fixture, participantId: string) =>
   fixture.home.participantId === participantId || fixture.away.participantId === participantId;
 
 /** My earliest match that is not CONFIRMED/RESOLVED yet. */

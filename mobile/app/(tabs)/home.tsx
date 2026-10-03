@@ -1,8 +1,10 @@
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import type { Fixture, StandingRow, Tournament } from '@/api/types';
+import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
@@ -10,7 +12,7 @@ import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
 import { Skeleton } from '@/components/StateViews';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
-import { formatDifference, myNextMatch, myStanding, summarizeRounds } from '@/features/tournament/derive';
+import { canEnterRoom, formatDifference, myNextMatch, myStanding, summarizeRounds } from '@/features/tournament/derive';
 import { useFixtures, useStandings, useTournament } from '@/features/tournament/hooks';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { useSessionStore } from '@/stores/sessionStore';
@@ -115,6 +117,7 @@ function NextMatchCard({
   fixtures: Fixture[];
   participantId: string;
 }) {
+  const router = useRouter();
   if (tournament.status === 'DRAFT') {
     return (
       <Card variant="dashed" style={styles.waiting}>
@@ -162,6 +165,9 @@ function NextMatchCard({
         <Side name={match.away.name} crestUrl={match.away.crestUrl} tag="Visitante" mine={!iAmHome} />
       </View>
       {resting ? <Text style={styles.restNote}>Descansas en la fecha {tournament.currentRound}.</Text> : null}
+      {canEnterRoom(match.status) ? (
+        <Button label="Entrar a la sala" icon="log-in" onPress={() => router.push(`/match/${match.id}`)} />
+      ) : null}
     </Card>
   );
 }

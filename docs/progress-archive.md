@@ -132,3 +132,21 @@ Decisiones clave: Realtime en vez de emitir tras mutar; audiencia aprendida de l
 Archivos principales: `backend/app/realtime/{events,translator,dispatcher,audience,connection_manager,listener,hub}.py`, `backend/app/api/ws.py`, `backend/app/repositories/audience_repository.py`, `scripts/demo/{visitor_bot,simulate_match,_common}.py`, `backend/tests/{realtime,api/test_ws.py,integration/test_realtime_real.py}`, `docs/architecture/realtime.md`, `docs/defense/realtime.md`.
 Cómo probarlo (PowerShell): `cd backend; .\venv\Scripts\python.exe -m pytest tests\realtime tests\api\test_ws.py` (sin red) y `.\venv\Scripts\python.exe -m pytest tests\integration\test_realtime_real.py -s` (Supabase real, ~40 s). Dos terminales: ver `docs/architecture/realtime.md` (final).
 Siguiente paso: Fase 7 (la define el usuario).
+
+## Fase 7 – Despliegue del backend (Render) – 2026-10-03
+Estado: COMPLETA
+Hecho (VERIFICADO):
+- Comparativa Render / Cloud Run / Koyeb con fuentes oficiales (`docs/architecture/deploy.md`); Fly.io descartado (sin plan gratuito para cuentas nuevas, solo fuentes de terceros). Elegido Render free.
+- Desplegado en `https://ea-fc-api.onrender.com` desde `render.yaml` (Blueprint; Python 3.12.0 aceptado; 3 claves de Supabase con `sync: false`, fuera del repo). Listener de Supabase suscrito en Render. Antes, build desde cero en local (venv limpio, sin `.env`).
+- `scripts/deploy/check_deploy.py` contra la URL pública: `/health` 200 por HTTPS (~0,8 s), upgrade wss, anónimo recibe `AUTH_ERROR AUTH_REQUIRED`, login + `AUTH_OK` + `PING->PONG` (252 ms): ALL CHECKS PASSED.
+- Hallazgo: la trama de cierre 4401 no llega al cliente a través de Render (cierre anormal a los ~21 s; en local llega al instante). Arreglo aprobado por el usuario: `AUTH_ERROR {code}` como trama de datos antes de cerrar (`ws.py::_close`); 16 tests fallan sin él (mutación). Reverificado en producción: `INVALID_TOKEN` a +1,2 s.
+- Se duerme: tras ~23,5 min sin tráfico el primer `/health` tardó 24,2 s (una muestra; la doc dice ~1 min). Los health checks internos de Render (cada ~5 s) no cuentan como tráfico.
+- Pruebas: 333 passed sin integración; `test_realtime_real.py` 1 passed (Supabase real). BD limpia: 0 torneos, usuarios solo admin + participant01..05.
+No probado / pendiente:
+- Causa exacta de la pérdida de la trama de cierre (Cloudflare o balanceador de Render): NO DETERMINADA.
+- NO PROBADO: que un PING de aplicación mantenga despierto el servicio con el WS abierto; qué ve un WS abierto cuando el servicio se duerme; más muestras del arranque en frío.
+- Espejo `mobile/src/realtime/events.ts` debe incluir `AUTH_ERROR` (Fase 8). Siguen sin existir `/media/...` ni el endpoint para crear el torneo. La clave secreta de Supabase quedó visible en esta sesión (selección del IDE): rotarla es decisión del usuario.
+Decisiones clave: Render (proceso persistente para el listener; Cloud Run por petición lo dejaría sin CPU); `AUTH_ERROR` como mensaje de datos porque es lo que sí atraviesa el proxy.
+Archivos principales: `render.yaml`, `scripts/deploy/check_deploy.py`, `backend/app/api/ws.py`, `backend/app/realtime/events.py`, `docs/architecture/deploy.md`, `docs/defense/deploy.md`.
+Cómo probarlo (PowerShell): `cd backend; .\venv\Scripts\python.exe -m pytest tests\api\test_ws.py` (sin red) y, desde la raíz, `backend\venv\Scripts\python.exe scripts\deploy\check_deploy.py https://ea-fc-api.onrender.com` (si estaba dormido tarda ~25-60 s).
+Siguiente paso: Fase 8 (la define el usuario). La URL pública será `EXPO_PUBLIC_API_URL`.

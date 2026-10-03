@@ -1,7 +1,21 @@
 # Progreso del proyecto
 
-Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go). Siguiente: Fase 9, cuando el usuario la indique.
+Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 9 PARCIAL: código y lógica verificados, faltan las pruebas en el teléfono (abajo).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
+
+## Fase 9 – Sala de partido horizontal + cola offline – 2026-10-03
+Estado: PARCIAL (falta la prueba guiada en el teléfono; la haces tú)
+Hecho (VERIFICADO):
+- `npx tsc --noEmit` limpio; `npx expo export --platform android` empaqueta; `npm run test:logic` 14 passed (cola: persistencia y recuperación, orden, fallo transitorio, rechazo definitivo sin bloquear, ráfagas concurrentes, caída entre "servidor aceptó" y "cola olvidó" sin duplicar contra un servidor simulado idempotente; derivaciones de la sala). Backend intacto: 348 passed sin integración. BD sin tocar (0 tests de integración ejecutados; sigue el `Torneo de prueba` DRAFT con 1 participante).
+- Hecho: `app/match/[id].tsx` (marcador, eventos en vivo, TU EQUIPO / OPONENTE, Gol/Amarilla/Roja con jugador + minuto, Finalizar del local con confirmación, `ResultModal` Confirmar/Rechazar del visitante, barra "Sin conexión – N eventos pendientes"), `offline/eventQueue.ts` + `queue.ts` (cola en AsyncStorage, envío en orden, backoff), disparadores en `useAppRuntime.ts` (red, WebSocket, primer plano), botón "Entrar a la sala" en Inicio y Calendario, `scripts/demo/room_helper.py` para la prueba guiada (solo `status` ejecutado, lectura).
+No probado / pendiente:
+- NO PROBADO en el teléfono: giro a horizontal en Expo Go (con `orientation: "portrait"` en `app.json`; plan B en `docs/VERSIONES.md`), teclado numérico del minuto en horizontal, escudos/fotos en la sala, aspecto de los modales, caso aprobado, caso rechazado, modal del visitante, prueba en modo avión (2 goles, llegan 1 vez).
+- Diferencia con el diseño: el chip "Ahora" del minuto se llama "Último" (no hay reloj de partido; vale el último minuto registrado). Sin pestaña Plantilla. Un envío tras dormir Render puede tardar hasta 60 s. La cola se borra al cerrar sesión.
+Decisiones clave: siempre encolar (con y sin red) para un único camino y orden garantizado; idempotencia por UUID del cliente en el servidor; AsyncStorage en vez de SQLite; 4xx definitivo = "rechazado" visible, no bloquea la cola.
+Archivos principales: `mobile/app/match/[id].tsx`, `mobile/src/features/match/*`, `mobile/src/offline/*`, `mobile/tests/logic.test.ts`, `scripts/demo/room_helper.py`, `docs/defense/offline.md`.
+Cómo probarlo (PowerShell, raíz del repo; guion completo en el último mensaje de la sesión):
+`$env:API_URL="https://ea-fc-api.onrender.com"; backend\venv\Scripts\python.exe scripts\demo\room_helper.py setup` (inscribe participant02/03, inicia el torneo, activa la fecha 1), luego `status`, `advance`, `play-home`, `resolve`, `events`; bot: `backend\venv\Scripts\python.exe scripts\demo\visitor_bot.py --email participant02@example.com --approve`. Tests: `cd mobile; npm run test:logic; npx tsc --noEmit`.
+Siguiente paso: tu prueba en el teléfono; con el resultado actualizo esta fase a COMPLETA (o corrijo). Después, Fase 10.
 
 ## Fase 8 – App: base, auth, ruleta, home, tabla, calendario – 2026-10-03
 Estado: COMPLETA
@@ -19,21 +33,3 @@ Decisiones clave: caché de TanStack Query persistida (no copiar datos a Zustand
 Archivos principales: `mobile/app/**`, `mobile/src/{api,stores,realtime,theme,components,features}`, `backend/app/{api/media.py,services/media_service.py,repositories/media_repository.py}`, `docs/defense/app-base.md`.
 Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear` y abrir con Expo Go (la URL está en `mobile/.env`: `EXPO_PUBLIC_API_URL=https://ea-fc-api.onrender.com`). Tests: `cd backend; .\venv\Scripts\python.exe -m pytest -m "not integration"`; `cd mobile; npx tsc --noEmit`.
 Siguiente paso: Fase 9 (la define el usuario).
-
-## Fase 7 – Despliegue del backend (Render) – 2026-10-03
-Estado: COMPLETA
-Hecho (VERIFICADO):
-- Comparativa Render / Cloud Run / Koyeb con fuentes oficiales (`docs/architecture/deploy.md`); Fly.io descartado (sin plan gratuito para cuentas nuevas, solo fuentes de terceros). Elegido Render free.
-- Desplegado en `https://ea-fc-api.onrender.com` desde `render.yaml` (Blueprint; Python 3.12.0 aceptado; 3 claves de Supabase con `sync: false`, fuera del repo). Listener de Supabase suscrito en Render. Antes, build desde cero en local (venv limpio, sin `.env`).
-- `scripts/deploy/check_deploy.py` contra la URL pública: `/health` 200 por HTTPS (~0,8 s), upgrade wss, anónimo recibe `AUTH_ERROR AUTH_REQUIRED`, login + `AUTH_OK` + `PING->PONG` (252 ms): ALL CHECKS PASSED.
-- Hallazgo: la trama de cierre 4401 no llega al cliente a través de Render (cierre anormal a los ~21 s; en local llega al instante). Arreglo aprobado por el usuario: `AUTH_ERROR {code}` como trama de datos antes de cerrar (`ws.py::_close`); 16 tests fallan sin él (mutación). Reverificado en producción: `INVALID_TOKEN` a +1,2 s.
-- Se duerme: tras ~23,5 min sin tráfico el primer `/health` tardó 24,2 s (una muestra; la doc dice ~1 min). Los health checks internos de Render (cada ~5 s) no cuentan como tráfico.
-- Pruebas: 333 passed sin integración; `test_realtime_real.py` 1 passed (Supabase real). BD limpia: 0 torneos, usuarios solo admin + participant01..05.
-No probado / pendiente:
-- Causa exacta de la pérdida de la trama de cierre (Cloudflare o balanceador de Render): NO DETERMINADA.
-- NO PROBADO: que un PING de aplicación mantenga despierto el servicio con el WS abierto; qué ve un WS abierto cuando el servicio se duerme; más muestras del arranque en frío.
-- Espejo `mobile/src/realtime/events.ts` debe incluir `AUTH_ERROR` (Fase 8). Siguen sin existir `/media/...` ni el endpoint para crear el torneo. La clave secreta de Supabase quedó visible en esta sesión (selección del IDE): rotarla es decisión del usuario.
-Decisiones clave: Render (proceso persistente para el listener; Cloud Run por petición lo dejaría sin CPU); `AUTH_ERROR` como mensaje de datos porque es lo que sí atraviesa el proxy.
-Archivos principales: `render.yaml`, `scripts/deploy/check_deploy.py`, `backend/app/api/ws.py`, `backend/app/realtime/events.py`, `docs/architecture/deploy.md`, `docs/defense/deploy.md`.
-Cómo probarlo (PowerShell): `cd backend; .\venv\Scripts\python.exe -m pytest tests\api\test_ws.py` (sin red) y, desde la raíz, `backend\venv\Scripts\python.exe scripts\deploy\check_deploy.py https://ea-fc-api.onrender.com` (si estaba dormido tarda ~25-60 s).
-Siguiente paso: Fase 8 (la define el usuario). La URL pública será `EXPO_PUBLIC_API_URL`.

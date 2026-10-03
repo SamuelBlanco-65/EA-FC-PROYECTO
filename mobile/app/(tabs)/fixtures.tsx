@@ -1,9 +1,11 @@
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import type { Fixture, MatchStatus, StandingRow } from '@/api/types';
+import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
@@ -11,7 +13,7 @@ import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
 import { EmptyState, Skeleton } from '@/components/StateViews';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
-import { isMine, restingIn, summarizeRounds, type RoundSummary } from '@/features/tournament/derive';
+import { canEnterRoom, isMine, restingIn, summarizeRounds, type RoundSummary } from '@/features/tournament/derive';
 import { useFixtures, useStandings, useTournament } from '@/features/tournament/hooks';
 import { colors, fonts, shadows, type } from '@/theme';
 
@@ -142,6 +144,7 @@ function RoundChips({
 }
 
 function MatchCard({ match, mine }: { match: Fixture; mine: boolean }) {
+  const router = useRouter();
   const variant = match.status === 'DISPUTED' ? 'danger' : mine ? 'highlight' : 'default';
   const showScore = match.homeScore !== null && match.awayScore !== null;
   const homeWins = showScore && (match.homeScore as number) > (match.awayScore as number);
@@ -174,6 +177,9 @@ function MatchCard({ match, mine }: { match: Fixture; mine: boolean }) {
           <ClubCrest crestUrl={match.away.crestUrl} name={match.away.name} size={42} />
         </View>
       </View>
+      {mine && canEnterRoom(match.status) ? (
+        <Button label="Entrar a la sala" icon="log-in" onPress={() => router.push(`/match/${match.id}`)} />
+      ) : null}
     </Card>
   );
 }

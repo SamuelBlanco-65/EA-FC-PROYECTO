@@ -47,6 +47,7 @@ Advertencia (VERIFICADO al ejecutar, sin impacto): aviso de deprecación relacio
 | react-native-gesture-handler | ~2.32.0 | docs de Expo |
 | expo-screen-orientation | ~57.0.2 | docs de Expo |
 | expo-secure-store | ~57.0.4 | docs de Expo |
+| expo-crypto | ~57.0.3 | Fase 9: `randomUUID()` para el id de cada evento (módulo nativo del SDK 57, `bundledNativeModules.json`; instalado con `expo install`) |
 | @tanstack/react-query | ^5.104.1 | documentación de TanStack |
 | zustand | ^5.0.15 | documentación de Zustand |
 | typescript | ~6.0.3 | plantilla de Expo |
@@ -65,9 +66,11 @@ Dependencias que NO se instalaron aún (no hay código que las use): `expo-font`
 
 Expo Go solo soporta el SDK más reciente. SDK 58 está en beta desde 2026-09-15 y saldrá estable en unas 3–4 semanas; cuando salga, las tiendas dejarán de ofrecer una versión de Expo Go para SDK 57. La entrega es el 2026-10-06, pero el teléfono puede actualizar Expo Go antes. Mitigaciones: no actualizar Expo Go en el teléfono, o instalar la versión SDK 57 desde expo.dev/go o con `npx expo-go download android latest` (VERIFICAR el nombre exacto y la versión que descarga ese comando). Alternativa si hiciera falta migrar: `npx expo install expo@latest --fix`. Decisión pendiente del usuario.
 
-## Almacenamiento local para la cola offline (propuesta, PENDIENTE de confirmar)
+## Almacenamiento local para la cola offline (DECIDIDO en la Fase 9: AsyncStorage)
 
-Propuesta: **expo-sqlite** para la cola de eventos. Motivo: orden garantizado, transacciones y estado por fila (pendiente / enviado / error), y sirve también como almacén clave-valor para la caché persistida de TanStack Query. Alternativa: `@react-native-async-storage/async-storage` (más simple, pero cada cambio reescribe un JSON y no hay transacciones). Descartado: MMKV (no está en Expo Go). La API concreta de persistencia de TanStack Query con SQLite es VERIFICAR antes de usarla.
+Decisión Fase 9: la cola usa **AsyncStorage** (ya instalado para la caché de consultas), con un único JSON `{v, pending, rejected}` y escrituras encadenadas. Motivo: la cola es pequeña (decenas de eventos), no hace falta SQL y se evita otra dependencia. Alternativa descartada: expo-sqlite (la propuesta original abajo). Coste: cada cambio reescribe el JSON entero (irrelevante a este tamaño) y no hay transacciones (se compensa con `id` idempotente en el servidor).
+
+Propuesta original (descartada): **expo-sqlite** para la cola de eventos. Motivo: orden garantizado, transacciones y estado por fila (pendiente / enviado / error), y sirve también como almacén clave-valor para la caché persistida de TanStack Query. Alternativa: `@react-native-async-storage/async-storage` (más simple, pero cada cambio reescribe un JSON y no hay transacciones). Descartado: MMKV (no está en Expo Go). La API concreta de persistencia de TanStack Query con SQLite es VERIFICAR antes de usarla.
 
 ## Supabase: claves y validación del JWT
 
@@ -86,7 +89,7 @@ Propuesta: **expo-sqlite** para la cola de eventos. Motivo: orden garantizado, t
 
 - Skill `sistema-diseno` no existe en `.claude/skills/` (CLAUDE.md la menciona). Los tokens quedan en `docs/design/design-system.md`.
 - `npm audit` reporta hallazgos en dependencias transitivas de la plantilla; no se ejecutó `npm audit fix` (podría romper versiones fijadas por Expo).
-- `mobile/app.json` tiene `orientation: "portrait"`; la sala en vivo necesita landscape. VERIFICAR con `expo-screen-orientation` en la fase de la sala.
+- `mobile/app.json` tiene `orientation: "portrait"`; la sala en vivo necesita landscape. Fase 9: la sala usa `lockAsync(OrientationLock.LANDSCAPE)` y vuelve con `PORTRAIT_UP` (nombres confirmados en la doc de Expo). La doc NO aclara si `orientation: "portrait"` del `app.json` impide el bloqueo en tiempo de ejecución en Expo Go: NO PROBADO hasta abrir la sala en el teléfono. Plan B si no gira: poner `"orientation": "default"` en `app.json` y bloquear portrait en el layout raíz.
 - El QR de `npx expo start` no se pudo imprimir en un terminal sin TTY: se verificó el manifiesto y el bundle por HTTP. Ver el QR y escanearlo lo hace el usuario.
 
 ## Fase 1 – Base de datos (2026-10-03)
