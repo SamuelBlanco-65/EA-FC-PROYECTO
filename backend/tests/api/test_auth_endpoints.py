@@ -85,6 +85,7 @@ def test_login_failure_uses_the_standard_error_body(client, repo):
     (AuthApiError("x", 400, "refresh_token_not_found"), 401, "INVALID_REFRESH_TOKEN"),
     (AuthApiError("x", 400, "validation_failed"), 422, "INVALID_EMAIL"),
     (AuthApiError("x", 429, None), 429, "RATE_LIMITED"),
+    (AuthApiError("x", 422, "email_provider_disabled"), 503, "AUTH_PROVIDER_DISABLED"),
     (AuthApiError("x", 500, "unexpected_failure"), 503, "UPSTREAM_UNAVAILABLE"),
     (AuthRetryableError("x", 0), 503, "UPSTREAM_UNAVAILABLE"),
     (AuthApiError("x", 400, "something_new"), 502, "UPSTREAM_ERROR"),

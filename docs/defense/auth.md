@@ -25,5 +25,5 @@ Login/registro/refresh: `api/auth.py` -> `AuthService` -> `AuthRepository` (Supa
 ## Errores típicos
 - 401 `TOKEN_EXPIRED` -> la app debe llamar a `/auth/refresh` y reintentar una vez.
 - 503 `UPSTREAM_UNAVAILABLE` -> Supabase o el JWKS no responden (a propósito no es 401: el token no es culpable).
-- 403 `EMAIL_CONFIRMATION_REQUIRED` en `/auth/register` -> el proyecto exige confirmar el correo. 429 `RATE_LIMITED` -> límite de correos de Supabase (NO PROBADO el registro exitoso).
+- 403 `EMAIL_CONFIRMATION_REQUIRED` en `/auth/register` -> el proyecto exige confirmar el correo (solo probado con repositorio simulado). 429 `RATE_LIMITED` -> límite de correos de Supabase; se evitó desactivando "Confirm email" (registro real VERIFICADO). 503 `AUTH_PROVIDER_DISABLED` -> el proveedor Email está apagado en Supabase.
 - `ValidationError` al arrancar -> `backend/.env` con valores de ejemplo (`REPLACE_ME`).

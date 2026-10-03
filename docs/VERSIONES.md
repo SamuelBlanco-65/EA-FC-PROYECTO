@@ -109,4 +109,6 @@ Cerrado en esta fase (antes era VERIFICAR):
 - Supabase responde `validation_failed` (400) a un refresh token inválido; se traduce según la operación.
 
 Pendiente / NO PROBADO:
-- `POST /auth/register` con éxito y con confirmación de correo contra el proyecto real: Supabase devolvió 429 `over_email_send_rate_limit` (límite de correos del SMTP integrado). Probado solo con repositorio simulado.
+- Caso EMAIL_CONFIRMATION_REQUIRED (proyecto con "Confirm email" ON): solo probado con repositorio simulado.
+
+Cerrado después: `POST /auth/register` VERIFICADO contra el proyecto real con "Confirm email" OFF (con ON, Supabase devolvía 429 `over_email_send_rate_limit` por el SMTP integrado). Con el proveedor Email desactivado, Supabase responde `email_provider_disabled` (400/422) y rompe también el login.
