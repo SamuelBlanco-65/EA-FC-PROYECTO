@@ -4,9 +4,17 @@ Proyecto académico individual. Entrega: 6 de octubre de 2026. Defensa oral indi
 Prioridad absoluta: correcto, estable y EXPLICABLE antes que grande o bonito. Nada de features no pedidas.
 
 ## Al iniciar CADA sesión
-1. Lee `docs/PROGRESS.md` (estado real del proyecto). Si no existe, estás en la Fase 0.
-2. Trabaja SOLO en la fase que te indique el usuario. No adelantes fases.
-3. Al terminar la fase, usa la skill `cerrar-fase`.
+1. Lee `docs/PROGRESS.md` (estado real del proyecto; fases viejas en `docs/progress-archive.md`). Si no existe, estás en la Fase 0.
+2. Comprueba la base: `git status` y, desde `backend/`, `.\venv\Scripts\python.exe -m pytest -m "not integration"`. Si falla algo que PROGRESS.md da por VERIFICADO, díselo al usuario antes de seguir.
+3. Trabaja SOLO en la fase que te indique el usuario. Si dice "Fase N", la definición está en la sección "Fase N" de `PROMPTS.md`: léela de ahí (no dependas de un texto pegado en el chat, puede llegar cortado).
+4. Al terminar la fase, usa la skill `cerrar-fase`. Ese cierre mueve a `docs/progress-archive.md` todo menos las 2 últimas fases de PROGRESS.md.
+
+## Peligros conocidos (aprendidos en fases anteriores)
+- Los tests `-m integration` escriben en el Supabase REAL (el mismo de desarrollo). Deben borrar lo que crean en un `finally`, y cada paso del borrado independiente: si uno falla, los demás deben seguir. Antes de dar una fase por cerrada, comprueba 0 torneos y 0 usuarios `it-*` huérfanos.
+- "Torneo actual" = el creado más recientemente. Un torneo de prueba huérfano cambia el comportamiento de TODOS los endpoints siguientes.
+- Borrar un torneo que ya tiene eventos falla: `match_events.participant_id` no tiene `ON DELETE CASCADE`. Borra primero los `match_events` de sus partidos.
+- Los flujos autenticados se prueban con el TestClient de FastAPI, no con uvicorn: no digas "probado con uvicorn" salvo que se haya hecho.
+- Los fakes de `backend/tests/api/fake_world.py` NO imitan la RLS; lo que decide Postgres se prueba en `tests/integration/`.
 
 ## Arquitectura (regla del profesor: el frontend NUNCA habla con la base de datos)
 ```

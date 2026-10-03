@@ -17,6 +17,8 @@ description: Procedimiento para cerrar una fase del proyecto EA FC: verificar, a
    Cómo probarlo: <comandos exactos para Windows>
    Siguiente paso: ...
    ```
+   Después, deja en PROGRESS.md solo las 2 últimas fases: mueve las más antiguas al FINAL de `docs/progress-archive.md` (sin reescribirlas) y actualiza las dos líneas de estado de la cabecera.
+   Antes de dar la fase por cerrada, si hubo tests de integración: comprueba 0 torneos y 0 usuarios `it-*` huérfanos en Supabase (ver "Peligros conocidos" en CLAUDE.md).
 3. Escribe o actualiza `docs/defense/<modulo>.md` (máx. 1 página) en español:
    - Qué hace y flujo de datos paso a paso (referenciando archivos reales).
    - 2-3 decisiones: por qué así, alternativa descartada, coste.

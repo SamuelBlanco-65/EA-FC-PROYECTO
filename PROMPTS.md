@@ -8,8 +8,8 @@
 5. Abre la carpeta en VS Code, terminal integrada, ejecuta `claude`.
 
 ## B. Cómo trabajar con plan Pro (cuidar el límite de uso)
-- Una fase por sesión. Al terminar una fase: `/clear` y pega el siguiente prompt. El contexto persiste gracias a CLAUDE.md + docs/PROGRESS.md.
-- Si te quedas sin cupo a mitad de fase: al volver, abre sesión nueva y pega: `Lee docs/PROGRESS.md y continúa la fase N donde quedó. Revisa git status primero.`
+- Una fase por sesión. Al terminar una fase: `/clear` y escribe solo: `Ejecuta la Fase N de PROMPTS.md.` (no pegues el bloque: puede llegar cortado). El contexto persiste gracias a CLAUDE.md + docs/PROGRESS.md.
+- Si te quedas sin cupo a mitad de fase: al volver, abre sesión nueva y escribe: `Lee docs/PROGRESS.md y continúa la Fase N de PROMPTS.md donde quedó. Revisa git status primero.`
 - Nunca le pegues los secretos en el chat: tú los escribes en `backend/.env`.
 - Al final de cada fase, LEE la ficha de `docs/defense/`. Ese es tu estudio para la defensa.
 
