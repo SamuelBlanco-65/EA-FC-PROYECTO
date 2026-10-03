@@ -1,7 +1,22 @@
 # Progreso del proyecto
 
-Fases 0-7 cerradas (0 PARCIAL: faltan QR y Expo Go). Siguiente: Fase 8, cuando el usuario la indique.
+Fases 0-8 cerradas (0 PARCIAL: faltan QR y Expo Go; 8 PARCIAL: falta tu prueba en el móvil). Siguiente: Fase 9, cuando el usuario la indique.
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
+
+## Fase 8 – App: base, auth, ruleta, home, tabla, calendario – 2026-10-03
+Estado: PARCIAL (código y backend VERIFICADOS; falta tu prueba en el móvil con Expo Go)
+Hecho (VERIFICADO):
+- Backend: `GET /participants/me` (solo lectura, no inscribe) y `GET /media/crests/{id}` + `/media/players/{id}` (JWT, PNG del bucket privado, ETag/304, `Cache-Control: private`). 348 passed sin integración; `tests/integration/test_app_flow_real.py` 6 passed contra Supabase real. Desplegado en Render y comprobado en la URL pública: login, `/participants/me` 403, `/tournament`, escudo 200 + 304 + anónimo 401, refresh, wss `AUTH_OK` (1,3 s).
+- App: `npx tsc --noEmit` limpio; `npx expo export --platform android` empaqueta (Hermes); lógica pura (`derive.ts`, `validation.ts`, `events.ts`) ejecutada con aserciones. Paquetes con `expo install` (ver `docs/VERSIONES.md`).
+- Hecho: tema desde `design-system.md`, cliente API con refresh en 401, sesión en SecureStore, caché persistida (AsyncStorage), Zustand (sesión/conexión), Login, Registro, Ruleta (Skia+Reanimated, el servidor elige), Home, Tabla, Calendario, Perfil mínimo (solo cerrar sesión), `RealtimeService` + banner, `ClubCrest`/`PlayerAvatar` (expo-image, caché en disco, iniciales).
+- BD: creé a propósito 1 torneo `Torneo de prueba` (DRAFT) para tu prueba; 0 usuarios `it-*` huérfanos.
+No probado / pendiente:
+- NO PROBADO en dispositivo: registro -> ruleta -> home, modo avión (tabla/calendario desde caché: hay que haberlos abierto antes con red), imágenes con `Authorization` en expo-image, WebSocket desde la app, banner, sombras/skew en Android, tiempo de arranque en frío de Render (el cliente espera hasta 60 s).
+- Hex y fuentes del diseño siguen siendo estimaciones (no muestreados). Sin: pestaña Plantilla, botón "Entrar a la sala" (Fase 9), "¿Olvidaste tu contraseña?" (no hay endpoint), confeti. Aún no hay endpoint para crear torneos; la clave secreta de Supabase sigue pendiente de rotar (decisión tuya).
+Decisiones clave: caché de TanStack Query persistida (no copiar datos a Zustand); `/participants/me` aparte de `assign-club`; `/media` con JWT y caché por URL sin token; Home compuesto en cliente con funciones puras (sin `/home`).
+Archivos principales: `mobile/app/**`, `mobile/src/{api,stores,realtime,theme,components,features}`, `backend/app/{api/media.py,services/media_service.py,repositories/media_repository.py}`, `docs/defense/app-base.md`.
+Cómo probarlo (PowerShell): `cd mobile; npx expo start --clear` y abrir con Expo Go (la URL está en `mobile/.env`: `EXPO_PUBLIC_API_URL=https://ea-fc-api.onrender.com`). Tests: `cd backend; .env\Scripts\python.exe -m pytest -m "not integration"`; `cd mobile; npx tsc --noEmit`.
+Siguiente paso: Fase 9 (la define el usuario). Si algo falla en el móvil, dímelo antes.
 
 ## Fase 7 – Despliegue del backend (Render) – 2026-10-03
 Estado: COMPLETA
@@ -20,20 +35,3 @@ Decisiones clave: Render (proceso persistente para el listener; Cloud Run por pe
 Archivos principales: `render.yaml`, `scripts/deploy/check_deploy.py`, `backend/app/api/ws.py`, `backend/app/realtime/events.py`, `docs/architecture/deploy.md`, `docs/defense/deploy.md`.
 Cómo probarlo (PowerShell): `cd backend; .\venv\Scripts\python.exe -m pytest tests\api\test_ws.py` (sin red) y, desde la raíz, `backend\venv\Scripts\python.exe scripts\deploy\check_deploy.py https://ea-fc-api.onrender.com` (si estaba dormido tarda ~25-60 s).
 Siguiente paso: Fase 8 (la define el usuario). La URL pública será `EXPO_PUBLIC_API_URL`.
-
-## Fase 6 – Realtime, WebSocket y bot visitante – 2026-10-03
-Estado: COMPLETA
-Hecho (VERIFICADO):
-- Listener de Supabase Realtime (`realtime/listener.py`, `postgres_changes` de `matches` y `match_events`, clave secreta) arrancado en el lifespan, con supervisor propio: vigila cada 5 s, reconstruye con backoff 1-30 s y tras cada recuperación envía `RESYNC_REQUIRED`. API de `realtime` 2.32.0 comprobada leyendo el código y ejecutando (ver `docs/VERSIONES.md`).
-- `/ws`: AUTH por primer mensaje (5 s), cierres 4401 con razón estable, PING/PONG, cierre al expirar el token. `ConnectionManager` (varios sockets por usuario, timeout 5 s por socket). Traductor puro, 8 eventos pedidos, avisos de partido solo a los 2 jugadores, globales a todos; ráfagas (600 inserts, fecha entera) = 1 evento.
-- Cadena completa contra Supabase real con uvicorn real y clientes `websockets` (`test_realtime_real.py`): torneo, fecha, gol, finalizar, rechazar, resolver, confirmar. Latencia desde que vuelve la respuesta HTTP: 27-330 ms. El tercer jugador y (en gol) el admin no reciben avisos del partido ajeno.
-- `visitor_bot.py` y `simulate_match.py` probados contra uvicorn real (puerto 8001): caso aprobado (CONFIRMED 2-1), disputa + resolución admin (RESOLVED 1-1), `--scenario both` con visitante simulado, reconexión del bot tras parar y reiniciar el servidor.
-- `python -m pytest` (backend): 371 passed (333 sin integración). Mutaciones: público de los avisos y deduplicación hacen fallar tests; la de autenticación se detecta por bloqueo. BD limpia al terminar (0 torneos; usuarios solo admin + participant01..05).
-No probado / pendiente:
-- Recuperación del listener ante una caída REAL de Supabase Realtime: solo con cliente simulado. `RESYNC_REQUIRED` no es de los 8 pedidos: lo añadí yo (sin él un cliente conectado se queda con datos viejos).
-- Los admin no reciben `MATCH_DISPUTED`/eventos de partido (decisión para la fase de admin). Espejo `mobile/src/realtime/events.ts`: pendiente (Fase 8). wss/HTTPS: Fase 7.
-- Seguía sin existir endpoint para CREAR el torneo (hoy SQL), `FINISHED` nunca se alcanza, y `/media/...` sin implementar. Un uvicorn `--reload` tuyo seguía en el puerto 8000 (no lo toqué; mis pruebas usaron el 8001).
-Decisiones clave: Realtime en vez de emitir tras mutar; audiencia aprendida de las filas (la consulta REST por aviso costaba ~1,4 s); el WebSocket solo notifica.
-Archivos principales: `backend/app/realtime/{events,translator,dispatcher,audience,connection_manager,listener,hub}.py`, `backend/app/api/ws.py`, `backend/app/repositories/audience_repository.py`, `scripts/demo/{visitor_bot,simulate_match,_common}.py`, `backend/tests/{realtime,api/test_ws.py,integration/test_realtime_real.py}`, `docs/architecture/realtime.md`, `docs/defense/realtime.md`.
-Cómo probarlo (PowerShell): `cd backend; .\venv\Scripts\python.exe -m pytest tests\realtime tests\api\test_ws.py` (sin red) y `.\venv\Scripts\python.exe -m pytest tests\integration\test_realtime_real.py -s` (Supabase real, ~40 s). Dos terminales: ver `docs/architecture/realtime.md` (final).
-Siguiente paso: Fase 7 (la define el usuario).
