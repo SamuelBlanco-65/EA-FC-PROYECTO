@@ -93,3 +93,20 @@ Cerrado en esta fase (antes era VERIFICAR):
 - VERIFICADO: supabase-py 2.32.0 funciona con las claves nuevas `sb_publishable_...` / `sb_secret_...` (login de usuarios, lecturas con JWT, escrituras y `rpc` con la clave secreta en `scripts/db/test_rls.py`).
 - VERIFICADO: la publicación `supabase_realtime` existe y ya contiene `matches` y `match_events` (`pg_publication_tables`). Se añadieron con `ALTER PUBLICATION ... ADD TABLE` (SQL estándar de Postgres; NO consulté la página de Supabase en esta fase). La ENTREGA de eventos al listener sigue NO PROBADA (fase de realtime).
 - Conexión: la `DATABASE_URL` usa la Session pooler (puerto 5432); la conexión directa es solo IPv6.
+
+## Fase 2 – Autenticación (2026-10-03)
+
+| Paquete | Versión | Nota |
+|---|---|---|
+| PyJWT (`PyJWKClient`) | 2.15.1 | Validación local del JWT con la clave pública del proyecto |
+| pydantic-settings | 2.15.0 | Configuración desde `backend/.env` |
+| supabase (supabase-py) | 2.32.0 | Auth (`sign_up`, `sign_in_with_password`, `refresh_session`) y PostgREST con el JWT del usuario |
+
+Cerrado en esta fase (antes era VERIFICAR):
+- Método de validación del JWT elegido: JWKS (`{SUPABASE_URL}/auth/v1/.well-known/jwks.json`) con `PyJWKClient`, caché de 300 s. Solo se aceptan `ES256` y `RS256` (HS256 y `none` se rechazan: evita el ataque de confusión de algoritmo). Se exigen `exp`, `sub`, `aud="authenticated"`, `iss="{SUPABASE_URL}/auth/v1"` y `role="authenticated"`; margen de reloj 10 s. VERIFICADO con tokens reales del proyecto (ES256) y con tokens falsificados en `backend/tests/`. Descartado: `auth.get_claims()` / consultar a Auth en cada request (otra ida y vuelta de red por request; su comportamiento exacto no se comprobó).
+- El rol sale de `profiles` (leído con el JWT del propio usuario, RLS `profiles_select_own`), nunca del token ni del cliente. VERIFICADO: el mismo token pasa de 403 a 200 al promover al usuario en la BD.
+- supabase-py reescribe el encabezado `Authorization` de su cliente al iniciar sesión (evento SIGNED_IN), por eso se crea un cliente NUEVO por operación de Auth. Observado en el código fuente de la librería.
+- Supabase responde `validation_failed` (400) a un refresh token inválido; se traduce según la operación.
+
+Pendiente / NO PROBADO:
+- `POST /auth/register` con éxito y con confirmación de correo contra el proyecto real: Supabase devolvió 429 `over_email_send_rate_limit` (límite de correos del SMTP integrado). Probado solo con repositorio simulado.

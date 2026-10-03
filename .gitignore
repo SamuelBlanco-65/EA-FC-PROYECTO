@@ -36,3 +36,6 @@ Thumbs.db
 
 # Claude Code local state
 .claude/settings.local.json
+
+# Demo account passwords (local only)
+scripts/demo/demo.env

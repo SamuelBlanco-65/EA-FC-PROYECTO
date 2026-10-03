@@ -1,6 +1,25 @@
 # Progreso del proyecto
 
-Fase actual: 1 completada. Fase 0 sigue PARCIAL en dos comprobaciones manuales (QR y Expo Go). Siguiente: Fase 2 (cuando el usuario la indique).
+Fase actual: 2 completada (register NO PROBADO contra Supabase real). Fase 0 sigue PARCIAL en dos comprobaciones manuales (QR y Expo Go). Siguiente: Fase 3 (cuando el usuario la indique).
+
+## Fase 2 – Autenticación – 2026-10-03
+Estado: COMPLETA salvo `/auth/register` con éxito real (NO PROBADO)
+Hecho (VERIFICADO):
+- Config, errores `{"error":{code,message,details}}`, logging con redacción de tokens/claves, CORS y capas (`core`, `domain`, `schemas`, `repositories`, `services`, `api`).
+- `POST /auth/login`, `/auth/refresh`, `GET /me` contra el Supabase real y con uvicorn real; `/docs` lista las 5 rutas. Login de `participant01` y `admin` correcto; contraseña mala -> 401; el log no contiene ningún token.
+- `get_current_user` (JWKS ES256) y `require_admin` (rol desde `profiles`): 401 sin token, 401 token inválido, 403 participante, 200 admin; también expirado, firma ajena, iss/aud erróneos, HS256 y `alg=none`.
+- `python -m pytest`: 47 passed, 1 skipped. Cuentas demo creadas: admin + participant01..05.
+No probado / pendiente:
+- `/auth/register` éxito y EMAIL_CONFIRMATION_REQUIRED: Supabase da 429 `over_email_send_rate_limit`. Solo probado con repositorio simulado. Decisión del usuario: desactivar "Confirm email", registrar por API admin, o SMTP propio.
+- Sin límite de intentos de login propio (solo el de Supabase). Una consulta extra a `profiles` por request autenticado (sin caché).
+Decisiones clave: validación local por JWKS (sin llamar a Auth por request); rol desde `profiles` y no del token; cliente Auth nuevo por operación; el rol nunca se acepta en el registro.
+Archivos principales: `backend/app/core/{config,errors,logging,security,supabase_clients}.py`, `backend/app/api/{deps,auth,me}.py`, `backend/app/services/auth_service.py`, `backend/app/repositories/{auth,profile}_repository.py`, `scripts/demo/create_users.py`, `docs/defense/auth.md`.
+Cómo probarlo (PowerShell, desde la raíz del repo):
+- `cd backend; .\venv\Scripts\python.exe -m pytest` (añade `-m "not integration"` para saltar Supabase real)
+- `.\backend\venv\Scripts\python.exe scripts\demo\create_users.py 5` (contraseñas en `scripts\demo\demo.env`, ignorado por git)
+- `cd backend; .\venv\Scripts\python.exe -m uvicorn app.main:app --port 8000` y abrir http://localhost:8000/docs -> `/auth/login` con `participant01@example.com`
+Siguiente paso: Fase 3 (la define el usuario).
+
 
 ## Fase 1 – Base de datos – 2026-10-03
 Estado: COMPLETA
