@@ -8,7 +8,7 @@ from app.core.supabase_clients import user_postgrest
 from app.domain.match import Player
 from app.repositories._postgrest import upstream_error
 
-COLUMNS = "id,club_id,name,position,overall_rating,age,nationality,shirt_number"
+COLUMNS = "id,club_id,name,position,overall_rating,age,nationality,shirt_number,pace,shooting,passing,dribbling,defending,physical"
 
 
 def _player(r: dict) -> Player:
@@ -21,6 +21,12 @@ def _player(r: dict) -> Player:
         age=r["age"],
         nationality=r["nationality"],
         shirt_number=r["shirt_number"],
+        pace=r["pace"],
+        shooting=r["shooting"],
+        passing=r["passing"],
+        dribbling=r["dribbling"],
+        defending=r["defending"],
+        physical=r["physical"],
     )
 
 
