@@ -5,12 +5,12 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { isApiError } from '@/api/errors';
 import { Button } from '@/components/Button';
-import { Eyebrow } from '@/components/Card';
+import { Card } from '@/components/Card';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { useRegister } from '@/features/auth/useAuth';
 import { emailError, nameError, passwordError, passwordStrength } from '@/features/auth/validation';
-import { colors, fonts, type } from '@/theme';
+import { palette, typeV2 } from '@/theme';
 
 interface ServerErrors {
   email?: string;
@@ -54,6 +54,7 @@ export default function Register() {
     confirm: touched.confirm && confirm !== password ? 'Las contraseñas no coinciden' : null,
   };
   const strength = passwordStrength(password);
+  const meterColor = strength.level >= 3 ? palette.positive : palette.cardYellow;
   const valid = !nameError(name) && !emailError(email) && !passwordError(password) && confirm === password;
 
   const submit = () => {
@@ -64,19 +65,20 @@ export default function Register() {
   return (
     <Screen banner={false} bottomInset>
       <Pressable onPress={() => router.back()} style={styles.back} accessibilityRole="button" hitSlop={12}>
-        <Feather name="chevron-left" size={26} color={colors.textPrimary} />
+        <Feather name="chevron-left" size={26} color={palette.paper} />
         <Text style={styles.backText}>Volver</Text>
       </Pressable>
 
-      <Eyebrow>Nuevo jugador</Eyebrow>
       <Text style={styles.title}>Crea tu cuenta</Text>
       <Text style={styles.subtitle}>Únete al torneo y sortea tu club.</Text>
 
       {remote.form ? (
-        <View style={styles.formError} accessibilityRole="alert">
-          <Feather name="alert-circle" size={22} color={colors.danger} />
-          <Text style={styles.formErrorText}>{remote.form}</Text>
-        </View>
+        <Card variant="danger" style={styles.formError}>
+          <Feather name="alert-circle" size={22} color={palette.dangerText} />
+          <Text style={styles.formErrorText} accessibilityRole="alert">
+            {remote.form}
+          </Text>
+        </Card>
       ) : null}
 
       <View style={styles.form}>
@@ -137,12 +139,10 @@ export default function Register() {
             <View style={styles.meter}>
               <View style={styles.segments}>
                 {[1, 2, 3, 4].map((i) => (
-                  <View key={i} style={[styles.segment, i <= strength.level && styles.segmentOn]} />
+                  <View key={i} style={[styles.segment, i <= strength.level && { backgroundColor: meterColor }]} />
                 ))}
               </View>
-              <Text style={[styles.strength, strength.level >= 3 ? { color: colors.accent } : { color: colors.warning }]}>
-                {strength.label}
-              </Text>
+              <Text style={[styles.strength, { color: meterColor }]}>{strength.label}</Text>
             </View>
           ) : null}
         </View>
@@ -181,29 +181,18 @@ export default function Register() {
 
 const styles = StyleSheet.create({
   back: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', marginBottom: 24 },
-  backText: { ...type.bodyStrong, color: colors.textPrimary },
-  title: { ...type.titleHero, color: colors.textPrimary, marginTop: 8 },
-  subtitle: { ...type.body, color: colors.textSecondary, marginTop: 4, marginBottom: 24 },
-  formError: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 14,
-    borderRadius: 18,
-    borderWidth: 1.5,
-    borderColor: colors.danger,
-    backgroundColor: colors.dangerSoft,
-    marginBottom: 16,
-  },
-  formErrorText: { ...type.bodyStrong, color: '#FF8A96', flex: 1 },
+  backText: { ...typeV2.bodyStrong, color: palette.paper },
+  title: { ...typeV2.titleScreen, color: palette.paper },
+  subtitle: { ...typeV2.body, color: palette.textSecondary, marginTop: 4, marginBottom: 24 },
+  formError: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 20, marginBottom: 16 },
+  formErrorText: { ...typeV2.bodyStrong, color: palette.dangerText, flex: 1 },
   form: { gap: 16 },
   meter: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 10 },
   segments: { flex: 1, flexDirection: 'row', gap: 8 },
-  segment: { flex: 1, height: 4, borderRadius: 2, backgroundColor: colors.border },
-  segmentOn: { backgroundColor: colors.accent },
-  strength: { ...type.bodyStrong, fontFamily: fonts.bold, minWidth: 72, textAlign: 'right' },
+  segment: { flex: 1, height: 4, backgroundColor: palette.line },
+  strength: { ...typeV2.bodyStrong, minWidth: 72, textAlign: 'right' },
   submit: { marginTop: 28 },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 32 },
-  footerText: { ...type.body, color: colors.textSecondary },
-  footerLink: { ...type.bodyStrong, fontFamily: fonts.bold, color: colors.accent },
+  footerText: { ...typeV2.body, color: palette.textSecondary },
+  footerLink: { ...typeV2.bodyStrong, color: palette.paper, textDecorationLine: 'underline' },
 });
