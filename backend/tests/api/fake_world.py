@@ -199,7 +199,11 @@ class World:
         self.names[uid] = name
         self.refs[p.id] = ClubRef(p.id, club_id, f"Club {name}", name[:3].upper())
         players = [
-            Player(uuid.uuid4(), club_id, f"{name} Player {i}", "CM", 70 + i, 25, "Land", i + 1) for i in range(12)
+            Player(
+                uuid.uuid4(), club_id, f"{name} Player {i}", "CM", 70 + i, 25, "Land", i + 1,
+                pace=50 + i, shooting=51 + i, passing=52 + i, dribbling=53 + i, defending=54 + i, physical=55 + i,
+            )
+            for i in range(12)
         ]
         self.all_players.update({pl.id: pl for pl in players})
         self.tournament = replace(self.tournament, participant_count=len(self.participants))

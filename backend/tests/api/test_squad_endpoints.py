@@ -16,7 +16,32 @@ def test_squad_is_only_my_club(client, two):
     rows = client.get("/me/squad", headers=two.me.headers).json()
     assert {r["id"] for r in rows} == {str(p.id) for p in two.me.players}
     assert rows[0]["photoUrl"] == f"/media/players/{rows[0]['id']}"
-    assert set(rows[0]) == {"id", "name", "position", "overallRating", "age", "nationality", "shirtNumber", "photoUrl"}
+    assert set(rows[0]) == {
+        "id", "name", "position", "overallRating", "age", "nationality", "shirtNumber", "photoUrl",
+        "pace", "shooting", "passing", "dribbling", "defending", "physical",
+    }
+
+
+def test_squad_exposes_the_six_card_stats(client, two):
+    by_id = {str(p.id): p for p in two.me.players}
+    rows = client.get("/me/squad", headers=two.me.headers).json()
+    for r in rows:
+        p = by_id[r["id"]]
+        assert [r[k] for k in ("pace", "shooting", "passing", "dribbling", "defending", "physical")] == [
+            p.pace, p.shooting, p.passing, p.dribbling, p.defending, p.physical
+        ]
+    assert all(isinstance(r["pace"], int) for r in rows)
+
+
+def test_missing_stats_are_null_not_zero():
+    # A player without stats (the source had none) must serialise as null: 0 would read as a real, terrible rating.
+    import uuid
+
+    from app.domain.match import Player
+    from app.schemas.match import PlayerResponse
+
+    body = PlayerResponse.from_domain(Player(uuid.uuid4(), uuid.uuid4(), "X", "GK", None, None, None, None)).model_dump(by_alias=True)
+    assert all(body[k] is None for k in ("pace", "shooting", "passing", "dribbling", "defending", "physical"))
 
 
 @pytest.mark.parametrize("path", ["/me/squad", "/lineups/me"])

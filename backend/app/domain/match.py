@@ -65,6 +65,15 @@ class Player:
     age: int | None
     nationality: str | None
     shirt_number: int | None
+    # Card stats (1-99, None when the source had none). For goalkeepers the same six columns mean something else
+    # (pace=diving, shooting=handling, passing=kicking, dribbling=reflexes, defending=speed, physical=positioning);
+    # the label is chosen by whoever draws the card, the data is stored as the source gave it.
+    pace: int | None = None
+    shooting: int | None = None
+    passing: int | None = None
+    dribbling: int | None = None
+    defending: int | None = None
+    physical: int | None = None
 
 
 @dataclass(frozen=True)

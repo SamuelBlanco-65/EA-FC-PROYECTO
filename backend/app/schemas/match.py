@@ -119,12 +119,21 @@ class PlayerResponse(CamelModel):
     nationality: str | None
     shirt_number: int | None
     photo_url: str
+    # Card stats, 1-99 or null. Goalkeepers: same columns, other meaning (the app picks the labels from `position`).
+    pace: int | None
+    shooting: int | None
+    passing: int | None
+    dribbling: int | None
+    defending: int | None
+    physical: int | None
 
     @classmethod
     def from_domain(cls, p: Player) -> "PlayerResponse":
         return cls(
             id=p.id, name=p.name, position=p.position, overall_rating=p.overall_rating, age=p.age,
             nationality=p.nationality, shirt_number=p.shirt_number, photo_url=player_photo_url(p.id),
+            pace=p.pace, shooting=p.shooting, passing=p.passing, dribbling=p.dribbling,
+            defending=p.defending, physical=p.physical,
         )
 
 
