@@ -103,6 +103,11 @@ function NextMatch({
         <Eyebrow>Próximo partido · Fecha {match.round}</Eyebrow>
         <MatchStatusBadge status={match.status} compact />
       </View>
+      <Pressable
+        onPress={() => router.push(`/match-detail/${match.id}`)}
+        accessibilityRole="button"
+        accessibilityLabel="Ver detalle del partido"
+      >
       <Scorebug
         variant="hero"
         mine={iAmHome ? 'home' : 'away'}
@@ -121,6 +126,7 @@ function NextMatch({
           score: match.awayScore,
         }}
       />
+      </Pressable>
       <View style={styles.heroNames}>
         <Text style={styles.heroTeams} numberOfLines={2}>
           {match.home.name} vs {match.away.name}

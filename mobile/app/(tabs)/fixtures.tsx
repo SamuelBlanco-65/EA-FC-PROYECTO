@@ -136,12 +136,18 @@ function MyMatch({ match, myId }: { match: Fixture; myId: string }) {
   return (
     <View style={styles.mine}>
       <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : undefined}>Tu partido</Eyebrow>
-      <Scorebug
-        variant="compact"
-        mine={iAmHome ? 'home' : 'away'}
-        home={toTeam(match.home, match.homeScore)}
-        away={toTeam(match.away, match.awayScore)}
-      />
+      <Pressable
+        onPress={() => router.push(`/match-detail/${match.id}`)}
+        accessibilityRole="button"
+        accessibilityLabel="Ver detalle del partido"
+      >
+        <Scorebug
+          variant="compact"
+          mine={iAmHome ? 'home' : 'away'}
+          home={toTeam(match.home, match.homeScore)}
+          away={toTeam(match.away, match.awayScore)}
+        />
+      </Pressable>
       <MatchStatusBadge status={match.status} />
       {canEnterRoom(match.status) ? (
         <Button label="Entrar a la sala" icon="log-in" onPress={() => router.push(`/match/${match.id}`)} />
@@ -151,13 +157,15 @@ function MyMatch({ match, myId }: { match: Fixture; myId: string }) {
 }
 
 function MatchRow({ match }: { match: Fixture }) {
+  const router = useRouter();
   const showScore = match.homeScore !== null && match.awayScore !== null;
   const homeScore = match.homeScore as number;
   const awayScore = match.awayScore as number;
   return (
-    <View
-      style={styles.row}
-      accessible
+    <Pressable
+      onPress={() => router.push(`/match-detail/${match.id}`)}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
       accessibilityLabel={
         showScore ? `${match.home.name} ${homeScore}, ${match.away.name} ${awayScore}` : `${match.home.name} contra ${match.away.name}`
       }
@@ -181,8 +189,11 @@ function MatchRow({ match }: { match: Fixture }) {
           <ClubCrest crestUrl={match.away.crestUrl} name={match.away.name} size={28} />
         </View>
       </View>
-      <MatchStatusBadge status={match.status} compact />
-    </View>
+      <View style={styles.badgeRow}>
+        <MatchStatusBadge status={match.status} compact />
+        <Feather name="chevron-right" size={18} color={palette.textSecondary} />
+      </View>
+    </Pressable>
   );
 }
 
@@ -232,6 +243,8 @@ const styles = StyleSheet.create({
   roundState: { ...typeV2.caption, color: palette.textSecondary },
   mine: { gap: 12, marginBottom: 24 },
   row: { paddingVertical: 12, gap: 8, borderBottomWidth: 1, borderBottomColor: palette.line },
+  rowPressed: { backgroundColor: palette.panel },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rowMain: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   team: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   teamHome: { justifyContent: 'flex-start' },
