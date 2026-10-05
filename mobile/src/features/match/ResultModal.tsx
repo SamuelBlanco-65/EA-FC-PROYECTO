@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { FixtureTeam } from '@/api/types';
 import { Button } from '@/components/Button';
 import { Scorebug } from '@/components/Scorebug';
+import { tapLight } from '@/haptics';
 import { clubColor, palette, radius, typeV2 } from '@/theme';
 
 interface Props {
@@ -63,7 +64,10 @@ export function ResultModal({ visible, home, away, homeScore, awayScore, busy, o
               icon="check"
               loading={busy === 'confirm'}
               disabled={blocked}
-              onPress={onConfirm}
+              onPress={() => {
+                tapLight();
+                onConfirm();
+              }}
               style={styles.button}
             />
             <Button
@@ -72,7 +76,10 @@ export function ResultModal({ visible, home, away, homeScore, awayScore, busy, o
               variant="secondary"
               loading={busy === 'reject'}
               disabled={blocked}
-              onPress={onReject}
+              onPress={() => {
+                tapLight();
+                onReject();
+              }}
               style={styles.button}
             />
           </View>

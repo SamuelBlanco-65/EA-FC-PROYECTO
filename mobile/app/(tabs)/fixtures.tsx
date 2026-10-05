@@ -2,6 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import type { Fixture, StandingRow } from '@/api/types';
 import { Button } from '@/components/Button';
@@ -60,11 +61,17 @@ export default function Fixtures() {
               </Text>
             </View>
 
-            {mine && myId ? <MyMatch match={mine} myId={myId} /> : null}
+            {mine && myId ? (
+              <Animated.View entering={FadeInDown.duration(220)}>
+                <MyMatch match={mine} myId={myId} />
+              </Animated.View>
+            ) : null}
 
             <View>
-              {others.map((m) => (
-                <MatchRow key={m.id} match={m} />
+              {others.map((m, i) => (
+                <Animated.View key={m.id} entering={i < 5 ? FadeInDown.duration(220).delay((i + 1) * 40) : undefined}>
+                  <MatchRow match={m} />
+                </Animated.View>
               ))}
               {restingIn(selected.matches, standings.data ?? []).map((row) => (
                 <RestRow key={row.participantId} row={row} />

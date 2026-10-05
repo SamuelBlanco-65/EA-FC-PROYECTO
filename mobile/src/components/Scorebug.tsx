@@ -1,4 +1,6 @@
+import { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TextStyle, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { palette, radius, typeV2 } from '@/theme';
 
@@ -28,15 +30,24 @@ const SIZES = {
   compact: { height: 56, block: 8, crest: 28, digit: typeV2.scoreBug, cell: 24, code: typeV2.rowCode },
 } as const;
 
-/** Each digit in its own fixed-width cell so the bug does not jump when the score changes (cell widths NOT TESTED on device). */
+/**
+ * Each digit in its own fixed-width cell so the bug does not jump when the score changes (cell widths NOT TESTED on device).
+ * A digit that changes after the first render rolls in from above (250 ms); the first render does not animate.
+ */
 function Digits({ value, style, cell }: { value: number; style: TextStyle; cell: number }) {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
   return (
     <View style={styles.digits}>
       {String(value)
         .split('')
         .map((d, i) => (
           <View key={i} style={{ width: cell, alignItems: 'center' }}>
-            <Text style={[style, { color: palette.paper }]}>{d}</Text>
+            <Animated.Text key={d} entering={mounted.current ? FadeInDown.duration(250) : undefined} style={[style, { color: palette.paper }]}>
+              {d}
+            </Animated.Text>
           </View>
         ))}
     </View>

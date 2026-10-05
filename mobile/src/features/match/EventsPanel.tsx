@@ -1,5 +1,7 @@
 import { Feather } from '@expo/vector-icons';
+import { useRef } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { Card, Eyebrow } from '@/components/Card';
 import { fontsV2, palette, typeV2 } from '@/theme';
@@ -21,6 +23,8 @@ export function EventsPanel({
   otherColor: string;
   onDismissRejected: (id: string) => void;
 }) {
+  // Events already in the list when the panel opens do not animate; a new one drops in (200 ms).
+  const initialIds = useRef(new Set(events.map((e) => e.id)));
   return (
     <Card style={styles.panel}>
       <View style={styles.header}>
@@ -37,18 +41,38 @@ export function EventsPanel({
         ListEmptyComponent={<Text style={styles.empty}>Aún no hay eventos. Los goles y tarjetas aparecerán aquí.</Text>}
         renderItem={({ item }) => {
           const mine = item.participantId === myParticipantId;
-          return <EventRow event={item} mine={mine} color={mine ? myColor : otherColor} onDismiss={() => onDismissRejected(item.id)} />;
+          return (
+            <EventRow
+              event={item}
+              mine={mine}
+              color={mine ? myColor : otherColor}
+              isNew={!initialIds.current.has(item.id)}
+              onDismiss={() => onDismissRejected(item.id)}
+            />
+          );
         }}
       />
     </Card>
   );
 }
 
-function EventRow({ event, mine, color, onDismiss }: { event: RoomEvent; mine: boolean; color: string; onDismiss: () => void }) {
+function EventRow({
+  event,
+  mine,
+  color,
+  isNew,
+  onDismiss,
+}: {
+  event: RoomEvent;
+  mine: boolean;
+  color: string;
+  isNew: boolean;
+  onDismiss: () => void;
+}) {
   const rejected = event.state === 'rejected';
   const dir = mine ? 'row' : 'row-reverse';
   return (
-    <View style={[styles.row, { flexDirection: dir }, rejected && styles.rowRejected]}>
+    <Animated.View entering={isNew ? FadeInDown.duration(200) : undefined} style={[styles.row, { flexDirection: dir }, rejected && styles.rowRejected]}>
       <View style={[styles.bar, { backgroundColor: color }]} />
       <View style={styles.content}>
         <View style={[styles.main, { flexDirection: dir }]}>
@@ -76,7 +100,7 @@ function EventRow({ event, mine, color, onDismiss }: { event: RoomEvent; mine: b
           </View>
         ) : null}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 

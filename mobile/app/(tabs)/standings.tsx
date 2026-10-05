@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import type { StandingRow } from '@/api/types';
 import { ClubCrest } from '@/components/ClubCrest';
@@ -44,8 +45,10 @@ export default function Standings() {
         ) : (
           <>
             <Header />
-            {rows.map((row) => (
-              <Row key={row.participantId} row={row} mine={row.participantId === participation.data?.participant.id} />
+            {rows.map((row, i) => (
+              <Animated.View key={row.participantId} entering={i < 6 ? FadeInDown.duration(220).delay(i * 40) : undefined}>
+                <Row row={row} mine={row.participantId === participation.data?.participant.id} />
+              </Animated.View>
             ))}
             <Text style={styles.legend}>
               Desempate: PTS, DG y GF. Solo cuentan los partidos confirmados o resueltos.

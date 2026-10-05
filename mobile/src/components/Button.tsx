@@ -1,9 +1,14 @@
 import { Feather } from '@expo/vector-icons';
+import { useState } from 'react';
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
+import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 
 import { metrics, palette, radius, typeV2 } from '@/theme';
 
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const PRESS_MS = 90;
 
 interface ButtonProps {
   label: string;
@@ -16,24 +21,46 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
+/** Scale 0.97 over 90 ms while pressed (design-system-v2.md §8); instant when the system asks for reduced motion. */
+function usePressScale() {
+  const reduce = useReducedMotion();
+  const scale = useSharedValue(1);
+  const [down, setDown] = useState(false);
+  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const to = (value: number) => {
+    scale.value = reduce ? value : withTiming(value, { duration: PRESS_MS });
+  };
+  return {
+    down,
+    animated,
+    handlers: {
+      onPressIn: () => {
+        setDown(true);
+        to(0.97);
+      },
+      onPressOut: () => {
+        setDown(false);
+        to(1);
+      },
+    },
+  };
+}
+
 // Flat v2 buttons (design-system-v2.md §7): no gradient, no glow, no shadow.
 export function Button({ label, onPress, variant = 'primary', loading, disabled, icon, iconRight, style }: ButtonProps) {
   const inactive = !!(loading || disabled);
   const handlePress = inactive ? undefined : onPress;
+  const press = usePressScale();
 
   if (variant === 'primary') {
     return (
-      <Pressable
+      <AnimatedPressable
         onPress={handlePress}
+        {...press.handlers}
         disabled={inactive}
         accessibilityRole="button"
         accessibilityState={{ disabled: inactive, busy: !!loading }}
-        style={({ pressed }) => [
-          styles.primary,
-          inactive ? styles.primaryInactive : pressed && styles.primaryPressed,
-          pressed && !inactive && styles.pressed,
-          style,
-        ]}
+        style={[styles.primary, inactive ? styles.primaryInactive : press.down && styles.primaryPressed, style, press.animated]}
       >
         <Content
           label={label}
@@ -42,28 +69,23 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
           icon={icon}
           iconRight={iconRight}
         />
-      </Pressable>
+      </AnimatedPressable>
     );
   }
 
   const isDanger = variant === 'dangerOutline';
   const color = inactive ? palette.textTertiary : isDanger ? palette.dangerText : palette.paper;
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={handlePress}
+      {...press.handlers}
       disabled={inactive}
       accessibilityRole="button"
       accessibilityState={{ disabled: inactive, busy: !!loading }}
-      style={({ pressed }) => [
-        styles.secondary,
-        isDanger && styles.dangerOutline,
-        inactive && styles.secondaryInactive,
-        pressed && !inactive && styles.pressed,
-        style,
-      ]}
+      style={[styles.secondary, isDanger && styles.dangerOutline, inactive && styles.secondaryInactive, style, press.animated]}
     >
       <Content label={label} color={color} loading={loading} icon={icon} iconRight={iconRight} />
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -110,5 +132,4 @@ const styles = StyleSheet.create({
   secondaryInactive: { borderColor: palette.line },
   dangerOutline: { borderColor: 'rgba(229,56,76,0.5)' },
   content: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  pressed: { transform: [{ scale: 0.97 }] },
 });

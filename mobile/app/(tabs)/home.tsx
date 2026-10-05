@@ -1,10 +1,12 @@
 import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { isApiError } from '@/api/errors';
 import type { Fixture, StandingRow, Tournament } from '@/api/types';
 import { Button } from '@/components/Button';
+import { CountUp } from '@/components/CountUp';
 import { Eyebrow } from '@/components/Card';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
@@ -53,9 +55,15 @@ export default function Home() {
       <QueryBoundary queries={queries} skeleton={<HomeSkeleton />}>
         {participation.data && tournament.data && standings.data && fixtures.data ? (
           <View style={styles.stack}>
-            <NextMatch tournament={tournament.data} fixtures={fixtures.data} participantId={participation.data.participant.id} />
-            <StatsLine row={myStanding(standings.data, participation.data.participant.id)} />
-            <RoundsBar tournament={tournament.data} fixtures={fixtures.data} />
+            <Animated.View entering={FadeInDown.duration(220)}>
+              <NextMatch tournament={tournament.data} fixtures={fixtures.data} participantId={participation.data.participant.id} />
+            </Animated.View>
+            <Animated.View entering={FadeInDown.duration(220).delay(40)}>
+              <StatsLine row={myStanding(standings.data, participation.data.participant.id)} />
+            </Animated.View>
+            <Animated.View entering={FadeInDown.duration(220).delay(80)}>
+              <RoundsBar tournament={tournament.data} fixtures={fixtures.data} />
+            </Animated.View>
           </View>
         ) : null}
       </QueryBoundary>
@@ -140,7 +148,15 @@ function StatsLine({ row }: { row: StandingRow | null }) {
       accessibilityLabel={row ? `Posición ${row.position}, ${summary}. Ver tabla` : 'Ver tabla'}
     >
       <Text style={[typeV2.statBig, styles.position]}>{row ? `#${row.position}` : '-'}</Text>
-      <Text style={styles.statsText}>{summary}</Text>
+      <Text style={styles.statsText}>
+        {row ? (
+          <>
+            <CountUp id="home-points" value={row.points} /> PTS · {formatDifference(row.goalDifference)} DG
+          </>
+        ) : (
+          summary
+        )}
+      </Text>
       <Feather name="chevron-right" size={20} color={palette.textSecondary} />
     </Pressable>
   );

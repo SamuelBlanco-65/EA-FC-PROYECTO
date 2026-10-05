@@ -21,6 +21,7 @@ import { lastMinute, liveScore, mergeEvents, mySide, tally } from '@/features/ma
 import { useMatch, useMatchAction, useMySquad } from '@/features/match/hooks';
 import { useLandscapeLock } from '@/features/match/useLandscapeLock';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
+import { tapLight } from '@/haptics';
 import { eventQueue, flushQueue, useQueueStore } from '@/offline/queue';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { clubColor, palette, typeV2 } from '@/theme';
@@ -124,6 +125,7 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
       return;
     }
     setPicking(null);
+    tapLight();
     void flushQueue();
   };
 

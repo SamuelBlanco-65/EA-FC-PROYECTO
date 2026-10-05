@@ -44,7 +44,7 @@ export default function RootLayout() {
         >
           <Runtime />
           <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.ink }, animation: 'fade' }} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.ink }, animation: 'slide_from_right' }} />
         </PersistQueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
