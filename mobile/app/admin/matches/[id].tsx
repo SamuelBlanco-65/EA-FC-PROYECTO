@@ -32,7 +32,7 @@ export default function ResolveMatch() {
 function Resolve({ id }: { id: string }) {
   const match = useMatch(id);
   return (
-    <Screen glow="red" bottomInset>
+    <Screen bottomInset>
       <BackHeader label="Administración" title="Resolver partido" fallback="/admin" />
       <QueryBoundary
         queries={[match]}
@@ -84,7 +84,7 @@ function Form({ match }: { match: MatchDetail }) {
     <View style={styles.stack}>
       <Card variant={match.status === 'DISPUTED' ? 'danger' : 'raised'} style={styles.head}>
         <View style={styles.row}>
-          <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : 'info'}>Fecha {match.round}</Eyebrow>
+          <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : undefined}>Fecha {match.round}</Eyebrow>
           <MatchStatusBadge status={match.status} />
         </View>
         <View style={styles.versus}>
@@ -144,7 +144,7 @@ function Form({ match }: { match: MatchDetail }) {
           </View>
           {!valid ? <Text style={[styles.caption, { color: colors.danger }]}>Escribe un entero entre 0 y 99 en cada casilla.</Text> : null}
 
-          <Eyebrow tone="info">Nota (opcional)</Eyebrow>
+          <Eyebrow>Nota (opcional)</Eyebrow>
           <TextInput
             value={note}
             onChangeText={(t) => setNote(t.slice(0, NOTE_MAX))}

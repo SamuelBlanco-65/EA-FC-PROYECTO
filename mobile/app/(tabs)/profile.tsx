@@ -17,7 +17,7 @@ export default function Profile() {
   const router = useRouter();
 
   return (
-    <Screen glow="blue">
+    <Screen>
       <Eyebrow>Cuenta</Eyebrow>
       <Text style={styles.title}>Perfil</Text>
       <Card style={styles.card}>

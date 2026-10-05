@@ -85,7 +85,7 @@ export default function Roulette() {
 
   const leagues = Object.keys(leagueColors);
   return (
-    <Screen glow="blue" scroll={false} banner={false} bottomInset>
+    <Screen scroll={false} banner={false} bottomInset>
       <View style={styles.header}>
         <View style={styles.pill}>
           <Text style={styles.pillText}>SORTEO ÚNICO</Text>
@@ -123,7 +123,7 @@ export default function Roulette() {
 
 function Result({ club, onContinue }: { club: Club; onContinue: () => void }) {
   return (
-    <Screen glow="green" scroll={false} banner={false} bottomInset>
+    <Screen scroll={false} banner={false} bottomInset>
       <View style={styles.header}>
         <View style={[styles.pill, styles.pillDone]}>
           <Text style={[styles.pillText, { color: colors.accent }]}>SORTEO COMPLETADO</Text>

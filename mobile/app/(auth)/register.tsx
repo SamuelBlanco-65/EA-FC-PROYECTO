@@ -62,7 +62,7 @@ export default function Register() {
   };
 
   return (
-    <Screen glow="blue" banner={false} bottomInset>
+    <Screen banner={false} bottomInset>
       <Pressable onPress={() => router.back()} style={styles.back} accessibilityRole="button" hitSlop={12}>
         <Feather name="chevron-left" size={26} color={colors.textPrimary} />
         <Text style={styles.backText}>Volver</Text>

@@ -82,4 +82,5 @@ export const typeV2 = {
   caption: { fontFamily: fontsV2.regular, fontSize: 13, lineHeight: 18 },
   button: { fontFamily: fontsV2.display, fontSize: 20, lineHeight: 24, letterSpacing: 0.5, textTransform: 'uppercase' },
   tabLabel: { fontFamily: fontsV2.semibold, fontSize: 12, lineHeight: 16 },
+  badge: { fontFamily: fontsV2.semibold, fontSize: 13, lineHeight: 16 },
 } satisfies Record<string, TextStyle>;

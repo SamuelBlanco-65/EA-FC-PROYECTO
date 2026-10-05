@@ -19,7 +19,7 @@ export function EventsPanel({
   return (
     <Card style={styles.panel}>
       <View style={styles.header}>
-        <Eyebrow tone="info">Eventos en vivo</Eyebrow>
+        <Eyebrow>Eventos en vivo</Eyebrow>
         <Text style={styles.count}>
           {events.length} {events.length === 1 ? 'evento' : 'eventos'}
         </Text>

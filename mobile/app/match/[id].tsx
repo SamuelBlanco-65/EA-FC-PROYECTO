@@ -11,7 +11,6 @@ import { errorMessage } from '@/api/errors';
 import type { EventType, MatchDetail } from '@/api/types';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
-import { ScreenBackground } from '@/components/ScreenBackground';
 import { Skeleton } from '@/components/StateViews';
 import { EventModal } from '@/features/match/EventModal';
 import { EventsPanel } from '@/features/match/EventsPanel';
@@ -37,7 +36,6 @@ export default function MatchRoom() {
 
   return (
     <View style={styles.root}>
-      <ScreenBackground glow="green" />
       <StatusBar hidden />
       <QueryBoundary
         queries={[match, participation]}

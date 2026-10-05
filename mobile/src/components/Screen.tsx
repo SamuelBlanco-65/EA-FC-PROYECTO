@@ -2,13 +2,11 @@ import { PropsWithChildren } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, layout } from '@/theme';
+import { metrics, palette } from '@/theme';
 
 import { ConnectionBanner, useBannerMode } from './ConnectionBanner';
-import { ScreenBackground } from './ScreenBackground';
 
 interface ScreenProps {
-  glow?: 'green' | 'blue' | 'red' | 'none';
   /** Scrollable body with the 16 dp side margin. Without it, children fill the screen and lay themselves out. */
   scroll?: boolean;
   onRefresh?: () => void;
@@ -20,7 +18,6 @@ interface ScreenProps {
 }
 
 export function Screen({
-  glow = 'green',
   scroll = true,
   onRefresh,
   refreshing = false,
@@ -37,11 +34,10 @@ export function Screen({
 
   return (
     <View style={styles.root}>
-      <ScreenBackground glow={glow} />
       {showBanner && mode ? <ConnectionBanner mode={mode} /> : null}
       {scroll ? (
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: layout.screenPadding, paddingTop: topPadding, paddingBottom: bottomPadding }}
+          contentContainerStyle={{ paddingHorizontal: metrics.screenPadding, paddingTop: topPadding, paddingBottom: bottomPadding }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -49,9 +45,9 @@ export function Screen({
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor={colors.accent}
-                colors={[colors.accent]}
-                progressBackgroundColor={colors.surfaceRaised}
+                tintColor={palette.signal}
+                colors={[palette.signal]}
+                progressBackgroundColor={palette.panelRaised}
               />
             ) : undefined
           }
@@ -66,5 +62,5 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
+  root: { flex: 1, backgroundColor: palette.ink },
 });

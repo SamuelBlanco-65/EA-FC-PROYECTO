@@ -100,7 +100,7 @@ export function OpponentPanel({ team, side, tally }: { team: FixtureTeam; side: 
   return (
     <Card variant="dashed" style={styles.panel}>
       <View style={styles.opponentHeader}>
-        <Eyebrow tone="info">Oponente</Eyebrow>
+        <Eyebrow>Oponente</Eyebrow>
         <View style={styles.readOnly}>
           <Feather name="lock" size={13} color={colors.textSecondary} />
           <Text style={styles.readOnlyText}>Solo lectura</Text>

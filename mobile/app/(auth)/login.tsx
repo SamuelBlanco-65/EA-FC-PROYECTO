@@ -31,7 +31,7 @@ export default function Login() {
   const wrong = login.isError;
 
   return (
-    <Screen glow={wrong ? 'red' : 'green'} banner={false} bottomInset>
+    <Screen banner={false} bottomInset>
       <View style={styles.logo}>
         <Logo />
       </View>

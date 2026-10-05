@@ -39,7 +39,7 @@ export default function Home() {
     user?.role === 'admin' && isApiError(participation.error) && participation.error.code === 'NOT_A_PARTICIPANT';
   if (adminNotPlaying) {
     return (
-      <Screen glow="blue">
+      <Screen>
         <Card variant="dashed" style={styles.waiting}>
           <Feather name="shield" size={28} color={colors.textSecondary} />
           <Text style={styles.waitingTitle}>Eres administrador</Text>
@@ -51,7 +51,7 @@ export default function Home() {
   }
 
   return (
-    <Screen glow="blue" onRefresh={refresh} refreshing={refreshing}>
+    <Screen onRefresh={refresh} refreshing={refreshing}>
       <View style={styles.header}>
         <View style={styles.greetingRow}>
           <LinearGradient colors={[colors.accentGradientTop, colors.accentGradientBottom]} style={styles.mark}>
@@ -235,7 +235,7 @@ function TournamentCard({ tournament, fixtures }: { tournament: Tournament; fixt
   return (
     <Card style={styles.tournament}>
       <View style={styles.matchHeader}>
-        <Eyebrow tone="info">Estado del torneo</Eyebrow>
+        <Eyebrow>Estado del torneo</Eyebrow>
         <View style={styles.statusPill}>
           <Text style={styles.statusPillText}>{TOURNAMENT_LABEL[tournament.status]}</Text>
         </View>

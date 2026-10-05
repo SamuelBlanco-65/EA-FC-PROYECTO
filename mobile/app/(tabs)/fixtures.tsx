@@ -36,7 +36,6 @@ export default function Fixtures() {
 
   return (
     <Screen
-      glow="blue"
       onRefresh={() => [...queries, standings, participation].forEach((q) => void q.refetch())}
       refreshing={refreshing}
     >
@@ -55,7 +54,6 @@ export default function Fixtures() {
       >
         {rounds.length === 0 || !selected ? (
           <EmptyState
-            icon="calendar"
             title="Calendario sin generar"
             message="Los partidos aparecerán cuando el administrador inicie el torneo."
           />
@@ -79,7 +77,7 @@ export default function Fixtures() {
               ))}
             </View>
             <Card style={styles.legend}>
-              <Eyebrow tone="info">Estados</Eyebrow>
+              <Eyebrow>Estados</Eyebrow>
               <View style={styles.legendBadges}>
                 {LEGEND.map((s) => (
                   <MatchStatusBadge key={s} status={s} compact />

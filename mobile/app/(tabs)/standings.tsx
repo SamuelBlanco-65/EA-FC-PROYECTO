@@ -39,7 +39,7 @@ export default function Standings() {
       : `Sin iniciar · ${rows.length} clubes`;
 
   return (
-    <Screen glow="blue" onRefresh={() => [...queries, participation].forEach((q) => void q.refetch())} refreshing={refreshing}>
+    <Screen onRefresh={() => [...queries, participation].forEach((q) => void q.refetch())} refreshing={refreshing}>
       <Eyebrow>{eyebrow}</Eyebrow>
       <Text style={styles.title}>Tabla de posiciones</Text>
       <View style={[styles.live, !live && styles.liveOff]}>
@@ -60,7 +60,7 @@ export default function Standings() {
         }
       >
         {rows.length === 0 ? (
-          <EmptyState icon="list" title="Aún no hay clubes" message="Cuando los jugadores se inscriban aparecerán aquí." />
+          <EmptyState title="Aún no hay clubes" message="Cuando los jugadores se inscriban aparecerán aquí." />
         ) : (
           <>
             <Card variant="raised" style={styles.table}>

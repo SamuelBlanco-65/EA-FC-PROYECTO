@@ -1,8 +1,7 @@
 import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ActivityIndicator, Pressable, StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { colors, radii, shadows, type } from '@/theme';
+import { metrics, palette, radius, typeV2 } from '@/theme';
 
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
 
@@ -17,34 +16,38 @@ interface ButtonProps {
   style?: StyleProp<ViewStyle>;
 }
 
+// Flat v2 buttons (design-system-v2.md §7): no gradient, no glow, no shadow.
 export function Button({ label, onPress, variant = 'primary', loading, disabled, icon, iconRight, style }: ButtonProps) {
   const inactive = !!(loading || disabled);
   const handlePress = inactive ? undefined : onPress;
 
   if (variant === 'primary') {
-    const textColor = inactive ? 'rgba(242,244,255,0.8)' : colors.textOnAccent;
     return (
       <Pressable
         onPress={handlePress}
         disabled={inactive}
         accessibilityRole="button"
         accessibilityState={{ disabled: inactive, busy: !!loading }}
-        style={({ pressed }) => [styles.primaryWrap, !inactive && shadows.glowAccent, pressed && styles.pressed, style]}
+        style={({ pressed }) => [
+          styles.primary,
+          inactive ? styles.primaryInactive : pressed && styles.primaryPressed,
+          pressed && !inactive && styles.pressed,
+          style,
+        ]}
       >
-        {inactive ? (
-          <View style={[styles.primary, { backgroundColor: colors.accentDisabled }]}>
-            <Content label={label} color={textColor} loading={loading} icon={icon} iconRight={iconRight} />
-          </View>
-        ) : (
-          <LinearGradient colors={[colors.accentGradientTop, colors.accentGradientBottom]} style={styles.primary}>
-            <Content label={label} color={textColor} icon={icon} iconRight={iconRight} />
-          </LinearGradient>
-        )}
+        <Content
+          label={label}
+          color={inactive ? palette.textTertiary : palette.onSignal}
+          loading={loading}
+          icon={icon}
+          iconRight={iconRight}
+        />
       </Pressable>
     );
   }
 
   const isDanger = variant === 'dangerOutline';
+  const color = inactive ? palette.textTertiary : isDanger ? palette.dangerText : palette.paper;
   return (
     <Pressable
       onPress={handlePress}
@@ -54,18 +57,12 @@ export function Button({ label, onPress, variant = 'primary', loading, disabled,
       style={({ pressed }) => [
         styles.secondary,
         isDanger && styles.dangerOutline,
-        inactive && styles.dim,
-        pressed && styles.pressed,
+        inactive && styles.secondaryInactive,
+        pressed && !inactive && styles.pressed,
         style,
       ]}
     >
-      <Content
-        label={label}
-        color={isDanger ? colors.danger : colors.textPrimary}
-        loading={loading}
-        icon={icon}
-        iconRight={iconRight}
-      />
+      <Content label={label} color={color} loading={loading} icon={icon} iconRight={iconRight} />
     </Pressable>
   );
 }
@@ -86,26 +83,32 @@ function Content({
   return (
     <View style={styles.content}>
       {loading ? <ActivityIndicator size={20} color={color} /> : icon ? <Feather name={icon} size={22} color={color} /> : null}
-      <Text style={[type.button, { color }]}>{label}</Text>
+      <Text style={[typeV2.button, { color }]}>{label}</Text>
       {iconRight && !loading ? <Feather name={iconRight} size={22} color={color} /> : null}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  primaryWrap: { borderRadius: radii.button },
-  primary: { height: 60, borderRadius: radii.button, alignItems: 'center', justifyContent: 'center' },
-  secondary: {
-    height: 56,
-    borderRadius: radii.button,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+  primary: {
+    height: metrics.buttonHeight,
+    borderRadius: radius.button,
+    backgroundColor: palette.signal,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dangerOutline: { backgroundColor: colors.dangerSoft, borderColor: colors.danger },
+  primaryPressed: { backgroundColor: palette.signalPressed },
+  primaryInactive: { backgroundColor: palette.panelRaised },
+  secondary: {
+    height: metrics.buttonSecondaryHeight,
+    borderRadius: radius.button,
+    borderWidth: 1,
+    borderColor: palette.lineStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryInactive: { borderColor: palette.line },
+  dangerOutline: { borderColor: 'rgba(229,56,76,0.5)' },
   content: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  pressed: { opacity: 0.85 },
-  dim: { opacity: 0.6 },
+  pressed: { transform: [{ scale: 0.97 }] },
 });

@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TabButton } from '@/components/TabButton';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, layout } from '@/theme';
+import { metrics, palette } from '@/theme';
 
 // Plantilla (squad) arrives with its own phase: it is not listed until its screen exists.
 export default function TabsLayout() {
@@ -18,7 +18,7 @@ export default function TabsLayout() {
       <View style={styles.slot}>
         <TabSlot />
       </View>
-      <TabList style={[styles.bar, { height: layout.tabBarHeight + insets.bottom, paddingBottom: insets.bottom }]}>
+      <TabList style={[styles.bar, { height: metrics.tabBarHeight + insets.bottom, paddingBottom: insets.bottom }]}>
         <TabTrigger name="home" href="/home" asChild>
           <TabButton label="Inicio" icon="home" />
         </TabTrigger>
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
   slot: { flex: 1 },
   bar: {
     flexDirection: 'row',
-    backgroundColor: colors.bg,
+    backgroundColor: palette.ink,
     borderTopWidth: 1,
-    borderTopColor: colors.border,
+    borderTopColor: palette.line,
   },
 });

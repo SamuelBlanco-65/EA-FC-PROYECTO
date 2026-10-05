@@ -1,45 +1,52 @@
 import { PropsWithChildren } from 'react';
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
-import { colors, radii, shadows, type } from '@/theme';
+import { palette, radius, typeV2 } from '@/theme';
 
 type Variant = 'default' | 'raised' | 'highlight' | 'danger' | 'dashed';
 
+// Flat v2 panel: relief comes from the surface contrast, not from borders or shadows (design-system-v2.md §6).
+// "Mine" (highlight) and "dispute" (danger) are marked with a 4 dp side bar, not with colour fills.
 export function Card({
   variant = 'default',
   style,
   children,
 }: PropsWithChildren<{ variant?: Variant; style?: StyleProp<ViewStyle> }>) {
-  return <View style={[styles.base, variantStyles[variant], style]}>{children}</View>;
-}
-
-/** Section label: 16x4 bar + uppercase text (design-system.md §7). */
-export function Eyebrow({ children, tone = 'accent' }: PropsWithChildren<{ tone?: 'accent' | 'info' | 'danger' }>) {
-  const bar = tone === 'info' ? colors.info : tone === 'danger' ? colors.danger : colors.accent;
+  const bar = variant === 'highlight' ? palette.paper : variant === 'danger' ? palette.cardRed : null;
   return (
-    <View style={styles.eyebrow}>
-      <View style={[styles.bar, { backgroundColor: bar }]} />
-      <Text style={[type.eyebrow, { color: colors.textSecondary }]}>{children}</Text>
+    <View style={[styles.base, variantStyles[variant], style]}>
+      {bar ? <View style={[styles.bar, { backgroundColor: bar }]} /> : null}
+      {children}
     </View>
   );
 }
 
+/** Section label: small uppercase text, no bar (design-system-v2.md §2 rule 7). */
+export function Eyebrow({ children, tone }: PropsWithChildren<{ tone?: 'danger' }>) {
+  return <Text style={[typeV2.label, { color: tone === 'danger' ? palette.dangerText : palette.textSecondary }]}>{children}</Text>;
+}
+
 const styles = StyleSheet.create({
   base: {
-    borderRadius: radii.card,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
+    borderRadius: radius.panel,
+    backgroundColor: palette.panel,
     padding: 16,
   },
-  eyebrow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  bar: { width: 16, height: 4, borderRadius: 2 },
+  bar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 4,
+    borderTopLeftRadius: radius.panel,
+    borderBottomLeftRadius: radius.panel,
+  },
 });
 
 const variantStyles = StyleSheet.create({
   default: {},
-  raised: { backgroundColor: colors.surfaceRaised },
-  highlight: { borderColor: colors.accent, borderWidth: 1.5, ...shadows.glowAccent },
-  danger: { borderColor: colors.danger, backgroundColor: colors.dangerSoft },
-  dashed: { borderStyle: 'dashed', borderColor: colors.borderDashed, backgroundColor: 'transparent', borderWidth: 1.5 },
+  raised: { backgroundColor: palette.panelRaised },
+  highlight: { backgroundColor: palette.panelRaised },
+  danger: {},
+  dashed: { borderStyle: 'dashed', borderColor: palette.lineStrong, backgroundColor: 'transparent', borderWidth: 1.5 },
 });

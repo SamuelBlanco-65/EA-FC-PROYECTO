@@ -41,7 +41,7 @@ function AdminScreen() {
   const refreshing = queries.some((q) => q.isFetching && !q.isPending);
 
   return (
-    <Screen glow="blue" bottomInset onRefresh={() => queries.forEach((q) => void q.refetch())} refreshing={refreshing}>
+    <Screen bottomInset onRefresh={() => queries.forEach((q) => void q.refetch())} refreshing={refreshing}>
       <BackHeader label="Perfil" title="Administración" fallback="/profile" />
       <QueryBoundary
         queries={queries}
@@ -70,7 +70,7 @@ function StatusCard({ tournament, overview }: { tournament: Tournament; overview
   return (
     <Card variant="raised" style={styles.status}>
       <View style={styles.row}>
-        <Eyebrow tone="info">Estado del torneo</Eyebrow>
+        <Eyebrow>Estado del torneo</Eyebrow>
         <View style={styles.pill}>
           <Text style={styles.pillText}>{STATUS_LABEL[tournament.status]}</Text>
         </View>

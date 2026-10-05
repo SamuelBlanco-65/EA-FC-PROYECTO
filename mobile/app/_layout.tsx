@@ -10,7 +10,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CACHE_BUSTER, CACHE_MAX_AGE_MS, persister, queryClient } from '@/api/queryClient';
 import { useAppRuntime } from '@/realtime/useAppRuntime';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, fontAssets } from '@/theme';
+import { fontAssets, palette } from '@/theme';
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -36,7 +36,7 @@ export default function RootLayout() {
   if (!ready) return null;
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: colors.bg }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: palette.ink }}>
       <SafeAreaProvider>
         <PersistQueryClientProvider
           client={queryClient}
@@ -44,7 +44,7 @@ export default function RootLayout() {
         >
           <Runtime />
           <StatusBar style="light" />
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg }, animation: 'fade' }} />
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: palette.ink }, animation: 'fade' }} />
         </PersistQueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

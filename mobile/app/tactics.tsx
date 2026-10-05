@@ -26,7 +26,7 @@ export default function Tactics() {
   const lineup = useMyLineup();
 
   return (
-    <Screen glow="green" scroll={false} bottomInset>
+    <Screen scroll={false} bottomInset>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8} accessibilityRole="button">
           <Feather name="chevron-left" size={26} color={colors.textPrimary} />
