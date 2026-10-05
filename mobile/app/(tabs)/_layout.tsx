@@ -28,6 +28,9 @@ export default function TabsLayout() {
         <TabTrigger name="fixtures" href="/fixtures" asChild>
           <TabButton label="Calendario" icon="calendar" />
         </TabTrigger>
+        <TabTrigger name="squad" href="/squad" asChild>
+          <TabButton label="Plantilla" icon="users" />
+        </TabTrigger>
         <TabTrigger name="profile" href="/profile" asChild>
           <TabButton label="Perfil" icon="user" />
         </TabTrigger>

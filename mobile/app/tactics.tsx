@@ -30,7 +30,7 @@ export default function Tactics() {
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8} accessibilityRole="button">
           <Feather name="chevron-left" size={26} color={palette.paper} />
-          <Text style={styles.backText}>Perfil</Text>
+          <Text style={styles.backText}>Plantilla</Text>
         </Pressable>
         <Text style={styles.title}>Pizarra táctica</Text>
       </View>

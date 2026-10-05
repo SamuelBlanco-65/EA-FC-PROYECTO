@@ -50,9 +50,6 @@ export default function Profile() {
       ) : null}
 
       <View style={styles.actions}>
-        {participation.data ? (
-          <Button label="Pizarra táctica" variant="secondary" icon="target" onPress={() => router.push('/tactics')} />
-        ) : null}
         {user?.role === 'admin' ? (
           <Button label="Administración" variant="secondary" icon="shield" onPress={() => router.push('/admin')} />
         ) : null}
