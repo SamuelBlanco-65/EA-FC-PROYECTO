@@ -2,7 +2,7 @@
 
 Escrito el 2026-10-05 para pasar el contexto a la siguiente sesión. Tokens y componentes: `design-system-v2.md` (léelo primero). Reglas duras y entrega: `PROMPTS.md` → "Fase 12".
 **No hay imágenes v2.** Cada pantalla se rediseña según este documento; las capturas de `design/reference/` (v1) solo sirven para saber qué hay hoy. Si algo no está aquí, pregunta al usuario en lugar de inventar.
-Esfuerzo: S ≈ 2 h, M ≈ medio día, L ≈ un día o más. Todo es ESTIMADO. Nada está implementado ni probado.
+Esfuerzo: S ≈ 2 h, M ≈ medio día, L ≈ un día o más. Todo es ESTIMADO. ACTUALIZADO 2026-10-05: P0-P9 están implementados (Fase 12), sin probar a fondo en el teléfono; la pantalla de Detalle de partido, la pestaña Plantilla y la tarjeta de jugador, que este documento dejaba fuera, se hicieron en la Fase 13 por petición del usuario.
 
 ## 0. Contexto y decisiones tomadas (sesión 2026-10-05)
 - Se hizo una auditoría crítica del v1 (sin código modificado). El usuario eligió la **dirección A** (transmisión de TV: scorebug, cintas de eventos, una sola señal naranja, color de club protagonista).

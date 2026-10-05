@@ -1,6 +1,6 @@
 # Defensa oral – Índice
 
-Detalle por fase en esta carpeta: `database.md`, `auth.md`, `torneo.md`, `scraper.md`, `match.md`, `realtime.md`, `deploy.md`, `offline.md`, `canvas.md`, `app-base.md`, `entorno-y-health.md`. Este archivo es la entrada: arquitectura, un recorrido completo y las preguntas más probables.
+Detalle por fase en esta carpeta: `database.md`, `auth.md`, `torneo.md`, `scraper.md`, `match.md`, `realtime.md`, `deploy.md`, `offline.md`, `canvas.md`, `player-card.md`, `app-base.md`, `entorno-y-health.md`. Este archivo es la entrada: arquitectura, un recorrido completo y las preguntas más probables.
 
 ## 1. Arquitectura en una página
 

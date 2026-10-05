@@ -1,6 +1,6 @@
 # Sistema de diseño v2 – "FC ARENA" · Dirección A: transmisión de TV deportiva
 
-Estado: DECIDIDO (dirección) / PROPUESTO (valores). Escrito el 2026-10-05 tras una auditoría crítica del diseño v1 (sesión de análisis, sin código modificado).
+Estado: DECIDIDO (dirección) / PROPUESTO (valores). IMPLEMENTADO en la Fase 12 (2026-10-05, ramas `redesign-v2` y `plantilla-detalle`); los valores siguen sin validarse en pantalla, ver `docs/PROGRESS.md`. Escrito el 2026-10-05 tras una auditoría crítica del diseño v1 (sesión de análisis, sin código modificado).
 Reemplaza a `design-system.md` (v1) SOLO en la rama de rediseño; v1 queda intacto como historial y respaldo de `master`. Pantalla por pantalla: `screens-v2.md`.
 
 ## 0. Cómo leer este documento
