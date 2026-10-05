@@ -18,7 +18,7 @@ import { buildSlots, type BoardSlot, signature, toPositions } from '@/features/t
 import { Pitch } from '@/features/tactics/Pitch';
 import { PlayerToken } from '@/features/tactics/PlayerToken';
 import { useConnectionStore } from '@/stores/connectionStore';
-import { colors, fonts, layout, type } from '@/theme';
+import { metrics, palette, radius, typeV2 } from '@/theme';
 
 export default function Tactics() {
   const router = useRouter();
@@ -29,7 +29,7 @@ export default function Tactics() {
     <Screen scroll={false} bottomInset>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8} accessibilityRole="button">
-          <Feather name="chevron-left" size={26} color={colors.textPrimary} />
+          <Feather name="chevron-left" size={26} color={palette.paper} />
           <Text style={styles.backText}>Perfil</Text>
         </Pressable>
         <Text style={styles.title}>Pizarra táctica</Text>
@@ -135,7 +135,7 @@ function Board({ squad, saved }: BoardProps) {
                 onMoved={onMoved}
               />
             ))}
-            <FpsMeter />
+            {__DEV__ ? <FpsMeter /> : null}
           </>
         ) : null}
       </View>
@@ -161,29 +161,21 @@ function Board({ squad, saved }: BoardProps) {
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: layout.screenPadding, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 44 },
+  header: { paddingHorizontal: metrics.screenPadding, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 44 },
   back: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  backText: { ...type.label, fontSize: 17, color: colors.textPrimary },
-  title: { ...type.titleScreen, fontSize: 26, lineHeight: 28, color: colors.textPrimary },
-  body: { flex: 1, paddingHorizontal: layout.screenPadding, paddingTop: 12 },
+  backText: { ...typeV2.bodyStrong, color: palette.paper },
+  title: { ...typeV2.titleClub, color: palette.paper },
+  body: { flex: 1, paddingHorizontal: metrics.screenPadding, paddingTop: 12 },
   board: { flex: 1, gap: 12 },
-  tabs: {
-    flexDirection: 'row',
-    padding: 4,
-    gap: 4,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  tab: { flex: 1, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  tabActive: { backgroundColor: colors.accent },
-  tabText: { fontFamily: fonts.displayItalic, fontSize: 20, color: colors.textSecondary },
-  tabTextActive: { color: colors.textOnAccent },
-  field: { flex: 1, borderRadius: 20 },
-  warning: { ...type.caption, color: colors.warning },
-  error: { ...type.caption, color: colors.danger },
+  tabs: { flexDirection: 'row', gap: 8 },
+  tab: { flex: 1, height: 44, borderRadius: radius.button, backgroundColor: palette.panel, alignItems: 'center', justifyContent: 'center' },
+  tabActive: { backgroundColor: palette.paper },
+  tabText: { ...typeV2.button, color: palette.textSecondary },
+  tabTextActive: { color: palette.ink },
+  field: { flex: 1, borderRadius: radius.panel },
+  warning: { ...typeV2.caption, color: palette.cardYellow },
+  error: { ...typeV2.caption, color: palette.dangerText },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  hint: { ...type.body, flex: 1, color: colors.textSecondary },
+  hint: { ...typeV2.caption, flex: 1, color: palette.textSecondary },
   save: { flex: 1.4 },
 });

@@ -22,7 +22,7 @@ import {
 import { useTournament } from '@/features/tournament/hooks';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, fonts, type } from '@/theme';
+import { palette, typeV2 } from '@/theme';
 
 const STATUS_LABEL = { DRAFT: 'En inscripción', ACTIVE: 'En curso', FINISHED: 'Finalizado' } as const;
 
@@ -47,15 +47,16 @@ function AdminScreen() {
         queries={queries}
         skeleton={
           <View style={styles.stack}>
-            <Skeleton height={150} />
-            <Skeleton height={70} />
-            <Skeleton height={160} />
+            <Skeleton height={20} style={styles.skName} />
+            <Skeleton height={56} />
+            <Skeleton height={56} />
+            <Skeleton height={56} />
           </View>
         }
       >
         {tournament.data && matches.data && participants.data ? (
           <View style={styles.stack}>
-            <StatusCard tournament={tournament.data} overview={roundOverview(matches.data, tournament.data.currentRound)} />
+            <Status tournament={tournament.data} overview={roundOverview(matches.data, tournament.data.currentRound)} />
             <Actions tournament={tournament.data} overview={roundOverview(matches.data, tournament.data.currentRound)} />
             <WorkQueue matches={matches.data} />
             <Participants participants={participants.data} max={tournament.data.maxParticipants} />
@@ -66,15 +67,12 @@ function AdminScreen() {
   );
 }
 
-function StatusCard({ tournament, overview }: { tournament: Tournament; overview: RoundOverview }) {
+/** Tournament state as plain text and three figures on one line, no tiles. */
+function Status({ tournament, overview }: { tournament: Tournament; overview: RoundOverview }) {
+  const allClosed = overview.currentTotal > 0 && overview.currentClosed === overview.currentTotal;
   return (
-    <Card variant="raised" style={styles.status}>
-      <View style={styles.row}>
-        <Eyebrow>Estado del torneo</Eyebrow>
-        <View style={styles.pill}>
-          <Text style={styles.pillText}>{STATUS_LABEL[tournament.status]}</Text>
-        </View>
-      </View>
+    <View style={styles.status}>
+      <Text style={styles.stateLabel}>{STATUS_LABEL[tournament.status]}</Text>
       <Text style={styles.tournamentName} numberOfLines={2}>
         {tournament.name}
       </Text>
@@ -84,20 +82,16 @@ function StatusCard({ tournament, overview }: { tournament: Tournament; overview
           label="Fecha activa"
           value={tournament.status === 'DRAFT' ? '-' : overview.totalRounds ? `${tournament.currentRound}/${overview.totalRounds}` : '-'}
         />
-        <Fact
-          label="Cerrados"
-          value={overview.currentTotal ? `${overview.currentClosed}/${overview.currentTotal}` : '-'}
-          accent={overview.currentTotal > 0 && overview.currentClosed === overview.currentTotal}
-        />
+        <Fact label="Cerrados" value={overview.currentTotal ? `${overview.currentClosed}/${overview.currentTotal}` : '-'} good={allClosed} />
       </View>
-    </Card>
+    </View>
   );
 }
 
-function Fact({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
+function Fact({ label, value, good }: { label: string; value: string; good?: boolean }) {
   return (
     <View style={styles.fact}>
-      <Text style={[styles.factValue, accent && { color: colors.accent }]}>{value}</Text>
+      <Text style={[typeV2.statBig, { color: good ? palette.positive : palette.paper }]}>{value}</Text>
       <Text style={styles.factLabel}>{label}</Text>
     </View>
   );
@@ -123,7 +117,7 @@ function Actions({ tournament, overview }: { tournament: Tournament; overview: R
     <View style={styles.stack}>
       {error ? (
         <Card variant="danger" style={styles.errorCard}>
-          <Feather name="alert-triangle" size={20} color={colors.danger} />
+          <Feather name="alert-triangle" size={20} color={palette.dangerText} />
           <Text style={styles.errorText}>{errorMessage(error)}</Text>
         </Card>
       ) : null}
@@ -179,46 +173,40 @@ function WorkQueue({ matches }: { matches: Fixture[] }) {
   const queue = needsAction(matches);
   return (
     <View style={styles.section}>
-      <Eyebrow tone="danger">Partidos pendientes y disputas ({queue.length})</Eyebrow>
+      <Eyebrow tone={queue.length > 0 ? 'danger' : undefined}>Partidos pendientes y disputas ({queue.length})</Eyebrow>
       {queue.length === 0 ? (
-        <Card variant="dashed" style={styles.empty}>
-          <Text style={styles.emptyText}>Nada que resolver por ahora.</Text>
-        </Card>
+        <Text style={styles.emptyText}>Nada que resolver por ahora.</Text>
       ) : (
-        queue.map((m) => (
-          <Pressable
-            key={m.id}
-            onPress={() => router.push(`/admin/matches/${m.id}`)}
-            accessibilityRole="button"
-            style={({ pressed }) => pressed && { opacity: 0.85 }}
-          >
-            <Card variant={m.status === 'DISPUTED' ? 'danger' : 'default'} style={styles.queueRow}>
+        <View>
+          {queue.map((m) => (
+            <Pressable
+              key={m.id}
+              onPress={() => router.push(`/admin/matches/${m.id}`)}
+              accessibilityRole="button"
+              style={({ pressed }) => [styles.queueRow, pressed && styles.queuePressed]}
+            >
+              {m.status === 'DISPUTED' ? <View style={styles.disputeBar} /> : null}
               <View style={styles.row}>
                 <Text style={styles.round}>Fecha {m.round}</Text>
                 <MatchStatusBadge status={m.status} compact />
               </View>
               <View style={styles.versus}>
-                <Team name={m.home.name} crestUrl={m.home.crestUrl} />
-                <Text style={styles.vs}>
-                  {m.homeScore !== null && m.awayScore !== null ? `${m.homeScore} - ${m.awayScore}` : 'VS'}
+                <View style={[styles.team, styles.teamHome]}>
+                  <ClubCrest crestUrl={m.home.crestUrl} name={m.home.name} size={28} />
+                  <Text style={styles.code}>{m.home.shortName}</Text>
+                </View>
+                <Text style={styles.score}>
+                  {m.homeScore !== null && m.awayScore !== null ? `${m.homeScore} : ${m.awayScore}` : 'VS'}
                 </Text>
-                <Team name={m.away.name} crestUrl={m.away.crestUrl} />
+                <View style={[styles.team, styles.teamAway]}>
+                  <Text style={styles.code}>{m.away.shortName}</Text>
+                  <ClubCrest crestUrl={m.away.crestUrl} name={m.away.name} size={28} />
+                </View>
               </View>
-            </Card>
-          </Pressable>
-        ))
+            </Pressable>
+          ))}
+        </View>
       )}
-    </View>
-  );
-}
-
-function Team({ name, crestUrl }: { name: string; crestUrl: string }) {
-  return (
-    <View style={styles.team}>
-      <ClubCrest crestUrl={crestUrl} name={name} size={40} />
-      <Text style={styles.teamName} numberOfLines={2}>
-        {name}
-      </Text>
     </View>
   );
 }
@@ -230,61 +218,55 @@ function Participants({ participants, max }: { participants: AdminParticipant[];
         Participantes ({participants.length}/{max})
       </Eyebrow>
       {participants.length === 0 ? (
-        <Card variant="dashed" style={styles.empty}>
-          <Text style={styles.emptyText}>Todavía no hay inscritos.</Text>
-        </Card>
+        <Text style={styles.emptyText}>Todavía no hay inscritos.</Text>
       ) : (
-        participants.map((p) => (
-          <Card key={p.id} style={styles.participant}>
-            <ClubCrest crestUrl={p.club.crestUrl} name={p.club.name} size={44} />
-            <View style={styles.participantText}>
-              <Text style={styles.participantName} numberOfLines={1}>
-                {p.displayName}
-              </Text>
-              <Text style={styles.participantClub} numberOfLines={1}>
-                {p.club.name}
-              </Text>
+        <View>
+          {participants.map((p) => (
+            <View key={p.id} style={styles.participant}>
+              <ClubCrest crestUrl={p.club.crestUrl} name={p.club.name} size={36} />
+              <View style={styles.participantText}>
+                <Text style={styles.participantName} numberOfLines={1}>
+                  {p.displayName}
+                </Text>
+                <Text style={styles.participantClub} numberOfLines={1}>
+                  {p.club.name}
+                </Text>
+              </View>
             </View>
-          </Card>
-        ))
+          ))}
+        </View>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: 12 },
-  section: { gap: 10, marginTop: 8 },
+  stack: { gap: 16 },
+  section: { gap: 8, marginTop: 8 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  status: { gap: 12 },
-  pill: { backgroundColor: colors.infoSoft, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6 },
-  pillText: { ...type.badge, color: colors.infoText },
-  tournamentName: { ...type.titleCard, color: colors.textPrimary },
-  facts: { flexDirection: 'row', gap: 8 },
-  fact: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderRadius: 14,
-    backgroundColor: colors.surfaceSunken,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  factValue: { ...type.statValue, fontSize: 26, lineHeight: 28, color: colors.textPrimary },
-  factLabel: { ...type.caption, fontFamily: fonts.medium, color: colors.textSecondary },
-  hint: { ...type.caption, color: colors.textSecondary, textAlign: 'center' },
-  errorCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  errorText: { ...type.bodyStrong, color: colors.danger, flex: 1 },
-  empty: { alignItems: 'center', paddingVertical: 20 },
-  emptyText: { ...type.body, color: colors.textSecondary },
-  queueRow: { gap: 12 },
-  round: { ...type.eyebrow, color: colors.textSecondary },
-  versus: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  team: { flex: 1, alignItems: 'center', gap: 6 },
-  teamName: { ...type.caption, fontFamily: fonts.bold, color: colors.textPrimary, textAlign: 'center' },
-  vs: { ...type.titleCard, color: colors.textPrimary, paddingHorizontal: 8 },
-  participant: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 12 },
+  skName: { width: 200 },
+  status: { gap: 8 },
+  stateLabel: { ...typeV2.label, color: palette.textSecondary },
+  tournamentName: { ...typeV2.titleClub, color: palette.paper },
+  facts: { flexDirection: 'row', gap: 8, borderTopWidth: 1, borderBottomWidth: 1, borderColor: palette.line, paddingVertical: 12 },
+  fact: { flex: 1, gap: 2 },
+  factLabel: { ...typeV2.caption, color: palette.textSecondary },
+  hint: { ...typeV2.caption, color: palette.textSecondary, textAlign: 'center' },
+  errorCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 20 },
+  errorText: { ...typeV2.bodyStrong, color: palette.dangerText, flex: 1 },
+  emptyText: { ...typeV2.body, color: palette.textSecondary },
+  queueRow: { paddingVertical: 12, paddingLeft: 12, gap: 8, borderBottomWidth: 1, borderBottomColor: palette.line },
+  queuePressed: { backgroundColor: palette.panel },
+  disputeBar: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: palette.cardRed },
+  round: { ...typeV2.label, color: palette.textSecondary },
+  versus: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  team: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  teamHome: { justifyContent: 'flex-start' },
+  teamAway: { justifyContent: 'flex-end' },
+  code: { ...typeV2.rowCode, color: palette.paper },
+  score: { ...typeV2.statBig, color: palette.paper, minWidth: 72, textAlign: 'center' },
+  participant: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: palette.line },
   participantText: { flex: 1 },
-  participantName: { ...type.bodyStrong, fontFamily: fonts.bold, color: colors.textPrimary },
-  participantClub: { ...type.caption, color: colors.textSecondary },
+  participantName: { ...typeV2.bodyStrong, color: palette.paper },
+  participantClub: { ...typeV2.caption, color: palette.textSecondary },
 });
