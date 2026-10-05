@@ -1,5 +1,6 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { isApiError } from '@/api/errors';
@@ -12,6 +13,7 @@ import { EmptyState, Skeleton } from '@/components/StateViews';
 import { useMySquad } from '@/features/match/hooks';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
 import { groupSquad, playerSubtitle } from '@/features/squad/groups';
+import { PlayerCard } from '@/features/squad/PlayerCard';
 import { fontsV2, palette, typeV2 } from '@/theme';
 
 /** My club's players, grouped by line. Read-only: the lineup is edited on the tactics board. */
@@ -19,6 +21,7 @@ export default function Squad() {
   const router = useRouter();
   const participation = useMyParticipation();
   const squad = useMySquad();
+  const [selected, setSelected] = useState<Player | null>(null);
   const queries = [participation, squad];
   const refreshing = queries.some((q) => q.isFetching && !q.isPending);
   const notPlaying = isApiError(participation.error) && participation.error.code === 'NOT_A_PARTICIPANT';
@@ -60,7 +63,7 @@ export default function Squad() {
                     </View>
                     {group.players.map((p, i) => (
                       <Animated.View key={p.id} entering={i < 5 ? FadeInDown.duration(220).delay(i * 40) : undefined}>
-                        <PlayerRow player={p} />
+                        <PlayerRow player={p} onPress={() => setSelected(p)} />
                       </Animated.View>
                     ))}
                   </View>
@@ -70,18 +73,20 @@ export default function Squad() {
           </QueryBoundary>
         </>
       )}
+      <PlayerCard player={selected} onClose={() => setSelected(null)} />
     </Screen>
   );
 }
 
-function PlayerRow({ player }: { player: Player }) {
+function PlayerRow({ player, onPress }: { player: Player; onPress: () => void }) {
   const top = (player.overallRating ?? 0) >= 85;
   const subtitle = playerSubtitle(player);
   return (
-    <View
-      style={styles.row}
-      accessible
-      accessibilityLabel={`${player.shirtNumber ?? ''} ${player.name}, ${player.position}${player.overallRating !== null ? `, valoración ${player.overallRating}` : ''}`}
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="button"
+      style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
+      accessibilityLabel={`${player.shirtNumber ?? ''} ${player.name}, ${player.position}${player.overallRating !== null ? `, valoración ${player.overallRating}` : ''}. Ver tarjeta`}
     >
       <PlayerAvatar photoUrl={player.photoUrl} name={player.name} size={44} />
       <Text style={styles.shirt}>{player.shirtNumber ?? '–'}</Text>
@@ -97,7 +102,7 @@ function PlayerRow({ player }: { player: Player }) {
       <View style={[styles.overall, top && styles.overallTop]}>
         <Text style={[styles.overallText, top && { color: palette.ink }]}>{player.overallRating ?? '–'}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -125,6 +130,7 @@ const styles = StyleSheet.create({
   groupTitle: { ...typeV2.label, color: palette.textSecondary },
   groupCount: { ...typeV2.caption, color: palette.textSecondary },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 60, paddingVertical: 8, borderBottomWidth: 1, borderBottomColor: palette.line },
+  rowPressed: { backgroundColor: palette.panel },
   shirt: { fontFamily: fontsV2.display, fontSize: 24, lineHeight: 26, color: palette.textSecondary, width: 30, textAlign: 'center' },
   rowText: { flex: 1, minWidth: 0 },
   name: { ...typeV2.bodyStrong, color: palette.paper },

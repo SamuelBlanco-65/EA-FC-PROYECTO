@@ -138,6 +138,7 @@ describe('formations', () => {
 
 const player = (id: string, position: string, rating: number | null, shirt: number | null = null, name = id): Player => ({
   id, name, position, overallRating: rating, age: 25, nationality: null, shirtNumber: shirt, photoUrl: '',
+  pace: null, shooting: null, passing: null, dribbling: null, defending: null, physical: null,
 });
 
 const SQUAD: Player[] = [

@@ -5,7 +5,8 @@ import type { Player } from '../src/api/types';
 import { groupSquad, playerSubtitle } from '../src/features/squad/groups';
 
 const player = (name: string, position: string, shirt: number | null, over: Partial<Player> = {}): Player => ({
-  id: name, name, position, overallRating: 80, age: 25, nationality: 'España', shirtNumber: shirt, photoUrl: '', ...over,
+  id: name, name, position, overallRating: 80, age: 25, nationality: 'España', shirtNumber: shirt, photoUrl: '',
+  pace: null, shooting: null, passing: null, dribbling: null, defending: null, physical: null, ...over,
 });
 
 describe('groupSquad', () => {
