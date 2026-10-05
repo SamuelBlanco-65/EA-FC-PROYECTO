@@ -3,6 +3,8 @@
 Fases 0-11 cerradas (0 PARCIAL: faltan QR y Expo Go). Fase 11 COMPLETA (probada por el usuario en el teléfono).
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
 
+**Fase 12 (rediseño visual) – PREPARADA, sin código (2026-10-05).** Solo hay documentación: auditoría crítica del diseño v1 y dirección elegida por el usuario (A: transmisión de TV deportiva) en `docs/design/design-system-v2.md` y `docs/design/screens-v2.md`. No existen imágenes v2. Rama de trabajo: `redesign-v2` (sin commits por delante de `master`). Entrega 6 de octubre: corte recomendado = tokens + componentes + Tabla + Inicio; el resto, después. La definición de la fase está en `PROMPTS.md` ("Fase 12", con una ACTUALIZACIÓN al inicio). Nada de esto está implementado ni probado en el teléfono.
+
 ## Fase 11 – Admin en la app, prueba integral y defensa – 2026-10-03
 Estado: COMPLETA
 Hecho (VERIFICADO por el usuario en Expo Go, Android): "probé todo" (pantallas admin con el torneo de demo). La prueba destapó 2 fallos, ya corregidos (tras corregirlos solo se volvió a ejecutar `tsc`, sin tests nuevos):
