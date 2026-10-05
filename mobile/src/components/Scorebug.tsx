@@ -24,7 +24,7 @@ interface ScorebugProps {
 }
 
 const SIZES = {
-  hero: { height: 96, block: 12, crest: 44, digit: typeV2.scoreHero, cell: 36, code: typeV2.titleClub },
+  hero: { height: 96, block: 12, crest: 40, digit: typeV2.scoreHero, cell: 34, code: typeV2.titleClub },
   compact: { height: 56, block: 8, crest: 28, digit: typeV2.scoreBug, cell: 24, code: typeV2.rowCode },
 } as const;
 
@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
   block: { alignSelf: 'stretch' },
   blockLeft: { borderTopLeftRadius: radius.panel, borderBottomLeftRadius: radius.panel },
   blockRight: { borderTopRightRadius: radius.panel, borderBottomRightRadius: radius.panel },
-  side: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 8 },
-  codeBox: { alignItems: 'center' },
+  side: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 6 },
+  codeBox: { alignItems: 'center', flexShrink: 1 },
   mine: { ...typeV2.tabLabel, color: palette.textSecondary },
   center: { flexDirection: 'row', alignItems: 'center', gap: 4, minWidth: 48, justifyContent: 'center' },
   digits: { flexDirection: 'row' },
