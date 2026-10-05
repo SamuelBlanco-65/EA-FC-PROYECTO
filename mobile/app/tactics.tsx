@@ -14,7 +14,9 @@ import { useMySquad } from '@/features/match/hooks';
 import { FORMATIONS, formationById } from '@/features/tactics/formations';
 import { FpsMeter } from '@/features/tactics/FpsMeter';
 import { useMyLineup, useSaveLineup } from '@/features/tactics/hooks';
-import { buildSlots, type BoardSlot, signature, toPositions } from '@/features/tactics/lineup';
+import { benchOf, buildSlots, type BoardSlot, signature, swapPlayers, toPositions } from '@/features/tactics/lineup';
+import { LineupSheet } from '@/features/tactics/LineupSheet';
+import { PlayerCard } from '@/features/squad/PlayerCard';
 import { Pitch } from '@/features/tactics/Pitch';
 import { PlayerToken } from '@/features/tactics/PlayerToken';
 import { useConnectionStore } from '@/stores/connectionStore';
@@ -66,6 +68,9 @@ function Board({ squad, saved }: BoardProps) {
     saved ? signature(saved.formation, saved.positions) : null,
   );
 
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [card, setCard] = useState<Player | null>(null);
+
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const fieldWidth = useSharedValue(0);
   const fieldHeight = useSharedValue(0);
@@ -78,6 +83,11 @@ function Board({ squad, saved }: BoardProps) {
 
   const onMoved = useCallback((index: number, x: number, y: number) => {
     setSlots((current) => current.map((s, i) => (i === index ? { ...s, x, y } : s)));
+  }, []);
+
+  // A substitute takes the starter's slot; the same eleven are kept if the formation changes afterwards.
+  const swap = useCallback((outId: string, incoming: Player) => {
+    setSlots((current) => swapPlayers(current, outId, incoming));
   }, []);
 
   const pickFormation = (id: string) => {
@@ -145,8 +155,9 @@ function Board({ squad, saved }: BoardProps) {
       ) : null}
       {save.isError ? <Text style={styles.error}>{errorMessage(save.error)}</Text> : null}
 
+      <Text style={styles.hint}>Mantén pulsada una ficha y arrástrala. Con «Cambios» eliges quién juega.</Text>
       <View style={styles.footer}>
-        <Text style={styles.hint}>Mantén pulsada una ficha y arrástrala para moverla.</Text>
+        <Button label="Cambios" icon="repeat" variant="secondary" onPress={() => setSheetOpen(true)} style={styles.swap} />
         <Button
           label={label}
           icon={dirty ? 'save' : 'check'}
@@ -156,6 +167,16 @@ function Board({ squad, saved }: BoardProps) {
           style={styles.save}
         />
       </View>
+
+      <LineupSheet
+        visible={sheetOpen}
+        starters={slots}
+        bench={benchOf(squad, slots)}
+        onSwap={swap}
+        onInfo={setCard}
+        onClose={() => setSheetOpen(false)}
+      />
+      <PlayerCard player={card} onClose={() => setCard(null)} />
     </View>
   );
 }
@@ -176,6 +197,7 @@ const styles = StyleSheet.create({
   warning: { ...typeV2.caption, color: palette.cardYellow },
   error: { ...typeV2.caption, color: palette.dangerText },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  hint: { ...typeV2.caption, flex: 1, color: palette.textSecondary },
+  hint: { ...typeV2.caption, color: palette.textSecondary },
+  swap: { flex: 1 },
   save: { flex: 1.4 },
 });

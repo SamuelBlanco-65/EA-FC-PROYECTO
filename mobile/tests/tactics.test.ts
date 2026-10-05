@@ -5,7 +5,7 @@ import type { Player } from '../src/api/types';
 import { addFrame, EMPTY_STATS, fpsOf } from '../src/features/tactics/frameStats';
 import { DEFAULT_FORMATION_ID, FORMATIONS, formationById } from '../src/features/tactics/formations';
 import { clamp, clampToField, dragTo, round4, toNormalized, toPixels } from '../src/features/tactics/geometry';
-import { buildSlots, signature, toPositions, tokenName } from '../src/features/tactics/lineup';
+import { benchOf, buildSlots, signature, swapPlayers, toPositions, tokenName } from '../src/features/tactics/lineup';
 
 const FIELD = { width: 360, height: 600 };
 const R = 22;
@@ -209,6 +209,75 @@ describe('buildSlots', () => {
   it('unknown ratings sort last', () => {
     const squad = [player('gkA', 'GK', null), player('gkB', 'GK', 60)];
     assert.equal(buildSlots(formationById('4-3-3'), squad)[0].player.id, 'gkB');
+  });
+});
+
+describe('swapPlayers / benchOf', () => {
+  const byId = (id: string) => SQUAD.find((p) => p.id === id) as Player;
+  const base = () => buildSlots(formationById('4-3-3'), SQUAD);
+
+  it('the substitute takes the starter\'s slot: same role and same spot, nobody else moves', () => {
+    const before = base();
+    const after = swapPlayers(before, 'cb1', byId('cb3'));
+    const i = before.findIndex((s) => s.player.id === 'cb1');
+    assert.equal(after[i].player.id, 'cb3');
+    assert.deepEqual([after[i].role, after[i].x, after[i].y], [before[i].role, before[i].x, before[i].y]);
+    after.forEach((s, k) => k === i || assert.deepEqual(s, before[k]));
+  });
+
+  it('still 11 distinct players and the lineup counts as changed', () => {
+    const before = base();
+    const after = swapPlayers(before, 'cb1', byId('cb3'));
+    assert.equal(after.length, 11);
+    assert.equal(new Set(after.map((s) => s.player.id)).size, 11);
+    assert.notEqual(signature('4-3-3', toPositions(after)), signature('4-3-3', toPositions(before)));
+  });
+
+  it('changes nothing if the leaving player is not a starter', () => {
+    const before = base();
+    assert.deepEqual(swapPlayers(before, 'gk2', byId('cb3')), before);
+    assert.deepEqual(swapPlayers(before, 'nobody', byId('cb3')), before);
+  });
+
+  it('never puts a player on the field twice', () => {
+    const before = base();
+    assert.deepEqual(swapPlayers(before, 'cb1', byId('cb2')), before);
+  });
+
+  it('does not mutate the input', () => {
+    const before = base();
+    const snapshot = JSON.stringify(before);
+    swapPlayers(before, 'cb1', byId('cb3'));
+    assert.equal(JSON.stringify(before), snapshot);
+  });
+
+  it('the swapped player survives a formation change', () => {
+    const swapped = swapPlayers(base(), 'cb1', byId('cb3'));
+    const next = buildSlots(formationById('4-4-2'), SQUAD, swapped.map((s) => s.player.id));
+    const ids = next.map((s) => s.player.id);
+    assert.ok(ids.includes('cb3'));
+    assert.ok(!ids.includes('cb1'));
+  });
+
+  it('benchOf is the rest of the squad, goalkeepers first, and excludes every starter', () => {
+    const slots = base();
+    const bench = benchOf(SQUAD, slots);
+    const playing = new Set(slots.map((s) => s.player.id));
+    assert.equal(bench.length, SQUAD.length - 11);
+    assert.ok(bench.every((p) => !playing.has(p.id)));
+    assert.equal(bench[0].id, 'gk2');
+  });
+
+  it('after a swap the bench has the player who left', () => {
+    const after = swapPlayers(base(), 'cb1', byId('cb3'));
+    const bench = benchOf(SQUAD, after).map((p) => p.id);
+    assert.ok(bench.includes('cb1'));
+    assert.ok(!bench.includes('cb3'));
+  });
+
+  it('an empty bench when the squad has no one else', () => {
+    const slots = buildSlots(formationById('4-4-2'), SQUAD.slice(0, 11));
+    assert.deepEqual(benchOf(SQUAD.slice(0, 11), slots), []);
   });
 });
 

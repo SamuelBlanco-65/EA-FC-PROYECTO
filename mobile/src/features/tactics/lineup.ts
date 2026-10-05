@@ -1,6 +1,6 @@
 // Pure logic of the tactical board: which 11 players stand where, and what gets sent to PUT /lineups/me.
 import type { LineupSlot, Player } from '../../api/types';
-import { positionLabel } from '../match/derive';
+import { positionLabel, sortSquad } from '../match/derive';
 import { type Formation, type Role } from './formations';
 import { round4 } from './geometry';
 
@@ -53,6 +53,22 @@ export function buildSlots(
     out.push({ player, role: slot.role, x: at?.x ?? slot.x, y: at?.y ?? slot.y });
   }
   return out;
+}
+
+/**
+ * The starter `outId` leaves and `incoming` takes his place on the field (same role, same x/y).
+ * Nothing changes if `outId` is not a starter or `incoming` already is one: a player can never appear twice.
+ */
+export function swapPlayers(slots: readonly BoardSlot[], outId: string, incoming: Player): BoardSlot[] {
+  const at = slots.findIndex((s) => s.player.id === outId);
+  if (at === -1 || slots.some((s) => s.player.id === incoming.id)) return [...slots];
+  return slots.map((s, i) => (i === at ? { ...s, player: incoming } : s));
+}
+
+/** Who is not on the field: the rest of the squad, goalkeepers first, then by line and shirt number. */
+export function benchOf(squad: readonly Player[], slots: readonly BoardSlot[]): Player[] {
+  const playing = new Set(slots.map((s) => s.player.id));
+  return sortSquad(squad.filter((p) => !playing.has(p.id)));
 }
 
 /** The body of PUT /lineups/me. Rounded, so "did anything change?" is a plain string comparison. */
