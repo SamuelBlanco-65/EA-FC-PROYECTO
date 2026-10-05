@@ -1,23 +1,21 @@
 import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import type { Fixture, MatchStatus, StandingRow } from '@/api/types';
+import type { Fixture, StandingRow } from '@/api/types';
 import { Button } from '@/components/Button';
-import { Card, Eyebrow } from '@/components/Card';
+import { Eyebrow } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
+import { Scorebug } from '@/components/Scorebug';
 import { EmptyState, Skeleton } from '@/components/StateViews';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
 import { canEnterRoom, isMine, restingIn, summarizeRounds, type RoundSummary } from '@/features/tournament/derive';
 import { useFixtures, useStandings, useTournament } from '@/features/tournament/hooks';
-import { colors, fonts, shadows, type } from '@/theme';
-
-const LEGEND: MatchStatus[] = ['SCHEDULED', 'ACTIVE', 'PENDING_CONFIRMATION', 'CONFIRMED', 'DISPUTED', 'RESOLVED'];
+import { clubColor, fontsV2, palette, typeV2 } from '@/theme';
 
 export default function Fixtures() {
   const participation = useMyParticipation();
@@ -32,26 +30,19 @@ export default function Fixtures() {
   const current = tournament.data?.currentRound ?? 0;
   const fallback = rounds.find((r) => r.round === current) ?? rounds[0];
   const selected = rounds.find((r) => r.round === picked) ?? fallback;
-  const perRound = rounds.length > 0 ? Math.max(...rounds.map((r) => r.matches.length)) : 0;
+
+  const myId = participation.data?.participant.id;
+  const mine = selected && myId ? selected.matches.find((m) => isMine(m, myId)) : undefined;
+  const others = selected ? selected.matches.filter((m) => m !== mine) : [];
 
   return (
     <Screen
       onRefresh={() => [...queries, standings, participation].forEach((q) => void q.refetch())}
       refreshing={refreshing}
     >
-      <Eyebrow>{rounds.length > 0 ? `${rounds.length} fechas · ${perRound} partidos por fecha` : 'Calendario'}</Eyebrow>
       <Text style={styles.title}>Calendario</Text>
 
-      <QueryBoundary
-        queries={queries}
-        skeleton={
-          <View style={styles.stack}>
-            <Skeleton height={70} />
-            <Skeleton height={120} />
-            <Skeleton height={120} />
-          </View>
-        }
-      >
+      <QueryBoundary queries={queries} skeleton={<FixturesSkeleton />}>
         {rounds.length === 0 || !selected ? (
           <EmptyState
             title="Calendario sin generar"
@@ -68,22 +59,17 @@ export default function Fixtures() {
                 {selected.closed ? 'Completada' : selected.round === current ? 'En curso' : selected.round > current ? 'Pendiente' : 'Abierta'}
               </Text>
             </View>
-            <View style={styles.stack}>
-              {selected.matches.map((m) => (
-                <MatchCard key={m.id} match={m} mine={!!participation.data && isMine(m, participation.data.participant.id)} />
+
+            {mine && myId ? <MyMatch match={mine} myId={myId} /> : null}
+
+            <View>
+              {others.map((m) => (
+                <MatchRow key={m.id} match={m} />
               ))}
               {restingIn(selected.matches, standings.data ?? []).map((row) => (
-                <RestCard key={row.participantId} row={row} />
+                <RestRow key={row.participantId} row={row} />
               ))}
             </View>
-            <Card style={styles.legend}>
-              <Eyebrow>Estados</Eyebrow>
-              <View style={styles.legendBadges}>
-                {LEGEND.map((s) => (
-                  <MatchStatusBadge key={s} status={s} compact />
-                ))}
-              </View>
-            </Card>
           </>
         )}
       </QueryBoundary>
@@ -105,35 +91,26 @@ function RoundChips({
   return (
     <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} style={styles.chipScroll}>
       {rounds.map((r) => {
-        const active = r.round === current;
+        const isCurrent = r.round === current;
         const future = r.round > current;
         const isSelected = r.round === selected;
-        const body = (
-          <>
-            {active ? (
-              <View style={styles.activeDot} />
-            ) : r.closed ? (
-              <Feather name="check" size={18} color={colors.accent} />
-            ) : future ? (
-              <Feather name="lock" size={16} color={colors.textSecondary} />
-            ) : null}
-            <Text style={[styles.chipText, active && { color: colors.textOnAccent, fontFamily: fonts.displayItalic }]}>
-              Fecha {r.round}
-            </Text>
-          </>
-        );
+        const fg = isSelected ? palette.ink : future ? palette.textSecondary : palette.paper;
         return (
-          <Pressable key={r.round} onPress={() => onPick(r.round)} accessibilityRole="button" accessibilityState={{ selected: isSelected }}>
-            {active ? (
-              <LinearGradient
-                colors={[colors.accentGradientTop, colors.accentGradientBottom]}
-                style={[styles.chip, shadows.glowAccent, isSelected && styles.chipSelectedRing]}
-              >
-                {body}
-              </LinearGradient>
-            ) : (
-              <View style={[styles.chip, future && styles.chipFuture, isSelected && styles.chipSelected]}>{body}</View>
-            )}
+          <Pressable
+            key={r.round}
+            onPress={() => onPick(r.round)}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isSelected }}
+            style={[styles.chip, isSelected && styles.chipSelected]}
+          >
+            {isCurrent ? (
+              <View style={[styles.currentDot, { backgroundColor: isSelected ? palette.signalPressed : palette.signal }]} />
+            ) : r.closed ? (
+              <Feather name="check" size={16} color={isSelected ? palette.ink : palette.positive} />
+            ) : future ? (
+              <Feather name="lock" size={14} color={fg} />
+            ) : null}
+            <Text style={[styles.chipText, { color: fg }]}>Fecha {r.round}</Text>
           </Pressable>
         );
       })}
@@ -141,114 +118,126 @@ function RoundChips({
   );
 }
 
-function MatchCard({ match, mine }: { match: Fixture; mine: boolean }) {
+function toTeam(team: Fixture['home'], score: number | null) {
+  return { code: team.shortName, name: team.name, crestUrl: team.crestUrl, color: clubColor(team.shortName), score };
+}
+
+/** My own match first and bigger: a compact scorebug, its status and the room button. */
+function MyMatch({ match, myId }: { match: Fixture; myId: string }) {
   const router = useRouter();
-  const variant = match.status === 'DISPUTED' ? 'danger' : mine ? 'highlight' : 'default';
-  const showScore = match.homeScore !== null && match.awayScore !== null;
-  const homeWins = showScore && (match.homeScore as number) > (match.awayScore as number);
-  const awayWins = showScore && (match.awayScore as number) > (match.homeScore as number);
+  const iAmHome = match.home.participantId === myId;
   return (
-    <Card variant={variant} style={styles.match}>
-      <View style={styles.matchTop}>
-        <MatchStatusBadge status={match.status} />
-        {mine ? <Text style={styles.mineTag}>TU PARTIDO</Text> : null}
-      </View>
-      <View style={styles.matchRow}>
+    <View style={styles.mine}>
+      <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : undefined}>Tu partido</Eyebrow>
+      <Scorebug
+        variant="compact"
+        mine={iAmHome ? 'home' : 'away'}
+        home={toTeam(match.home, match.homeScore)}
+        away={toTeam(match.away, match.awayScore)}
+      />
+      <MatchStatusBadge status={match.status} />
+      {canEnterRoom(match.status) ? (
+        <Button label="Entrar a la sala" icon="log-in" onPress={() => router.push(`/match/${match.id}`)} />
+      ) : null}
+    </View>
+  );
+}
+
+function MatchRow({ match }: { match: Fixture }) {
+  const showScore = match.homeScore !== null && match.awayScore !== null;
+  const homeScore = match.homeScore as number;
+  const awayScore = match.awayScore as number;
+  return (
+    <View
+      style={styles.row}
+      accessible
+      accessibilityLabel={
+        showScore ? `${match.home.name} ${homeScore}, ${match.away.name} ${awayScore}` : `${match.home.name} contra ${match.away.name}`
+      }
+    >
+      <View style={styles.rowMain}>
         <View style={[styles.team, styles.teamHome]}>
-          <ClubCrest crestUrl={match.home.crestUrl} name={match.home.name} size={42} />
-          <Text style={styles.teamName} numberOfLines={2}>
-            {match.home.name}
-          </Text>
+          <ClubCrest crestUrl={match.home.crestUrl} name={match.home.name} size={28} />
+          <Text style={styles.code}>{match.home.shortName}</Text>
         </View>
         {showScore ? (
           <View style={styles.score}>
-            <ScoreBox value={match.homeScore as number} lead={homeWins} />
-            <ScoreBox value={match.awayScore as number} lead={awayWins} />
+            <Text style={[styles.digit, homeScore < awayScore && styles.digitLoser]}>{homeScore}</Text>
+            <Text style={styles.colon}>:</Text>
+            <Text style={[styles.digit, awayScore < homeScore && styles.digitLoser]}>{awayScore}</Text>
           </View>
         ) : (
           <Text style={styles.vs}>VS</Text>
         )}
         <View style={[styles.team, styles.teamAway]}>
-          <Text style={[styles.teamName, styles.teamNameAway]} numberOfLines={2}>
-            {match.away.name}
-          </Text>
-          <ClubCrest crestUrl={match.away.crestUrl} name={match.away.name} size={42} />
+          <Text style={styles.code}>{match.away.shortName}</Text>
+          <ClubCrest crestUrl={match.away.crestUrl} name={match.away.name} size={28} />
         </View>
       </View>
-      {mine && canEnterRoom(match.status) ? (
-        <Button label="Entrar a la sala" icon="log-in" onPress={() => router.push(`/match/${match.id}`)} />
-      ) : null}
-    </Card>
+      <MatchStatusBadge status={match.status} compact />
+    </View>
   );
 }
 
-const ScoreBox = ({ value, lead }: { value: number; lead: boolean }) => (
-  <View style={styles.scoreBox}>
-    <Text style={[styles.scoreDigit, lead && { color: colors.accent }]}>{value}</Text>
-  </View>
-);
-
-function RestCard({ row }: { row: StandingRow }) {
+function RestRow({ row }: { row: StandingRow }) {
   return (
-    <Card variant="dashed" style={styles.rest}>
-      <ClubCrest crestUrl={row.crestUrl} name={row.clubName} size={38} />
+    <View style={[styles.row, styles.rest]}>
+      <ClubCrest crestUrl={row.crestUrl} name={row.clubName} size={28} />
       <Text style={styles.restText}>
         <Text style={styles.restStrong}>Descansa: </Text>
         {row.clubName}
       </Text>
-    </Card>
+    </View>
+  );
+}
+
+/** Chip strip, round header, my match and two rows. */
+function FixturesSkeleton() {
+  return (
+    <View style={styles.skStack}>
+      <Skeleton height={40} />
+      <Skeleton height={20} style={styles.skHeader} />
+      <Skeleton height={56} />
+      <Skeleton height={56} />
+      <Skeleton height={56} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: { ...type.titleScreen, fontSize: 36, color: colors.textPrimary, marginTop: 6, marginBottom: 16 },
-  stack: { gap: 12 },
+  title: { ...typeV2.titleScreen, color: palette.paper, marginBottom: 16 },
   chipScroll: { marginHorizontal: -16, flexGrow: 0 },
-  chips: { paddingHorizontal: 16, gap: 10, paddingVertical: 8 },
+  chips: { paddingHorizontal: 16, gap: 8, paddingVertical: 4 },
   chip: {
-    height: 48,
-    borderRadius: 14,
-    paddingHorizontal: 16,
+    height: 40,
+    borderRadius: 6,
+    paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    gap: 6,
+    backgroundColor: palette.panel,
   },
-  chipFuture: { borderStyle: 'dashed', borderColor: colors.borderDashed, backgroundColor: 'transparent' },
-  chipSelected: { borderColor: colors.accent },
-  chipSelectedRing: { borderWidth: 0 },
-  chipText: { fontFamily: fonts.displayItalic, fontSize: 20, lineHeight: 24, color: colors.textPrimary },
-  activeDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.textOnAccent },
-  roundHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginVertical: 14 },
-  roundTitle: { ...type.bodyStrong, fontFamily: fonts.bold, fontSize: 22, lineHeight: 26, color: colors.textPrimary },
-  roundState: { ...type.body, color: colors.textSecondary },
-  match: { gap: 14 },
-  matchTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  mineTag: { ...type.eyebrow, color: colors.accent, letterSpacing: 2 },
-  matchRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  team: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  chipSelected: { backgroundColor: palette.paper },
+  chipText: { fontFamily: fontsV2.display, fontSize: 18, lineHeight: 22, textTransform: 'uppercase' },
+  currentDot: { width: 8, height: 8, borderRadius: 4 },
+  roundHeader: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginTop: 24, marginBottom: 12 },
+  roundTitle: { ...typeV2.bodyStrong, color: palette.paper },
+  roundState: { ...typeV2.caption, color: palette.textSecondary },
+  mine: { gap: 12, marginBottom: 24 },
+  row: { paddingVertical: 12, gap: 8, borderBottomWidth: 1, borderBottomColor: palette.line },
+  rowMain: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  team: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
   teamHome: { justifyContent: 'flex-start' },
   teamAway: { justifyContent: 'flex-end' },
-  teamName: { ...type.bodyStrong, fontFamily: fonts.bold, fontSize: 17, lineHeight: 20, color: colors.textPrimary, flexShrink: 1 },
-  teamNameAway: { textAlign: 'right' },
-  score: { flexDirection: 'row', gap: 8 },
-  scoreBox: {
-    width: 35,
-    height: 44,
-    borderRadius: 10,
-    backgroundColor: colors.surfaceSunken,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scoreDigit: { ...type.scoreDigitSmall, color: colors.textPrimary },
-  vs: { ...type.titleCard, fontSize: 22, color: colors.textSecondary, minWidth: 78, textAlign: 'center' },
-  rest: { flexDirection: 'row', alignItems: 'center', gap: 14 },
-  restText: { ...type.body, fontSize: 18, color: colors.textSecondary, flex: 1 },
-  restStrong: { fontFamily: fonts.bold, color: colors.textPrimary },
-  legend: { marginTop: 16, gap: 12 },
-  legendBadges: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  code: { ...typeV2.rowCode, color: palette.paper },
+  score: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, minWidth: 72 },
+  digit: { ...typeV2.statBig, color: palette.paper, minWidth: 18, textAlign: 'center' },
+  digitLoser: { color: palette.textSecondary },
+  colon: { ...typeV2.statBig, color: palette.textSecondary },
+  vs: { ...typeV2.label, color: palette.textSecondary, minWidth: 72, textAlign: 'center' },
+  rest: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  restText: { ...typeV2.body, color: palette.textSecondary, flex: 1 },
+  restStrong: { ...typeV2.bodyStrong, color: palette.paper },
+  skStack: { gap: 12 },
+  skHeader: { width: 160 },
 });
