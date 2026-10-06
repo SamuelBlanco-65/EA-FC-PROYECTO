@@ -5,8 +5,8 @@ import { palette, radius, typeV2 } from '@/theme';
 
 type Variant = 'default' | 'raised' | 'highlight' | 'danger' | 'dashed';
 
-// Flat v2 panel: relief comes from the surface contrast, not from borders or shadows (design-system-v2.md §6).
-// "Mine" (highlight) and "dispute" (danger) are marked with a 4 dp side bar, not with colour fills.
+// v2 panel with a thin border and a soft shadow so it reads against the ink background.
+// "Mine" (highlight) gets a signal border + glow, "dispute" (danger) a red tint; both keep the 4 dp side bar.
 export function Card({
   variant = 'default',
   style,
@@ -30,7 +30,14 @@ const styles = StyleSheet.create({
   base: {
     borderRadius: radius.panel,
     backgroundColor: palette.panel,
+    borderWidth: 1,
+    borderColor: palette.line,
     padding: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
   bar: {
     position: 'absolute',
@@ -45,8 +52,8 @@ const styles = StyleSheet.create({
 
 const variantStyles = StyleSheet.create({
   default: {},
-  raised: { backgroundColor: palette.panelRaised },
-  highlight: { backgroundColor: palette.panelRaised },
-  danger: {},
-  dashed: { borderStyle: 'dashed', borderColor: palette.lineStrong, backgroundColor: 'transparent', borderWidth: 1.5 },
+  raised: { backgroundColor: palette.panelRaised, borderColor: palette.lineStrong },
+  highlight: { backgroundColor: palette.panelRaised, borderColor: palette.signalBorder, shadowColor: palette.signal, shadowOpacity: 0.3, elevation: 5 },
+  danger: { backgroundColor: '#2A1B26', borderColor: palette.dangerBorder },
+  dashed: { borderStyle: 'dashed', borderColor: palette.lineStrong, backgroundColor: 'transparent', borderWidth: 1.5, elevation: 0, shadowOpacity: 0 },
 });

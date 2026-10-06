@@ -1,14 +1,16 @@
 import { useIsFocused } from 'expo-router';
 import { PropsWithChildren, useEffect, useRef } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
-import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { metrics, palette } from '@/theme';
 
 import { ConnectionBanner, useBannerMode } from './ConnectionBanner';
 
-const FADE_MS = 160;
+const FADE_MS = 260;
+const RISE_DP = 14;
+const EASE_OUT = Easing.out(Easing.cubic);
 
 interface ScreenProps {
   /** Scrollable body with the 16 dp side margin. Without it, children fill the screen and lay themselves out. */
@@ -30,14 +32,17 @@ function useFocusFade() {
   const reduce = useReducedMotion();
   const wasFocused = useRef(focused);
   const opacity = useSharedValue(1);
+  const rise = useSharedValue(0);
   useEffect(() => {
     if (focused && !wasFocused.current && !reduce) {
       opacity.value = 0;
-      opacity.value = withTiming(1, { duration: FADE_MS });
+      rise.value = RISE_DP;
+      opacity.value = withTiming(1, { duration: FADE_MS, easing: EASE_OUT });
+      rise.value = withTiming(0, { duration: FADE_MS, easing: EASE_OUT });
     }
     wasFocused.current = focused;
-  }, [focused, reduce, opacity]);
-  return useAnimatedStyle(() => ({ opacity: opacity.value }));
+  }, [focused, reduce, opacity, rise]);
+  return useAnimatedStyle(() => ({ opacity: opacity.value, transform: [{ translateY: rise.value }] }));
 }
 
 export function Screen({

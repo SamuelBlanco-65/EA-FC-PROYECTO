@@ -1,7 +1,9 @@
+import { Feather } from '@expo/vector-icons';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import type { StandingRow } from '@/api/types';
+import { Card, Eyebrow } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
 import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
@@ -10,7 +12,7 @@ import { useMyParticipation } from '@/features/participation/useMyParticipation'
 import { formatDifference, summarizeRounds } from '@/features/tournament/derive';
 import { useFixtures, useStandings, useTournament } from '@/features/tournament/hooks';
 import { useConnectionStore } from '@/stores/connectionStore';
-import { clubColor, metrics, palette, typeV2 } from '@/theme';
+import { clubColor, metrics, palette, radius, typeV2 } from '@/theme';
 
 export default function Standings() {
   const participation = useMyParticipation();
@@ -50,12 +52,7 @@ export default function Standings() {
                 <Row row={row} mine={row.participantId === participation.data?.participant.id} />
               </Animated.View>
             ))}
-            <Text style={styles.legend}>
-              Desempate: PTS, DG y GF. Solo cuentan los partidos confirmados o resueltos.
-            </Text>
-            <Text style={styles.legend}>
-              PJ jugados · GF goles a favor · DG diferencia de goles · PTS puntos. Bajo el club: ganados-empatados-perdidos.
-            </Text>
+            <Legend />
           </>
         )}
       </QueryBoundary>
@@ -104,6 +101,47 @@ function Row({ row, mine }: { row: StandingRow; mine: boolean }) {
   );
 }
 
+const TIEBREAK = ['PTS', 'DG', 'GF'] as const;
+const ABBREVIATIONS = [
+  { code: 'PJ', text: 'Partidos jugados' },
+  { code: 'GF', text: 'Goles a favor' },
+  { code: 'DG', text: 'Diferencia de goles' },
+  { code: 'PTS', text: 'Puntos' },
+] as const;
+
+function Legend() {
+  return (
+    <Card style={styles.legendCard}>
+      <Eyebrow>Desempate</Eyebrow>
+      <View style={styles.steps}>
+        {TIEBREAK.map((code, i) => (
+          <View key={code} style={styles.stepGroup}>
+            {i > 0 ? <Feather name="chevron-right" size={16} color={palette.textTertiary} /> : null}
+            <View style={styles.step}>
+              <Text style={styles.stepIndex}>{i + 1}</Text>
+              <Text style={styles.stepCode}>{code}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.legendNote}>Solo cuentan los partidos confirmados o resueltos.</Text>
+
+      <View style={styles.divider} />
+
+      <Eyebrow>Cómo leer la tabla</Eyebrow>
+      <View style={styles.abbrGrid}>
+        {ABBREVIATIONS.map((a) => (
+          <View key={a.code} style={styles.abbr}>
+            <Text style={styles.abbrCode}>{a.code}</Text>
+            <Text style={styles.abbrText}>{a.text}</Text>
+          </View>
+        ))}
+      </View>
+      <Text style={styles.legendNote}>Bajo el club: ganados-empatados-perdidos.</Text>
+    </Card>
+  );
+}
+
 /** Same silhouette as a row: crest, code + caption, and the numbers. */
 function TableSkeleton() {
   return (
@@ -126,7 +164,16 @@ const styles = StyleSheet.create({
   status: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   statusText: { ...typeV2.caption, color: palette.cardYellow },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  headerRow: { flexDirection: 'row', alignItems: 'center', height: 32, borderBottomWidth: 1, borderBottomColor: palette.line },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 32,
+    backgroundColor: palette.panelRaised,
+    borderTopLeftRadius: radius.panel,
+    borderTopRightRadius: radius.panel,
+    borderBottomWidth: 2,
+    borderBottomColor: palette.signalBorder,
+  },
   head: { ...typeV2.tabLabel, color: palette.textSecondary, textAlign: 'center' },
   row: {
     height: metrics.rowHeight,
@@ -135,7 +182,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: palette.line,
   },
-  rowMine: { backgroundColor: palette.panelRaised },
+  rowMine: { backgroundColor: palette.signalSoft },
   bar: { position: 'absolute', left: 0, top: 0, bottom: 0, width: metrics.clubBarWidth },
   colPos: { width: 36, paddingLeft: 8, textAlign: 'left' },
   colClubHead: { flex: 1, textAlign: 'left', paddingLeft: 36 },
@@ -146,7 +193,28 @@ const styles = StyleSheet.create({
   colGf: { width: 32 },
   colDg: { width: 38 },
   colPts: { width: 44 },
-  legend: { ...typeV2.caption, color: palette.textSecondary, marginTop: 12 },
+  legendCard: { marginTop: 20, gap: 10 },
+  steps: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 4 },
+  stepGroup: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  step: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    height: 32,
+    paddingHorizontal: 10,
+    borderRadius: radius.button,
+    backgroundColor: palette.panelRaised,
+    borderWidth: 1,
+    borderColor: palette.lineStrong,
+  },
+  stepIndex: { ...typeV2.label, color: palette.signal },
+  stepCode: { ...typeV2.bodyStrong, color: palette.paper },
+  legendNote: { ...typeV2.caption, color: palette.textSecondary },
+  divider: { height: 1, backgroundColor: palette.line, marginVertical: 4 },
+  abbrGrid: { flexDirection: 'row', flexWrap: 'wrap', rowGap: 10 },
+  abbr: { width: '50%', flexDirection: 'row', alignItems: 'center', gap: 8, paddingRight: 8 },
+  abbrCode: { ...typeV2.bodyStrong, color: palette.signal, minWidth: 30 },
+  abbrText: { ...typeV2.caption, color: palette.textSecondary, flex: 1 },
   skeletonRow: { height: metrics.rowHeight, flexDirection: 'row', alignItems: 'center', gap: 12 },
   skCrest: { width: 28 },
   skName: { flex: 1 },

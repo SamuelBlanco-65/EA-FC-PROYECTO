@@ -111,7 +111,19 @@ export function Scorebug({ home, away, mine = null, variant = 'compact' }: Score
 }
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'center', backgroundColor: palette.panel, borderRadius: radius.panel },
+  bar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: palette.panelRaised,
+    borderRadius: radius.panel,
+    borderWidth: 1,
+    borderColor: palette.lineStrong,
+    shadowColor: '#000',
+    shadowOpacity: 0.4,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
   block: { alignSelf: 'stretch' },
   blockLeft: { borderTopLeftRadius: radius.panel, borderBottomLeftRadius: radius.panel },
   blockRight: { borderTopRightRadius: radius.panel, borderBottomRightRadius: radius.panel },

@@ -3,6 +3,15 @@
 Fases 0-13 cerradas (0 PARCIAL: faltan QR y Expo Go). Fases 12 y 13: código y tests VERIFICADOS por mí; falta que el usuario pruebe en el teléfono lo marcado como NO probado.
 Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
 
+## Cambios posteriores a la Fase 13 (solo app, 2026-10-06) – rama `plantilla-detalle`
+Estado: hechos y comprobados con `tsc` limpio, `npm run test:logic` 112 passed (+5 de `seasonTrail.test.ts`) y `expo export` OK; NO probados en el teléfono. Backend sin cambios.
+- Retoque visual: bordes, sombras y tintes del naranja de marca en Card, Scorebug, botones, filas de Plantilla/Calendario/Inicio/Perfil, tarjeta de jugador (barras por nivel) y hojas; transición de pestañas más suave; leyenda de la Tabla rediseñada.
+- Inicio: "camino de la temporada" en zigzag (`features/tournament/SeasonTrail.tsx`, lógica pura `seasonTrail` en `derive.ts`) con tu resultado por fecha y una copa al final.
+- Admin que no juega: pestaña "Administración" (`app/(tabs)/admin.tsx`, movida desde `app/admin/index.tsx`); se ocultan Inicio y Plantilla para él. Participantes y admin que sí juega no cambian.
+- `mobile/eas.json` y `android.package` (`com.eafc.tournament`) para un APK con EAS Build (`preview`). El build quedó en cola del plan gratuito: NO hay APK verificado.
+- BD real (solo demo): `Torneo de demo` con 15 participantes, fechas 1-16 jugadas y la 17 activa. Los partidos del presentador se rellenaron directamente en la BD (atajo de demo, con eventos pero sin pasar por la API); los de los bots, por la API. `Torneo de prueba` sin tocar.
+- Auditoría antes de entregar: los valores reales de `backend/.env`, `demo.env` y `mobile/.env` no aparecen ni en los archivos ni en el historial de git.
+
 ## Fase 13 – Detalle de partido, Plantilla, tarjeta de jugador y elegir titulares – 2026-10-05
 Estado: COMPLETA en código (rama `plantilla-detalle`); pruebas en el teléfono PENDIENTES (ver abajo)
 Hecho (VERIFICADO por mí): backend hermético 350 passed (348 + 2); `npx tsc --noEmit` limpio; `npm run test:logic` 107 passed (22 nuevos); `npx expo export --platform android` empaqueta.

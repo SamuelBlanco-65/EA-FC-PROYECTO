@@ -29,7 +29,9 @@ export function PlayerCard({ player, onClose }: { player: Player | null; onClose
                 <Text style={styles.ratingText}>{player.overallRating ?? '–'}</Text>
                 <Text style={styles.position}>{player.position.toUpperCase()}</Text>
               </View>
-              <PlayerAvatar photoUrl={player.photoUrl} name={player.name} size={112} />
+              <View style={styles.photoRing}>
+                <PlayerAvatar photoUrl={player.photoUrl} name={player.name} size={104} dashed={false} />
+              </View>
               <View style={styles.shirt}>
                 <Text style={styles.shirtText}>{player.shirtNumber ?? '–'}</Text>
                 <Text style={styles.shirtLabel}>Dorsal</Text>
@@ -62,6 +64,14 @@ export function PlayerCard({ player, onClose }: { player: Player | null; onClose
   );
 }
 
+// Bar colour by level (design only): low = muted red, mid = yellow, good = green, elite = signal.
+function statColor(value: number): string {
+  if (value >= 85) return palette.signal;
+  if (value >= 70) return palette.positive;
+  if (value >= 50) return palette.cardYellow;
+  return palette.cardRed;
+}
+
 function Stat({ row }: { row: StatRow }) {
   const fill = statFill(row.value);
   return (
@@ -70,7 +80,9 @@ function Stat({ row }: { row: StatRow }) {
         <Text style={styles.statValue}>{row.value ?? '–'}</Text>
         <Text style={styles.statLabel}>{row.label}</Text>
       </View>
-      <View style={styles.track}>{fill !== null ? <View style={[styles.fill, { width: `${Math.round(fill * 100)}%` }]} /> : null}</View>
+      <View style={styles.track}>
+        {fill !== null ? <View style={[styles.fill, { width: `${Math.round(fill * 100)}%`, backgroundColor: statColor(row.value as number) }]} /> : null}
+      </View>
     </View>
   );
 }
@@ -82,13 +94,19 @@ const styles = StyleSheet.create({
     backgroundColor: palette.panelRaised,
     borderTopLeftRadius: radius.modal,
     borderTopRightRadius: radius.modal,
+    borderWidth: 1,
+    borderBottomWidth: 0,
+    borderTopWidth: 3,
+    borderColor: palette.lineStrong,
+    borderTopColor: palette.signal,
     paddingHorizontal: 20,
     paddingTop: 20,
     gap: 12,
   },
   top: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rating: { width: 72, alignItems: 'flex-start' },
-  ratingText: { fontFamily: fontsV2.displayBlack, fontSize: 56, lineHeight: 56, color: palette.paper },
+  ratingText: { fontFamily: fontsV2.displayBlack, fontSize: 56, lineHeight: 56, color: palette.signal },
+  photoRing: { borderRadius: 60, borderWidth: 3, borderColor: palette.signal, padding: 2, backgroundColor: palette.panel },
   position: { ...typeV2.label, color: palette.textSecondary },
   shirt: { width: 72, alignItems: 'flex-end' },
   shirtText: { fontFamily: fontsV2.display, fontSize: 40, lineHeight: 42, color: palette.textSecondary },
@@ -101,6 +119,6 @@ const styles = StyleSheet.create({
   statHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   statValue: { fontFamily: fontsV2.display, fontSize: 28, lineHeight: 30, color: palette.paper },
   statLabel: { ...typeV2.label, color: palette.textSecondary },
-  track: { height: 4, backgroundColor: palette.line },
-  fill: { height: 4, backgroundColor: palette.paper },
+  track: { height: 6, borderRadius: 3, backgroundColor: palette.ink, overflow: 'hidden' },
+  fill: { height: 6, borderRadius: 3, backgroundColor: palette.paper },
 });

@@ -8,6 +8,7 @@
     "scheme": "eafctournament",
     "userInterfaceStyle": "dark",
     "android": {
+      "package": "com.eafc.tournament",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -28,6 +29,13 @@
       ],
       "expo-image",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5fbf4fdd-bf2a-470f-9d73-e67869dfdab4"
+      }
+    },
+    "owner": "samuelblanco"
   }
 }

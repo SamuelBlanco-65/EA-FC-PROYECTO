@@ -1,14 +1,56 @@
 # EA FC Tournament – Companion App (FC ARENA)
 
-Proyecto académico individual (Desarrollo Móvil). App móvil (Expo, TypeScript) + backend propio (Python, FastAPI) + Supabase (Postgres, Auth, Storage, Realtime). La app nunca habla con la base de datos: solo conoce la URL del backend.
+Aplicación móvil complementaria e infraestructura en tiempo real para gestionar un torneo de **EA Sports FC** entre amigos: inscripción con ruleta de club, liga todos contra todos de ida y vuelta, sala de partido en vivo con validación cruzada entre rivales, tabla en tiempo real, panel de administración y pizarra táctica.
+
+Proyecto académico **individual** de *Desarrollo Móvil* (Evaluación Parcial V2). Entrega: 6 de octubre de 2026. El enunciado está en [`docs/enunciado.md`](docs/enunciado.md).
+
+> **Regla de arquitectura:** el frontend nunca habla con la base de datos. La app solo conoce la URL del backend (`EXPO_PUBLIC_API_URL`); no contiene ninguna clave de Supabase.
 
 ```
-App móvil --HTTPS REST + WSS--> Backend FastAPI --supabase-py / Postgres--> Supabase
-                                      ^                                          |
-                                      +------ Supabase Realtime -----------------+
+App móvil (Expo, TypeScript) --HTTPS REST + WSS--> Backend propio (Python, FastAPI) --supabase-py / Postgres--> Supabase
+                                                          ^                                                        |
+                                                          +------ Supabase Realtime (postgres_changes) ------------+
 ```
 
-Documentación: `CLAUDE.md` (reglas del proyecto), `docs/PROGRESS.md` (estado real), `docs/defense/INDEX.md` (arquitectura, recorrido de un evento y preguntas de defensa), `docs/design/` (sistema de diseño), `docs/scraping/scraping.md` (origen de los datos).
+## Qué incluye (por módulo del enunciado)
+
+| Módulo | Qué hace | Dónde está |
+|---|---|---|
+| **1. Ingesta y autenticación** | Scraping/seed de los planteles de los **top 5 de las 5 grandes ligas** (25 clubes, 677 jugadores, escudos y fotos). Registro e inicio de sesión por participante y **ruleta animada** que asigna un club de forma pseudoaleatoria y persistente (el sorteo lo hace el servidor, de forma atómica). | `scraper/`, `backend/app/api/auth.py`, `mobile/app/roulette.tsx` |
+| **2. Liga y calendario** | Calendario **ida y vuelta** (método del círculo), puntuación 3/1/0 con diferencia de goles, tabla en tiempo real y **panel de administración** (iniciar torneo y habilitar las fechas en orden). | `backend/app/domain/round_robin.py`, `mobile/app/(tabs)/admin.tsx` |
+| **3. Sala de partido en vivo** | Vista **horizontal** para registrar goles y tarjetas (solo del equipo propio), finalización por el local, **aprobación o rechazo del visitante por WebSocket** y estado de **disputa** que resuelve el administrador. | `mobile/app/match/[id].tsx`, `backend/app/realtime/`, `backend/app/domain/match_state.py` |
+| **4. Pizarra táctica** | Arrastrar y soltar fichas sobre un campo dibujado en **Canvas (Skia)**, con límites de pantalla, formaciones reasignables y medición de FPS. | `mobile/app/tactics.tsx`, `mobile/src/features/tactics/` |
+| **Extra: offline** | Lectura desde caché persistida y **cola de eventos sin conexión** con UUID del cliente; el servidor es idempotente, así que reenviar no duplica. | `mobile/src/offline/` |
+
+## Tecnología
+
+- **Backend:** Python 3.12, FastAPI, Pydantic, supabase-py, cliente Realtime asíncrono, pytest. Capas: router → service → domain (funciones puras) → repository.
+- **Base de datos:** Supabase (Postgres, Auth, Storage, Realtime) con **RLS en todas las tablas**, migraciones SQL y funciones atómicas.
+- **App:** Expo + TypeScript + Expo Router, TanStack Query, Zustand, Skia, Reanimated, Gesture Handler y `expo-secure-store`. Se ejecuta en **Expo Go (Android)**.
+- **Despliegue:** backend en Render (HTTPS/WSS). Ver `render.yaml` y `docs/defense/deploy.md`.
+
+## Seguridad en breve
+
+- El backend valida el JWT en cada petición y lee el rol de `profiles`, nunca del cliente.
+- Dos candados: reglas en el servicio y **RLS en Postgres**. Sin ninguna política para `anon`.
+- Las contraseñas las gestiona Supabase Auth (hash bcrypt). Las claves viven solo en `backend/.env` y en el panel de Render; **no están en el repositorio ni en su historial** (verificado antes de la entrega).
+
+## Estado del proyecto
+
+- **Backend:** 350 tests herméticos pasan (`pytest -m "not integration"`). Además hay 44 tests de integración contra Supabase real, que escriben y limpian sus propios datos.
+- **App:** `tsc --noEmit` limpio y 112 tests de lógica pasan (`npm run test:logic`).
+- **Probado en un teléfono Android real (Expo Go):** registro, ruleta, tabla, calendario, sala horizontal, aprobación y rechazo de resultados, modo avión con cola offline, pizarra a 60 FPS y pantallas de administración.
+- **Cambios recientes aún sin probar en el teléfono:** rediseño visual v2, Plantilla, tarjeta de jugador, detalle de partido, camino de la temporada en Inicio y pestaña de Administración. Ver `docs/PROGRESS.md` para el detalle de lo verificado y lo pendiente.
+- **Límites conocidos:** el torneo se crea por SQL (no hay endpoint), el estado `FINISHED` no se alcanza al cerrar la última fecha, no hay recuperación de contraseña ni verificación de correo (torneo cerrado entre conocidos), y el plan gratuito de Render se duerme tras unos minutos sin tráfico (el primer arranque tarda hasta ~1 min).
+- **Ramas:** `master` es la versión estable v1 que despliega Render; `plantilla-detalle` contiene además el rediseño v2 y la Fase 13.
+
+## Documentación
+
+- [`docs/PROGRESS.md`](docs/PROGRESS.md): estado real, qué está verificado y qué falta.
+- [`docs/defense/INDEX.md`](docs/defense/INDEX.md): arquitectura en una página, recorrido de un evento de punta a punta y preguntas probables de la defensa (más una ficha por módulo).
+- [`docs/architecture/`](docs/architecture/), [`docs/database/`](docs/database/), [`docs/domain/`](docs/domain/), [`docs/scraping/scraping.md`](docs/scraping/scraping.md): decisiones técnicas.
+- [`docs/design/`](docs/design/): sistema de diseño (v2 vigente; v1 es historial).
+- [`CLAUDE.md`](CLAUDE.md): reglas de negocio y convenciones del proyecto.
 
 ## Aviso sobre datos e imágenes
 
@@ -124,10 +166,12 @@ Los tests herméticos funcionan en un clon nuevo **sin** `backend\.env` (usan va
 
 ```
 backend/    app/{api,core,domain,repositories,services,realtime,schemas}/  tests/
-mobile/     app/ (Expo Router)  src/{api,features,stores,realtime,offline,theme,components}/
+mobile/     app/ (Expo Router)  src/{api,features,stores,realtime,offline,theme,components}/  tests/  eas.json
 scraper/    parsers, normalización, validación y seed
 supabase/   migrations/*.sql
-scripts/    db/ (migraciones y comprobaciones)  demo/ (cuentas, torneo de demo, bots)
+scripts/    db/ (migraciones y comprobaciones)  demo/ (cuentas, torneo de demo, bots)  deploy/ (verificación del despliegue)
 config/     tournament-clubs.json (los 25 clubes)
-docs/       PROGRESS.md  defense/  design/  architecture/  scraping/
+design/     reference/ (capturas de referencia del diseño)
+docs/       PROGRESS.md  enunciado.md  defense/  design/  architecture/  database/  domain/  scraping/  performance/
+render.yaml (despliegue del backend en Render)   CLAUDE.md / PROMPTS.md (reglas y fases del proyecto)
 ```

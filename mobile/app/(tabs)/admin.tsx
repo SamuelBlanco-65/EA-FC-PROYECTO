@@ -4,7 +4,6 @@ import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { errorMessage } from '@/api/errors';
 import type { AdminParticipant, Fixture, Tournament } from '@/api/types';
-import { BackHeader } from '@/components/BackHeader';
 import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
@@ -42,7 +41,7 @@ function AdminScreen() {
 
   return (
     <Screen bottomInset onRefresh={() => queries.forEach((q) => void q.refetch())} refreshing={refreshing}>
-      <BackHeader label="Perfil" title="Administración" fallback="/profile" />
+      <Text style={styles.title}>Administración</Text>
       <QueryBoundary
         queries={queries}
         skeleton={
@@ -241,6 +240,7 @@ function Participants({ participants, max }: { participants: AdminParticipant[];
 }
 
 const styles = StyleSheet.create({
+  title: { ...typeV2.titleScreen, color: palette.paper, marginBottom: 16 },
   stack: { gap: 16 },
   section: { gap: 8, marginTop: 8 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },

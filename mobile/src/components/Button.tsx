@@ -118,9 +118,14 @@ const styles = StyleSheet.create({
     backgroundColor: palette.signal,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: palette.signal,
+    shadowOpacity: 0.45,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
   },
   primaryPressed: { backgroundColor: palette.signalPressed },
-  primaryInactive: { backgroundColor: palette.panelRaised },
+  primaryInactive: { backgroundColor: palette.panelRaised, elevation: 0, shadowOpacity: 0 },
   secondary: {
     height: metrics.buttonSecondaryHeight,
     borderRadius: radius.button,
@@ -130,6 +135,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   secondaryInactive: { borderColor: palette.line },
-  dangerOutline: { borderColor: 'rgba(229,56,76,0.5)' },
+  dangerOutline: { borderColor: palette.dangerBorder, backgroundColor: palette.dangerSoft },
   content: { flexDirection: 'row', alignItems: 'center', gap: 12 },
 });

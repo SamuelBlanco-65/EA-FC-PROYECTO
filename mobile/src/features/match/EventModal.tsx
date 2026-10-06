@@ -206,6 +206,8 @@ const styles = StyleSheet.create({
   sheet: {
     backgroundColor: palette.panelRaised,
     borderRadius: radius.modal,
+    borderWidth: 1,
+    borderColor: palette.signalBorder,
     padding: 14,
     gap: 10,
   },

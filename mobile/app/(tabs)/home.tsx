@@ -7,15 +7,16 @@ import { isApiError } from '@/api/errors';
 import type { Fixture, StandingRow, Tournament } from '@/api/types';
 import { Button } from '@/components/Button';
 import { CountUp } from '@/components/CountUp';
-import { Eyebrow } from '@/components/Card';
+import { Card, Eyebrow } from '@/components/Card';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
 import { Scorebug } from '@/components/Scorebug';
 import { EmptyState, Skeleton } from '@/components/StateViews';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
-import { canEnterRoom, formatDifference, myNextMatch, myStanding, summarizeRounds } from '@/features/tournament/derive';
+import { canEnterRoom, formatDifference, myNextMatch, myStanding, seasonTrail, summarizeRounds } from '@/features/tournament/derive';
 import { useFixtures, useStandings, useTournament } from '@/features/tournament/hooks';
+import { SeasonTrail } from '@/features/tournament/SeasonTrail';
 import { useSessionStore } from '@/stores/sessionStore';
 import { clubColor, palette, typeV2 } from '@/theme';
 
@@ -62,7 +63,7 @@ export default function Home() {
               <StatsLine row={myStanding(standings.data, participation.data.participant.id)} />
             </Animated.View>
             <Animated.View entering={FadeInDown.duration(220).delay(80)}>
-              <RoundsBar tournament={tournament.data} fixtures={fixtures.data} />
+              <RoundsBar tournament={tournament.data} fixtures={fixtures.data} participantId={participation.data.participant.id} />
             </Animated.View>
           </View>
         ) : null}
@@ -168,36 +169,25 @@ function StatsLine({ row }: { row: StandingRow | null }) {
   );
 }
 
-function RoundsBar({ tournament, fixtures }: { tournament: Tournament; fixtures: Fixture[] }) {
+function RoundsBar({ tournament, fixtures, participantId }: { tournament: Tournament; fixtures: Fixture[]; participantId: string }) {
   const rounds = summarizeRounds(fixtures);
   const completed = rounds.filter((r) => r.closed).length;
+  if (rounds.length === 0) {
+    return <Text style={styles.roundsLabel}>Sin iniciar · {TOURNAMENT_LABEL[tournament.status]}</Text>;
+  }
   return (
-    <View style={styles.rounds}>
-      {rounds.length === 0 ? (
-        <Text style={styles.roundsLabel}>Sin iniciar · {TOURNAMENT_LABEL[tournament.status]}</Text>
-      ) : (
-        <>
-          <View style={styles.roundsRow}>
-            <Text style={styles.roundsLabel}>
-              Fecha {tournament.currentRound} de {rounds.length} · {TOURNAMENT_LABEL[tournament.status]}
-            </Text>
-            <Text style={styles.completed}>{completed} completadas</Text>
-          </View>
-          <View style={styles.segments}>
-            {rounds.map((r) => (
-              <View
-                key={r.round}
-                style={[
-                  styles.segment,
-                  r.closed && styles.segmentDone,
-                  !r.closed && r.round === tournament.currentRound && styles.segmentCurrent,
-                ]}
-              />
-            ))}
-          </View>
-        </>
-      )}
-    </View>
+    <Card style={styles.rounds}>
+      <View style={styles.roundsRow}>
+        <Text style={styles.roundsLabel}>
+          Fecha {tournament.currentRound} de {rounds.length} · {TOURNAMENT_LABEL[tournament.status]}
+        </Text>
+        <Text style={styles.completed}>{completed} completadas</Text>
+      </View>
+      <View style={styles.progress}>
+        <View style={[styles.progressFill, { width: `${Math.round((completed / rounds.length) * 100)}%` }]} />
+      </View>
+      <SeasonTrail steps={seasonTrail(fixtures, participantId, tournament.currentRound)} />
+    </Card>
   );
 }
 
@@ -211,7 +201,7 @@ function HomeSkeleton() {
         <Skeleton height={56} />
       </View>
       <Skeleton height={44} />
-      <Skeleton height={40} />
+      <Skeleton height={130} />
     </View>
   );
 }
@@ -229,20 +219,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    minHeight: 48,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
+    minHeight: 52,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    borderWidth: 1,
     borderColor: palette.line,
+    backgroundColor: palette.panel,
   },
-  statsPressed: { backgroundColor: palette.panel },
+  statsPressed: { backgroundColor: palette.panelRaised, borderColor: palette.signalBorder },
   position: { color: palette.paper },
   statsText: { ...typeV2.data, color: palette.paper, flex: 1 },
-  rounds: { gap: 8 },
+  rounds: { gap: 12, paddingHorizontal: 12 },
   roundsRow: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   roundsLabel: { ...typeV2.label, color: palette.paper },
   completed: { ...typeV2.caption, color: palette.textSecondary },
-  segments: { flexDirection: 'row', gap: 4 },
-  segment: { flex: 1, height: 6, backgroundColor: palette.line },
-  segmentDone: { backgroundColor: palette.paper },
-  segmentCurrent: { backgroundColor: palette.signal },
+  progress: { height: 4, borderRadius: 2, backgroundColor: palette.ink, overflow: 'hidden' },
+  progressFill: { height: 4, borderRadius: 2, backgroundColor: palette.signal },
 });
