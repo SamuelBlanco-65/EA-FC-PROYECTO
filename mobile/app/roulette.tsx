@@ -2,22 +2,37 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Redirect, useRouter } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { cancelAnimation, Easing, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, {
+  BounceInUp,
+  cancelAnimation,
+  Easing,
+  FadeIn,
+  FadeInDown,
+  useAnimatedStyle,
+  useReducedMotion,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { api } from '@/api/endpoints';
 import { errorMessage } from '@/api/errors';
 import { queryKeys } from '@/api/queryKeys';
 import type { AssignClubResponse, Club } from '@/api/types';
 import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
 import { Screen } from '@/components/Screen';
 import { PLACEHOLDER_SECTORS, sectorCentre, sectorsOf, Wheel } from '@/features/roulette/Wheel';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, leagueColors, type } from '@/theme';
+import { clubColor, leagueColors, palette, textOnFill, typeV2 } from '@/theme';
 
 const SPIN_MS = 4800;
 const FULL_TURNS = 5;
+const FLOOD_MS = 500;
+const CREST_DELAY_MS = 450;
+const NAME_DELAY_MS = 1000;
+const LETTER_STAGGER_MS = 35;
 
 type Phase = 'idle' | 'spinning' | 'result';
 
@@ -81,17 +96,14 @@ export default function Roulette() {
     assign.mutate();
   };
 
-  if (phase === 'result' && assigned) return <Result club={assigned.club} onContinue={() => router.replace('/home')} />;
+  if (phase === 'result' && assigned) return <Reveal club={assigned.club} onContinue={() => router.replace('/home')} />;
 
   const leagues = Object.keys(leagueColors);
   return (
-    <Screen glow="blue" scroll={false} banner={false} bottomInset>
+    <Screen scroll={false} banner={false} bottomInset>
       <View style={styles.header}>
-        <View style={styles.pill}>
-          <Text style={styles.pillText}>SORTEO ÚNICO</Text>
-        </View>
         <Text style={styles.title}>Sorteo de tu club</Text>
-        <Text style={styles.subtitle}>Este será tu equipo durante todo el torneo</Text>
+        <Text style={styles.subtitle}>Este será tu equipo durante todo el torneo. Solo puedes girar una vez y el resultado es definitivo.</Text>
       </View>
 
       <View style={styles.wheel}>
@@ -115,103 +127,112 @@ export default function Roulette() {
           loading={phase === 'spinning'}
           onPress={spin}
         />
-        <Text style={styles.note}>Solo puedes girar una vez. El resultado es definitivo.</Text>
       </View>
     </Screen>
   );
 }
 
-function Result({ club, onContinue }: { club: Club; onContinue: () => void }) {
+/**
+ * "Opening the envelope": the club colour floods the screen, the crest drops in with a bounce and the name is
+ * composed letter by letter. Purely visual: the club was already decided by the server.
+ */
+function Reveal({ club, onContinue }: { club: Club; onContinue: () => void }) {
+  const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const color = clubColor(club.shortName, club.primaryColor);
+  const ink = textOnFill(color);
+
   return (
-    <Screen glow="green" scroll={false} banner={false} bottomInset>
-      <View style={styles.header}>
-        <View style={[styles.pill, styles.pillDone]}>
-          <Text style={[styles.pillText, { color: colors.accent }]}>SORTEO COMPLETADO</Text>
+    <View style={styles.revealRoot}>
+      <View style={styles.revealTop}>
+        <Flood color={color} width={width} height={height} />
+        <View style={[styles.revealContent, { paddingTop: insets.top + 16 }]}>
+          <Animated.Text entering={FadeIn.delay(CREST_DELAY_MS)} style={[typeV2.label, { color: ink }]}>
+            ¡Tu club es...!
+          </Animated.Text>
+          <Animated.View entering={BounceInUp.delay(CREST_DELAY_MS).duration(1000)} style={styles.crestPlate}>
+            <ClubCrest crestUrl={club.crestUrl} name={club.name} size={140} />
+          </Animated.View>
+          <ComposedName name={club.name} color={ink} />
+          <Animated.Text entering={FadeIn.delay(NAME_DELAY_MS + club.name.length * LETTER_STAGGER_MS)} style={[typeV2.body, { color: ink }]}>
+            {club.league} · {club.country}
+          </Animated.Text>
         </View>
-        <Text style={styles.title}>Sorteo de tu club</Text>
-        <Text style={styles.subtitle}>Este será tu equipo durante todo el torneo</Text>
       </View>
-
-      <View style={styles.resultWrap}>
-        <Card variant="highlight" style={styles.resultCard}>
-          <Text style={styles.resultKicker}>¡Tu club es...!</Text>
-          <ClubCrest crestUrl={club.crestUrl} name={club.name} size={150} style={styles.resultCrest} />
-          <Text style={styles.resultName} adjustsFontSizeToFit numberOfLines={2}>
-            {club.name}
-          </Text>
-          <View style={styles.chips}>
-            <Chip label="Liga" value={club.league} />
-            <Chip label="País" value={club.country} />
-          </View>
-        </Card>
-      </View>
-
-      <View style={styles.footer}>
+      <View style={[styles.revealFooter, { paddingBottom: insets.bottom + 16 }]}>
         <Button label="Comenzar" iconRight="arrow-right" onPress={onContinue} />
       </View>
-    </Screen>
+    </View>
   );
 }
 
-function Chip({ label, value }: { label: string; value: string }) {
+/** A circle that grows from the centre until it covers the whole area (instant when reduced motion is on). */
+function Flood({ color, width, height }: { color: string; width: number; height: number }) {
+  const reduce = useReducedMotion();
+  const scale = useSharedValue(reduce ? 1 : 0);
+  useEffect(() => {
+    if (!reduce) scale.value = withTiming(1, { duration: FLOOD_MS, easing: Easing.out(Easing.cubic) });
+  }, [reduce, scale]);
+  const animated = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const diameter = Math.hypot(width, height) * 2;
   return (
-    <View style={styles.chip}>
-      <Text style={styles.chipLabel}>{label}</Text>
-      <Text style={styles.chipValue}>{value}</Text>
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        {
+          position: 'absolute',
+          width: diameter,
+          height: diameter,
+          borderRadius: diameter / 2,
+          left: (width - diameter) / 2,
+          top: (height - diameter) / 2,
+          backgroundColor: color,
+        },
+        animated,
+      ]}
+    />
+  );
+}
+
+function ComposedName({ name, color }: { name: string; color: string }) {
+  const words = name.toUpperCase().split(/\s+/).filter(Boolean);
+  const fontSize = name.length > 14 ? 34 : 44;
+  let index = 0;
+  return (
+    <View style={styles.name} accessible accessibilityLabel={name}>
+      {words.map((word, w) => (
+        <View key={w} style={styles.word}>
+          {word.split('').map((letter, l) => (
+            <Animated.Text
+              key={l}
+              entering={FadeInDown.duration(220).delay(NAME_DELAY_MS + index++ * LETTER_STAGGER_MS)}
+              style={[typeV2.scoreBug, { color, fontSize, lineHeight: fontSize + 4 }]}
+            >
+              {letter}
+            </Animated.Text>
+          ))}
+        </View>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { alignItems: 'center', paddingHorizontal: 16 },
-  pill: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surface,
-    borderRadius: 14,
-    paddingHorizontal: 22,
-    paddingVertical: 8,
-    marginBottom: 18,
-  },
-  pillDone: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  pillText: { ...type.eyebrow, fontSize: 14, color: colors.textSecondary, letterSpacing: 3 },
-  title: { ...type.titleHero, fontSize: 44, lineHeight: 46, color: colors.textPrimary, textAlign: 'center' },
-  subtitle: { ...type.body, color: colors.textSecondary, textAlign: 'center', marginTop: 6 },
-  wheel: { alignItems: 'center', marginTop: 36 },
-  legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 10, marginTop: 28, paddingHorizontal: 20 },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  swatch: { width: 12, height: 12, borderRadius: 3 },
-  legendText: { ...type.bodyStrong, color: colors.textPrimary },
+  header: { paddingHorizontal: 16, gap: 8 },
+  title: { ...typeV2.titleScreen, color: palette.paper },
+  subtitle: { ...typeV2.body, color: palette.textSecondary },
+  wheel: { alignItems: 'center', marginTop: 32 },
+  legend: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 16, rowGap: 8, marginTop: 24, paddingHorizontal: 20 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  swatch: { width: 12, height: 12, borderRadius: 2 },
+  legendText: { ...typeV2.caption, color: palette.paper },
   footer: { marginTop: 'auto', paddingHorizontal: 16, gap: 12 },
-  error: { ...type.bodyStrong, color: colors.danger, textAlign: 'center' },
-  note: { ...type.caption, color: colors.textSecondary, textAlign: 'center' },
-  resultWrap: { paddingHorizontal: 16, marginTop: 32 },
-  resultCard: { alignItems: 'center', paddingVertical: 24, backgroundColor: colors.surfaceRaised },
-  resultKicker: { ...type.titleCard, color: colors.accent, fontSize: 30 },
-  resultCrest: { marginVertical: 24 },
-  resultName: { ...type.titleHero, fontSize: 46, lineHeight: 48, color: colors.textPrimary, textAlign: 'center' },
-  chips: { flexDirection: 'row', gap: 12, marginTop: 16 },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.surfaceSunken,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  chipLabel: { ...type.eyebrow, color: colors.textSecondary, letterSpacing: 1.5 },
-  chipValue: { ...type.bodyStrong, color: colors.textPrimary },
+  error: { ...typeV2.bodyStrong, color: palette.dangerText, textAlign: 'center' },
+  revealRoot: { flex: 1, backgroundColor: palette.ink },
+  revealTop: { flex: 1, overflow: 'hidden', alignItems: 'center', justifyContent: 'center' },
+  revealContent: { alignItems: 'center', gap: 20, paddingHorizontal: 24 },
+  crestPlate: { backgroundColor: 'rgba(255,255,255,0.92)', borderRadius: 16, padding: 20 },
+  name: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', columnGap: 14 },
+  word: { flexDirection: 'row' },
+  revealFooter: { paddingHorizontal: 16, paddingTop: 16, backgroundColor: palette.ink },
 });

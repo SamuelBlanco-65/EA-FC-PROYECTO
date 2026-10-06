@@ -75,7 +75,8 @@ function RemoteImage({ path, fallbackText, size, radius, style, fit, dashed }: R
             setLoaded(true);
           }}
           onError={(e) => {
-            if (__DEV__) console.warn('[media] FAILED', url, e.error);
+            // A 404 is the normal "no image" case (NULL photo_path); only other failures deserve a warning.
+            if (__DEV__) (String(e.error).includes('404') ? console.log : console.warn)('[media] FAILED', url, e.error);
             setFailed(true);
           }}
           accessibilityLabel={fallbackText}

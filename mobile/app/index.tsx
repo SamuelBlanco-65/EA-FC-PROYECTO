@@ -19,9 +19,9 @@ export default function Gate() {
 
   const error = participation.error;
   // 403 NOT_A_PARTICIPANT: not enrolled yet, which is the normal state before the roulette.
-  // An admin who does not play has nothing to draw (and may find the enrolment closed): straight to the profile.
+  // An admin who does not play has nothing to draw (and may find the enrolment closed): straight to Administración.
   if (isApiError(error) && error.code === 'NOT_A_PARTICIPANT') {
-    return <Redirect href={role === 'admin' ? '/profile' : '/roulette'} />;
+    return <Redirect href={role === 'admin' ? '/admin' : '/roulette'} />;
   }
 
   if (participation.isError) {

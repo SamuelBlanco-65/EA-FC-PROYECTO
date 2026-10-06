@@ -1,14 +1,18 @@
-import { PropsWithChildren } from 'react';
+import { useIsFocused } from 'expo-router';
+import { PropsWithChildren, useEffect, useRef } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { Easing, useAnimatedStyle, useReducedMotion, useSharedValue, withTiming } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, layout } from '@/theme';
+import { metrics, palette } from '@/theme';
 
 import { ConnectionBanner, useBannerMode } from './ConnectionBanner';
-import { ScreenBackground } from './ScreenBackground';
+
+const FADE_MS = 260;
+const RISE_DP = 14;
+const EASE_OUT = Easing.out(Easing.cubic);
 
 interface ScreenProps {
-  glow?: 'green' | 'blue' | 'red' | 'none';
   /** Scrollable body with the 16 dp side margin. Without it, children fill the screen and lay themselves out. */
   scroll?: boolean;
   onRefresh?: () => void;
@@ -19,8 +23,29 @@ interface ScreenProps {
   banner?: boolean;
 }
 
+/**
+ * Tab screens stay mounted while hidden, so a mount animation never replays when you come back to a tab.
+ * This fades the content in each time the screen regains focus (never on first mount: that would hide it if the animation failed).
+ */
+function useFocusFade() {
+  const focused = useIsFocused();
+  const reduce = useReducedMotion();
+  const wasFocused = useRef(focused);
+  const opacity = useSharedValue(1);
+  const rise = useSharedValue(0);
+  useEffect(() => {
+    if (focused && !wasFocused.current && !reduce) {
+      opacity.value = 0;
+      rise.value = RISE_DP;
+      opacity.value = withTiming(1, { duration: FADE_MS, easing: EASE_OUT });
+      rise.value = withTiming(0, { duration: FADE_MS, easing: EASE_OUT });
+    }
+    wasFocused.current = focused;
+  }, [focused, reduce, opacity, rise]);
+  return useAnimatedStyle(() => ({ opacity: opacity.value, transform: [{ translateY: rise.value }] }));
+}
+
 export function Screen({
-  glow = 'green',
   scroll = true,
   onRefresh,
   refreshing = false,
@@ -30,18 +55,18 @@ export function Screen({
 }: PropsWithChildren<ScreenProps>) {
   const insets = useSafeAreaInsets();
   const mode = useBannerMode();
+  const fade = useFocusFade();
   const showBanner = banner && mode !== null;
   // The banner paints under the status bar itself, so the content only needs the inset when there is no banner.
   const topPadding = showBanner ? 12 : insets.top + 12;
   const bottomPadding = (bottomInset ? insets.bottom : 0) + 24;
 
   return (
-    <View style={styles.root}>
-      <ScreenBackground glow={glow} />
+    <Animated.View style={[styles.root, fade]}>
       {showBanner && mode ? <ConnectionBanner mode={mode} /> : null}
       {scroll ? (
         <ScrollView
-          contentContainerStyle={{ paddingHorizontal: layout.screenPadding, paddingTop: topPadding, paddingBottom: bottomPadding }}
+          contentContainerStyle={{ paddingHorizontal: metrics.screenPadding, paddingTop: topPadding, paddingBottom: bottomPadding }}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           refreshControl={
@@ -49,9 +74,9 @@ export function Screen({
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={onRefresh}
-                tintColor={colors.accent}
-                colors={[colors.accent]}
-                progressBackgroundColor={colors.surfaceRaised}
+                tintColor={palette.signal}
+                colors={[palette.signal]}
+                progressBackgroundColor={palette.panelRaised}
               />
             ) : undefined
           }
@@ -61,10 +86,10 @@ export function Screen({
       ) : (
         <View style={{ flex: 1, paddingTop: topPadding, paddingBottom: bottomPadding }}>{children}</View>
       )}
-    </View>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
+  root: { flex: 1, backgroundColor: palette.ink },
 });

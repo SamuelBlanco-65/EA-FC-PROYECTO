@@ -7,7 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { realtimeService } from '@/realtime/RealtimeService';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, fonts } from '@/theme';
+import { fontsV2, palette } from '@/theme';
 
 export type BannerMode = 'offline' | 'connecting' | null;
 
@@ -21,6 +21,7 @@ export function useBannerMode(): BannerMode {
   return null;
 }
 
+/** The single, thin connection signal (design-system-v2.md §7 "Estados"). */
 export function ConnectionBanner({ mode }: { mode: Exclude<BannerMode, null> }) {
   const insets = useSafeAreaInsets();
   const queryClient = useQueryClient();
@@ -33,16 +34,13 @@ export function ConnectionBanner({ mode }: { mode: Exclude<BannerMode, null> }) 
 
   const offline = mode === 'offline';
   return (
-    <View style={[styles.banner, { paddingTop: insets.top + 8 }]} accessibilityRole="alert">
-      <Feather name={offline ? 'wifi-off' : 'wifi'} size={22} color={colors.textOnAccent} />
-      <View style={styles.texts}>
-        <Text style={styles.title}>{offline ? 'Sin conexión' : 'Conectando en tiempo real…'}</Text>
-        <Text style={styles.subtitle}>
-          {offline ? 'Mostrando datos guardados' : 'Puede tardar si el servidor estaba dormido'}
-        </Text>
-      </View>
-      <Pressable onPress={retry} style={styles.retry} accessibilityRole="button">
-        <Text style={styles.retryText}>Reintentar</Text>
+    <View style={[styles.banner, { paddingTop: insets.top + 6 }]} accessibilityRole="alert">
+      <Feather name={offline ? 'wifi-off' : 'wifi'} size={16} color={palette.onSignal} />
+      <Text style={styles.text} numberOfLines={1}>
+        {offline ? 'Sin conexión · datos guardados' : 'Conectando · el servidor puede estar dormido'}
+      </Text>
+      <Pressable onPress={retry} hitSlop={8} accessibilityRole="button">
+        <Text style={styles.retry}>Reintentar</Text>
       </Pressable>
     </View>
   );
@@ -50,16 +48,13 @@ export function ConnectionBanner({ mode }: { mode: Exclude<BannerMode, null> }) 
 
 const styles = StyleSheet.create({
   banner: {
-    backgroundColor: colors.warning,
+    backgroundColor: palette.cardYellow,
     paddingHorizontal: 16,
-    paddingBottom: 8,
+    paddingBottom: 6,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: 8,
   },
-  texts: { flex: 1 },
-  title: { fontFamily: fonts.bold, fontSize: 15, lineHeight: 18, color: colors.textOnAccent },
-  subtitle: { fontFamily: fonts.medium, fontSize: 12, lineHeight: 15, color: colors.textOnAccent },
-  retry: { borderWidth: 1.5, borderColor: colors.textOnAccent, borderRadius: 10, paddingHorizontal: 12, paddingVertical: 6 },
-  retryText: { fontFamily: fonts.bold, fontSize: 13, color: colors.textOnAccent },
+  text: { flex: 1, fontFamily: fontsV2.semibold, fontSize: 13, lineHeight: 18, color: palette.onSignal },
+  retry: { fontFamily: fontsV2.bold, fontSize: 13, lineHeight: 18, color: palette.onSignal, textDecorationLine: 'underline' },
 });

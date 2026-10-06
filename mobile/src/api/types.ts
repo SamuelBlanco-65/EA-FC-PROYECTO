@@ -97,6 +97,13 @@ export interface Player {
   nationality: string | null;
   shirtNumber: number | null;
   photoUrl: string;
+  /** Card stats, 1-99 or null. For goalkeepers the same columns mean diving, handling, kicking, reflexes, speed, positioning. */
+  pace: number | null;
+  shooting: number | null;
+  passing: number | null;
+  dribbling: number | null;
+  defending: number | null;
+  physical: number | null;
 }
 
 /** One token of the tactical board; x/y are normalized 0..1 (own goal at the bottom). */

@@ -30,6 +30,34 @@ export function summarizeRounds(fixtures: Fixture[]): RoundSummary[] {
   }));
 }
 
+export type RoundResult = 'W' | 'D' | 'L';
+
+export interface RoundStep {
+  round: number;
+  state: 'done' | 'current' | 'upcoming';
+  /** My result in that round when I played a closed match; null if it is not closed yet or I rested. */
+  result: RoundResult | null;
+  /** I have no match in that round (odd number of clubs: one rests each round). */
+  rest: boolean;
+}
+
+/** One step per round for the home "season trail", in round order. */
+export function seasonTrail(fixtures: Fixture[], participantId: string, currentRound: number): RoundStep[] {
+  return summarizeRounds(fixtures)
+    .sort((a, b) => a.round - b.round)
+    .map(({ round, matches, closed }) => {
+      const mine = matches.find((m) => isMine(m, participantId));
+      let result: RoundResult | null = null;
+      if (mine && isClosed(mine.status) && mine.homeScore !== null && mine.awayScore !== null) {
+        const iAmHome = mine.home.participantId === participantId;
+        const scored = iAmHome ? mine.homeScore : mine.awayScore;
+        const conceded = iAmHome ? mine.awayScore : mine.homeScore;
+        result = scored > conceded ? 'W' : scored < conceded ? 'L' : 'D';
+      }
+      return { round, state: closed ? 'done' : round === currentRound ? 'current' : 'upcoming', result, rest: !mine };
+    });
+}
+
 /** The room is offered while there is something to do in it: record events (ACTIVE) or answer the result. */
 export const canEnterRoom = (status: MatchStatus) => status === 'ACTIVE' || status === 'PENDING_CONFIRMATION';
 

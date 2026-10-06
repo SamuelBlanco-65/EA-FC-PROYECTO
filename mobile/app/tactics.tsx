@@ -14,11 +14,13 @@ import { useMySquad } from '@/features/match/hooks';
 import { FORMATIONS, formationById } from '@/features/tactics/formations';
 import { FpsMeter } from '@/features/tactics/FpsMeter';
 import { useMyLineup, useSaveLineup } from '@/features/tactics/hooks';
-import { buildSlots, type BoardSlot, signature, toPositions } from '@/features/tactics/lineup';
+import { benchOf, buildSlots, type BoardSlot, signature, swapPlayers, toPositions } from '@/features/tactics/lineup';
+import { LineupSheet } from '@/features/tactics/LineupSheet';
+import { PlayerCard } from '@/features/squad/PlayerCard';
 import { Pitch } from '@/features/tactics/Pitch';
 import { PlayerToken } from '@/features/tactics/PlayerToken';
 import { useConnectionStore } from '@/stores/connectionStore';
-import { colors, fonts, layout, type } from '@/theme';
+import { metrics, palette, radius, typeV2 } from '@/theme';
 
 export default function Tactics() {
   const router = useRouter();
@@ -26,11 +28,11 @@ export default function Tactics() {
   const lineup = useMyLineup();
 
   return (
-    <Screen glow="green" scroll={false} bottomInset>
+    <Screen scroll={false} bottomInset>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.back} hitSlop={8} accessibilityRole="button">
-          <Feather name="chevron-left" size={26} color={colors.textPrimary} />
-          <Text style={styles.backText}>Perfil</Text>
+          <Feather name="chevron-left" size={26} color={palette.paper} />
+          <Text style={styles.backText}>Plantilla</Text>
         </Pressable>
         <Text style={styles.title}>Pizarra táctica</Text>
       </View>
@@ -66,6 +68,9 @@ function Board({ squad, saved }: BoardProps) {
     saved ? signature(saved.formation, saved.positions) : null,
   );
 
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [card, setCard] = useState<Player | null>(null);
+
   const [size, setSize] = useState<{ width: number; height: number } | null>(null);
   const fieldWidth = useSharedValue(0);
   const fieldHeight = useSharedValue(0);
@@ -78,6 +83,11 @@ function Board({ squad, saved }: BoardProps) {
 
   const onMoved = useCallback((index: number, x: number, y: number) => {
     setSlots((current) => current.map((s, i) => (i === index ? { ...s, x, y } : s)));
+  }, []);
+
+  // A substitute takes the starter's slot; the same eleven are kept if the formation changes afterwards.
+  const swap = useCallback((outId: string, incoming: Player) => {
+    setSlots((current) => swapPlayers(current, outId, incoming));
   }, []);
 
   const pickFormation = (id: string) => {
@@ -135,7 +145,7 @@ function Board({ squad, saved }: BoardProps) {
                 onMoved={onMoved}
               />
             ))}
-            <FpsMeter />
+            {__DEV__ ? <FpsMeter /> : null}
           </>
         ) : null}
       </View>
@@ -145,8 +155,9 @@ function Board({ squad, saved }: BoardProps) {
       ) : null}
       {save.isError ? <Text style={styles.error}>{errorMessage(save.error)}</Text> : null}
 
+      <Text style={styles.hint}>Mantén pulsada una ficha y arrástrala. Con «Cambios» eliges quién juega.</Text>
       <View style={styles.footer}>
-        <Text style={styles.hint}>Mantén pulsada una ficha y arrástrala para moverla.</Text>
+        <Button label="Cambios" icon="repeat" variant="secondary" onPress={() => setSheetOpen(true)} style={styles.swap} />
         <Button
           label={label}
           icon={dirty ? 'save' : 'check'}
@@ -156,34 +167,37 @@ function Board({ squad, saved }: BoardProps) {
           style={styles.save}
         />
       </View>
+
+      <LineupSheet
+        visible={sheetOpen}
+        starters={slots}
+        bench={benchOf(squad, slots)}
+        onSwap={swap}
+        onInfo={setCard}
+        onClose={() => setSheetOpen(false)}
+      />
+      <PlayerCard player={card} onClose={() => setCard(null)} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  header: { paddingHorizontal: layout.screenPadding, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 44 },
+  header: { paddingHorizontal: metrics.screenPadding, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', height: 44 },
   back: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  backText: { ...type.label, fontSize: 17, color: colors.textPrimary },
-  title: { ...type.titleScreen, fontSize: 26, lineHeight: 28, color: colors.textPrimary },
-  body: { flex: 1, paddingHorizontal: layout.screenPadding, paddingTop: 12 },
+  backText: { ...typeV2.bodyStrong, color: palette.paper },
+  title: { ...typeV2.titleClub, color: palette.paper },
+  body: { flex: 1, paddingHorizontal: metrics.screenPadding, paddingTop: 12 },
   board: { flex: 1, gap: 12 },
-  tabs: {
-    flexDirection: 'row',
-    padding: 4,
-    gap: 4,
-    borderRadius: 18,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  tab: { flex: 1, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  tabActive: { backgroundColor: colors.accent },
-  tabText: { fontFamily: fonts.displayItalic, fontSize: 20, color: colors.textSecondary },
-  tabTextActive: { color: colors.textOnAccent },
-  field: { flex: 1, borderRadius: 20 },
-  warning: { ...type.caption, color: colors.warning },
-  error: { ...type.caption, color: colors.danger },
+  tabs: { flexDirection: 'row', gap: 8 },
+  tab: { flex: 1, height: 44, borderRadius: radius.button, backgroundColor: palette.panel, alignItems: 'center', justifyContent: 'center' },
+  tabActive: { backgroundColor: palette.paper },
+  tabText: { ...typeV2.button, color: palette.textSecondary },
+  tabTextActive: { color: palette.ink },
+  field: { flex: 1, borderRadius: radius.panel },
+  warning: { ...typeV2.caption, color: palette.cardYellow },
+  error: { ...typeV2.caption, color: palette.dangerText },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  hint: { ...type.body, flex: 1, color: colors.textSecondary },
+  hint: { ...typeV2.caption, color: palette.textSecondary },
+  swap: { flex: 1 },
   save: { flex: 1.4 },
 });

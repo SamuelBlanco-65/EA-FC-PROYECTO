@@ -1,6 +1,5 @@
 import { Feather } from '@expo/vector-icons';
 import { randomUUID } from 'expo-crypto';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useMemo, useState } from 'react';
@@ -9,9 +8,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { errorMessage } from '@/api/errors';
 import type { EventType, MatchDetail } from '@/api/types';
+import { Button } from '@/components/Button';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
-import { ScreenBackground } from '@/components/ScreenBackground';
+import { Scorebug } from '@/components/Scorebug';
 import { Skeleton } from '@/components/StateViews';
 import { EventModal } from '@/features/match/EventModal';
 import { EventsPanel } from '@/features/match/EventsPanel';
@@ -21,9 +21,10 @@ import { lastMinute, liveScore, mergeEvents, mySide, tally } from '@/features/ma
 import { useMatch, useMatchAction, useMySquad } from '@/features/match/hooks';
 import { useLandscapeLock } from '@/features/match/useLandscapeLock';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
+import { tapLight } from '@/haptics';
 import { eventQueue, flushQueue, useQueueStore } from '@/offline/queue';
 import { useConnectionStore } from '@/stores/connectionStore';
-import { colors, fonts, radii, type } from '@/theme';
+import { clubColor, palette, typeV2 } from '@/theme';
 
 export default function MatchRoom() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -37,7 +38,6 @@ export default function MatchRoom() {
 
   return (
     <View style={styles.root}>
-      <ScreenBackground glow="green" />
       <StatusBar hidden />
       <QueryBoundary
         queries={[match, participation]}
@@ -55,7 +55,7 @@ export default function MatchRoom() {
       {/* The query states above can hide the way out; this one is always reachable. */}
       {!match.data ? (
         <Pressable onPress={leave} style={[styles.floatingLeave, { left: insets.left + 12 }]} accessibilityRole="button">
-          <Feather name="chevron-left" size={22} color={colors.textPrimary} />
+          <Feather name="chevron-left" size={22} color={palette.paper} />
           <Text style={styles.leaveText}>Salir</Text>
         </Pressable>
       ) : null}
@@ -125,6 +125,7 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
       return;
     }
     setPicking(null);
+    tapLight();
     void flushQueue();
   };
 
@@ -151,46 +152,40 @@ function Room({ match, myParticipantId, onLeave }: { match: MatchDetail; myParti
       <ConnectionBar offline={offline} pendingCount={pendingCount} />
       <View style={[styles.header, { paddingLeft: insets.left + 12, paddingRight: insets.right + 12 }]}>
         <Pressable onPress={onLeave} style={styles.leave} accessibilityRole="button" accessibilityLabel="Salir de la sala">
-          <Feather name="chevron-left" size={22} color={colors.textPrimary} />
+          <Feather name="chevron-left" size={22} color={palette.paper} />
           <Text style={styles.leaveText}>Salir</Text>
         </Pressable>
-        <View style={styles.title}>
-          <View style={styles.titleBar} />
-          <Text style={styles.titleText} numberOfLines={2}>
-            Fecha {match.round} · {match.home.shortName} vs {match.away.shortName}
+        <View style={styles.bug}>
+          <Scorebug
+            variant="compact"
+            mine="home"
+            home={{ code: mine.shortName, name: mine.name, crestUrl: mine.crestUrl, color: clubColor(mine.shortName), score: shown.mine }}
+            away={{ code: other.shortName, name: other.name, crestUrl: other.crestUrl, color: clubColor(other.shortName), score: shown.theirs }}
+          />
+        </View>
+        <View style={styles.meta}>
+          <MatchStatusBadge status={status} compact />
+          <Text style={styles.roleText}>
+            Fecha {match.round} · {side === 'home' ? 'Local' : 'Visitante'}
           </Text>
         </View>
-        {active ? (
-          <View style={styles.liveBadge}>
-            <View style={styles.liveDot} />
-            <Text style={styles.liveText}>En vivo</Text>
-          </View>
-        ) : (
-          <MatchStatusBadge status={status} compact />
-        )}
-        <View style={styles.score}>
-          <ScoreBox value={shown.mine} label={mine.shortName} mine />
-          <Text style={styles.colon}>:</Text>
-          <ScoreBox value={shown.theirs} label={other.shortName} />
-        </View>
-        <ConnectionChip online={online} socket={socket} />
-        <View style={styles.rolePill}>
-          <Text style={styles.roleText}>{side === 'home' ? 'Eres el local' : 'Eres el visitante'}</Text>
-        </View>
+        <ConnectionIcon online={online} socket={socket} />
       </View>
 
       <View style={[styles.columns, { paddingLeft: insets.left + 12, paddingRight: insets.right + 12 }]}>
-        <View style={styles.colSide}>
+        <View style={styles.colMine}>
           <MyTeamPanel team={mine} side={side} enabled={active} onPick={setPicking} />
         </View>
         <View style={styles.colCenter}>
           <EventsPanel
             events={events}
             myParticipantId={myParticipantId}
+            myColor={clubColor(mine.shortName)}
+            otherColor={clubColor(other.shortName)}
             onDismissRejected={(eventId) => void eventQueue.dismissRejected(eventId)}
           />
         </View>
-        <View style={styles.colSide}>
+        <View style={styles.colOther}>
           <OpponentPanel team={other} side={side === 'home' ? 'away' : 'home'} tally={tally(events, other.participantId)} />
         </View>
       </View>
@@ -264,26 +259,16 @@ function Footer({
     const blocked = !isHome || offline || pendingCount > 0;
     return (
       <>
-        <Pressable
+        <Button
+          label={finishing ? 'Finalizando…' : 'Finalizar partido'}
+          icon={blocked ? 'lock' : 'flag'}
+          variant="secondary"
+          loading={finishing}
+          disabled={blocked}
           onPress={onFinish}
-          disabled={blocked || finishing}
-          accessibilityRole="button"
-          accessibilityState={{ disabled: blocked || finishing, busy: finishing }}
-          style={({ pressed }) => [styles.finishWrap, pressed && { opacity: 0.85 }]}
-        >
-          {blocked ? (
-            <View style={[styles.finish, styles.finishBlocked]}>
-              <Feather name="lock" size={20} color={colors.textSecondary} />
-              <Text style={[styles.finishText, { color: colors.textSecondary }]}>Finalizar partido</Text>
-            </View>
-          ) : (
-            <LinearGradient colors={['#FFFFFF', '#E4E8F8']} style={styles.finish}>
-              <Feather name="flag" size={20} color={colors.textOnAccent} />
-              <Text style={[styles.finishText, { color: colors.textOnAccent }]}>{finishing ? 'Finalizando…' : 'Finalizar partido'}</Text>
-            </LinearGradient>
-          )}
-        </Pressable>
-        <Text style={[styles.hint, (offline || pendingCount > 0) && isHome && { color: colors.warning }]}>{reason}</Text>
+          style={[styles.finish, !blocked && !finishing && styles.finishReady]}
+        />
+        <Text style={[styles.hint, (offline || pendingCount > 0) && isHome && { color: palette.cardYellow }]}>{reason}</Text>
       </>
     );
   }
@@ -304,8 +289,8 @@ function ConnectionBar({ offline, pendingCount }: { offline: boolean; pendingCou
   const plural = pendingCount === 1 ? 'evento pendiente' : 'eventos pendientes';
   return (
     <View style={[styles.bar, offline ? styles.barOffline : styles.barSending]} accessibilityRole="alert">
-      <Feather name={offline ? 'wifi-off' : 'upload-cloud'} size={16} color={offline ? colors.textOnAccent : colors.warning} />
-      <Text style={[styles.barText, !offline && { color: colors.warning }]}>
+      <Feather name={offline ? 'wifi-off' : 'upload-cloud'} size={16} color={offline ? palette.onSignal : palette.cardYellow} />
+      <Text style={[styles.barText, !offline && { color: palette.cardYellow }]}>
         {offline
           ? pendingCount > 0
             ? `Sin conexión – ${pendingCount} ${plural} de enviar`
@@ -321,87 +306,44 @@ function ConnectionBar({ offline, pendingCount }: { offline: boolean; pendingCou
   );
 }
 
-function ConnectionChip({ online, socket }: { online: boolean | null; socket: string }) {
+/** Small icon, only when something is wrong: when all is well there is nothing to show. */
+function ConnectionIcon({ online, socket }: { online: boolean | null; socket: string }) {
   const ok = online !== false && socket === 'authenticated';
+  if (ok) return null;
   const off = online === false;
-  const tone = ok ? colors.accent : colors.warning;
   return (
-    <View style={[styles.chip, { borderColor: tone, backgroundColor: ok ? colors.accentSoft : colors.warningSoft }]}>
-      <Feather name={off ? 'wifi-off' : 'wifi'} size={16} color={tone} />
-      <Text style={[styles.chipText, { color: tone }]}>{ok ? 'Conectado' : off ? 'Sin conexión' : 'Conectando'}</Text>
+    <View accessible accessibilityLabel={off ? 'Sin conexión' : 'Conectando'}>
+      <Feather name={off ? 'wifi-off' : 'wifi'} size={20} color={palette.cardYellow} />
     </View>
   );
 }
 
-const ScoreBox = ({ value, label, mine }: { value: number; label: string; mine?: boolean }) => (
-  <View style={styles.scoreCell}>
-    <View style={[styles.scoreBox, mine && { borderColor: colors.accent }]}>
-      <Text style={styles.scoreDigit}>{value}</Text>
-    </View>
-    <Text style={[styles.scoreLabel, mine && { color: colors.accent }]} numberOfLines={1}>
-      {label}
-    </Text>
-  </View>
-);
-
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.bg },
+  root: { flex: 1, backgroundColor: palette.ink },
   room: { flex: 1 },
   loading: { flex: 1, justifyContent: 'center', gap: 12 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12 },
-  centerTitle: { ...type.titleCard, color: colors.textPrimary },
-  centerButton: { height: 44, paddingHorizontal: 20, borderRadius: 12, borderWidth: 1, borderColor: colors.border, alignItems: 'center', justifyContent: 'center' },
+  centerTitle: { ...typeV2.titleClub, color: palette.paper },
+  centerButton: { height: 44, paddingHorizontal: 20, borderRadius: 6, borderWidth: 1, borderColor: palette.lineStrong, alignItems: 'center', justifyContent: 'center' },
   floatingLeave: { position: 'absolute', top: 12, flexDirection: 'row', alignItems: 'center', gap: 4 },
   bar: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, paddingVertical: 6, paddingHorizontal: 12 },
-  barOffline: { backgroundColor: colors.warning },
-  barSending: { backgroundColor: colors.warningSoft, borderBottomWidth: 1, borderBottomColor: colors.warning },
-  barText: { fontFamily: fonts.bold, fontSize: 14, lineHeight: 18, color: colors.textOnAccent },
-  barRetry: { fontFamily: fonts.bold, fontSize: 13, color: colors.textPrimary, textDecorationLine: 'underline' },
-  header: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingTop: 8, paddingBottom: 8 },
+  barOffline: { backgroundColor: palette.cardYellow },
+  barSending: { backgroundColor: palette.panel },
+  barText: { ...typeV2.badge, fontSize: 14, lineHeight: 18, color: palette.onSignal },
+  barRetry: { ...typeV2.badge, color: palette.paper, textDecorationLine: 'underline' },
+  header: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingTop: 8, paddingBottom: 8 },
   leave: { flexDirection: 'row', alignItems: 'center', gap: 2, height: 40 },
-  leaveText: { ...type.bodyStrong, color: colors.textPrimary },
-  title: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
-  titleBar: { width: 16, height: 4, borderRadius: 2, backgroundColor: colors.accent },
-  titleText: { ...type.eyebrow, color: colors.textSecondary, flex: 1 },
-  liveBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: colors.danger,
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    height: 34,
-    transform: [{ skewX: '-8deg' }],
-  },
-  liveDot: { width: 9, height: 9, borderRadius: 5, backgroundColor: colors.textOnAccent },
-  liveText: { fontFamily: fonts.displayItalic, fontSize: 18, lineHeight: 20, color: colors.textOnAccent, textTransform: 'uppercase', letterSpacing: 1 },
-  score: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  colon: { ...type.scoreDigit, fontSize: 28, color: colors.textSecondary },
-  scoreCell: { alignItems: 'center', gap: 2, maxWidth: 70 },
-  scoreLabel: { fontFamily: fonts.bold, fontSize: 10, lineHeight: 12, letterSpacing: 1, color: colors.textSecondary, textTransform: 'uppercase' },
-  scoreBox: {
-    width: 44,
-    height: 52,
-    borderRadius: radii.digit,
-    backgroundColor: colors.surfaceSunken,
-    borderWidth: 1,
-    borderColor: colors.border,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scoreDigit: { ...type.scoreDigit, fontSize: 36, lineHeight: 40, color: colors.textPrimary },
-  chip: { flexDirection: 'row', alignItems: 'center', gap: 6, height: 34, paddingHorizontal: 10, borderRadius: 12, borderWidth: 1 },
-  chipText: { ...type.badge },
-  rolePill: { height: 34, paddingHorizontal: 12, borderRadius: 12, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center' },
-  roleText: { ...type.bodyStrong, fontSize: 14 , color: colors.textPrimary },
+  leaveText: { ...typeV2.bodyStrong, color: palette.paper },
+  bug: { flex: 1, maxWidth: 460 },
+  meta: { gap: 4 },
+  roleText: { ...typeV2.caption, color: palette.textSecondary },
   columns: { flex: 1, flexDirection: 'row', gap: 10 },
-  colSide: { flex: 3 },
+  colMine: { flex: 3 },
   colCenter: { flex: 3.4 },
+  colOther: { flex: 1.6 },
   footer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16, paddingVertical: 8, minHeight: 56 },
-  finishWrap: { borderRadius: radii.button },
-  finish: { height: 44, paddingHorizontal: 28, borderRadius: radii.button, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  finishBlocked: { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-  finishText: { fontFamily: fonts.displayItalic, fontSize: 20, lineHeight: 24, textTransform: 'uppercase' },
-  hint: { ...type.body, fontSize: 14, color: colors.textSecondary, flexShrink: 1 },
-  status: { ...type.bodyStrong, fontSize: 15, color: colors.textPrimary, textAlign: 'center' },
+  finish: { paddingHorizontal: 24 },
+  finishReady: { borderColor: palette.paper },
+  hint: { ...typeV2.body, fontSize: 14, color: palette.textSecondary, flexShrink: 1 },
+  status: { ...typeV2.bodyStrong, color: palette.paper, textAlign: 'center' },
 });

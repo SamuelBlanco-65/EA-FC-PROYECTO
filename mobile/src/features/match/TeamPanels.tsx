@@ -1,11 +1,9 @@
-import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { EventType, FixtureTeam } from '@/api/types';
-import { Card, Eyebrow } from '@/components/Card';
+import { Card } from '@/components/Card';
 import { ClubCrest } from '@/components/ClubCrest';
-import { colors, fonts, radii, shadows, type } from '@/theme';
+import { palette, radius, typeV2 } from '@/theme';
 
 import { EventIcon } from './EventIcon';
 import type { Tally } from './derive';
@@ -26,14 +24,13 @@ export function MyTeamPanel({
 }) {
   return (
     <Card variant="highlight" style={styles.panel}>
-      <Eyebrow>Tu equipo</Eyebrow>
       <View style={styles.identity}>
-        <ClubCrest crestUrl={team.crestUrl} name={team.name} size={52} />
+        <ClubCrest crestUrl={team.crestUrl} name={team.name} size={36} />
         <View style={styles.identityText}>
-          <Text style={styles.clubName} numberOfLines={2}>
+          <Text style={styles.clubName} numberOfLines={1}>
             {team.name}
           </Text>
-          <Text style={styles.role}>{ROLE[side]}</Text>
+          <Text style={styles.role}>Tu equipo · {ROLE[side]}</Text>
         </View>
       </View>
       <View style={styles.actions}>
@@ -42,15 +39,16 @@ export function MyTeamPanel({
           onPress={() => onPick('GOAL')}
           accessibilityRole="button"
           accessibilityLabel="Registrar gol"
-          style={({ pressed }) => [styles.actionWrap, !enabled && styles.dim, pressed && styles.pressed, enabled && shadows.glowAccent]}
+          accessibilityState={{ disabled: !enabled }}
+          style={({ pressed }) => [styles.goal, !enabled && styles.goalOff, pressed && enabled && styles.goalPressed]}
         >
-          <LinearGradient colors={[colors.accentGradientTop, colors.accentGradientBottom]} style={styles.action}>
-            <EventIcon type="GOAL" size={30} color={colors.textOnAccent} />
-            <Text style={[styles.actionText, { color: colors.textOnAccent }]}>Gol</Text>
-          </LinearGradient>
+          <EventIcon type="GOAL" size={36} color={enabled ? palette.onSignal : palette.textTertiary} />
+          <Text style={[styles.goalText, { color: enabled ? palette.onSignal : palette.textTertiary }]}>Gol</Text>
         </Pressable>
-        <CardButton type="YELLOW" label="Amarilla" enabled={enabled} onPress={onPick} />
-        <CardButton type="RED" label="Roja" enabled={enabled} onPress={onPick} />
+        <View style={styles.cards}>
+          <CardButton type="YELLOW" label="Amarilla" enabled={enabled} onPress={onPick} />
+          <CardButton type="RED" label="Roja" enabled={enabled} onPress={onPick} />
+        </View>
       </View>
     </Card>
   );
@@ -68,60 +66,46 @@ function CardButton({
   onPress: (type: EventType) => void;
 }) {
   const yellow = kind === 'YELLOW';
-  const tone = yellow ? colors.warning : colors.danger;
+  const edge = yellow ? palette.cardYellow : palette.cardRed;
+  const text = yellow ? palette.cardYellow : palette.dangerText;
   return (
     <Pressable
       disabled={!enabled}
       onPress={() => onPress(kind)}
       accessibilityRole="button"
       accessibilityLabel={`Registrar tarjeta ${yellow ? 'amarilla' : 'roja'}`}
-      style={({ pressed }) => [
-        styles.actionWrap,
-        styles.action,
-        { backgroundColor: yellow ? colors.warningSoft : colors.dangerSoft, borderColor: tone, borderWidth: 1.5 },
-        !enabled && styles.dim,
-        pressed && styles.pressed,
-      ]}
+      accessibilityState={{ disabled: !enabled }}
+      style={({ pressed }) => [styles.cardButton, { borderColor: enabled ? edge : palette.line }, pressed && enabled && styles.cardPressed]}
     >
-      <EventIcon type={kind} size={30} />
-      <Text style={[styles.actionText, { color: tone }]} numberOfLines={1} adjustsFontSizeToFit>
+      <EventIcon type={kind} size={22} color={enabled ? undefined : palette.textTertiary} />
+      <Text style={[styles.cardText, { color: enabled ? text : palette.textTertiary }]} numberOfLines={1} adjustsFontSizeToFit>
         {label}
       </Text>
     </Pressable>
   );
 }
 
+/** Thin read-only column: the opponent's totals. Nothing here is tappable. */
 export function OpponentPanel({ team, side, tally }: { team: FixtureTeam; side: 'home' | 'away'; tally: Tally }) {
-  const stats = [
-    { label: 'Goles', value: tally.goals },
-    { label: 'Amarillas', value: tally.yellows },
-    { label: 'Rojas', value: tally.reds },
+  const stats: { type: EventType; value: number; label: string }[] = [
+    { type: 'GOAL', value: tally.goals, label: 'Goles' },
+    { type: 'YELLOW', value: tally.yellows, label: 'Amarillas' },
+    { type: 'RED', value: tally.reds, label: 'Rojas' },
   ];
   return (
-    <Card variant="dashed" style={styles.panel}>
-      <View style={styles.opponentHeader}>
-        <Eyebrow tone="info">Oponente</Eyebrow>
-        <View style={styles.readOnly}>
-          <Feather name="lock" size={13} color={colors.textSecondary} />
-          <Text style={styles.readOnlyText}>Solo lectura</Text>
-        </View>
-      </View>
+    <Card style={styles.opponent}>
       <View style={styles.identity}>
-        <ClubCrest crestUrl={team.crestUrl} name={team.name} size={52} />
-        <View style={styles.identityText}>
-          <Text style={[styles.clubName, { color: colors.textSecondary }]} numberOfLines={2}>
-            {team.name}
-          </Text>
-          <Text style={styles.role}>{ROLE[side]}</Text>
-        </View>
+        <ClubCrest crestUrl={team.crestUrl} name={team.name} size={32} />
+        <Text style={styles.code}>{team.shortName}</Text>
       </View>
-      <View style={styles.actions}>
+      <Text style={styles.role} numberOfLines={1}>
+        Oponente · {ROLE[side]}
+      </Text>
+      <View style={styles.stats}>
         {stats.map((s) => (
-          <View key={s.label} style={styles.stat}>
+          <View key={s.type} style={styles.stat} accessible accessibilityLabel={`${s.label}: ${s.value}`}>
+            <EventIcon type={s.type} size={20} />
             <Text style={styles.statValue}>{s.value}</Text>
-            <Text style={styles.statLabel} numberOfLines={1}>
-              {s.label}
-            </Text>
           </View>
         ))}
       </View>
@@ -130,28 +114,42 @@ export function OpponentPanel({ team, side, tally }: { team: FixtureTeam; side: 
 }
 
 const styles = StyleSheet.create({
-  panel: { flex: 1, padding: 12, gap: 8, justifyContent: 'space-between' },
+  panel: { flex: 1, padding: 12, paddingLeft: 16, gap: 8, justifyContent: 'space-between' },
+  opponent: { flex: 1, padding: 12, gap: 6 },
   identity: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   identityText: { flex: 1 },
-  clubName: { ...type.titleCard, fontSize: 22, lineHeight: 24, color: colors.textPrimary },
-  role: { ...type.body, fontSize: 14, lineHeight: 18, color: colors.textSecondary },
+  clubName: { ...typeV2.rowCode, color: palette.paper },
+  code: { ...typeV2.rowCode, color: palette.paper },
+  role: { ...typeV2.caption, color: palette.textSecondary },
   actions: { flexDirection: 'row', gap: 8 },
-  actionWrap: { flex: 1, borderRadius: radii.button },
-  action: { height: 74, borderRadius: radii.button, alignItems: 'center', justifyContent: 'center', gap: 4 },
-  actionText: { fontFamily: fonts.displayItalic, fontSize: 18, lineHeight: 20, textTransform: 'uppercase' },
-  dim: { opacity: 0.4 },
-  pressed: { opacity: 0.8 },
-  opponentHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  readOnly: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  readOnlyText: { ...type.caption, color: colors.textSecondary },
-  stat: {
-    flex: 1,
-    height: 74,
-    borderRadius: radii.button,
-    backgroundColor: colors.surface,
+  goal: {
+    flex: 1.1,
+    minWidth: 120,
+    height: 120,
+    borderRadius: radius.button,
+    backgroundColor: palette.signal,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 4,
   },
-  statValue: { ...type.statValue, color: colors.textPrimary },
-  statLabel: { ...type.caption, color: colors.textSecondary },
+  goalOff: { backgroundColor: palette.panelRaised },
+  goalPressed: { backgroundColor: palette.signalPressed, transform: [{ scale: 0.97 }] },
+  goalText: { ...typeV2.button, fontSize: 28, lineHeight: 30 },
+  cards: { flex: 1, gap: 8 },
+  cardButton: {
+    flex: 1,
+    minHeight: 56,
+    borderRadius: radius.button,
+    borderWidth: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingHorizontal: 8,
+  },
+  cardPressed: { transform: [{ scale: 0.97 }] },
+  cardText: { ...typeV2.button, fontSize: 18, lineHeight: 22 },
+  stats: { gap: 4, marginTop: 2 },
+  stat: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 32 },
+  statValue: { ...typeV2.statBig, color: palette.paper },
 });

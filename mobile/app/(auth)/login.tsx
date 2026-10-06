@@ -5,11 +5,12 @@ import { StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { isApiError } from '@/api/errors';
 import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
 import { Logo } from '@/components/Logo';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { useLogin } from '@/features/auth/useAuth';
-import { colors, fonts, shadows, type } from '@/theme';
+import { palette, typeV2 } from '@/theme';
 
 function loginMessage(error: unknown): string {
   if (!isApiError(error)) return 'No se pudo iniciar sesión.';
@@ -31,19 +32,20 @@ export default function Login() {
   const wrong = login.isError;
 
   return (
-    <Screen glow={wrong ? 'red' : 'green'} banner={false} bottomInset>
+    <Screen banner={false} bottomInset>
       <View style={styles.logo}>
         <Logo />
       </View>
 
       <Text style={styles.title}>Iniciar sesión</Text>
-      <Text style={styles.subtitle}>Entra para ver tu club, la tabla y tus partidos.</Text>
 
       {wrong ? (
-        <View style={[styles.error, shadows.glowDanger]} accessibilityRole="alert">
-          <Feather name="alert-circle" size={24} color={colors.danger} />
-          <Text style={styles.errorText}>{loginMessage(login.error)}</Text>
-        </View>
+        <Card variant="danger" style={styles.error}>
+          <Feather name="alert-circle" size={22} color={palette.dangerText} />
+          <Text style={styles.errorText} accessibilityRole="alert">
+            {loginMessage(login.error)}
+          </Text>
+        </Card>
       ) : null}
 
       <View style={styles.form}>
@@ -106,25 +108,13 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  logo: { marginTop: 24, marginBottom: 48 },
-  title: { ...type.titleHero, color: colors.textPrimary },
-  subtitle: { ...type.body, color: colors.textSecondary, marginTop: 8, marginBottom: 24 },
-  error: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    minHeight: 52,
-    paddingHorizontal: 16,
-    borderRadius: 18,
-    borderWidth: 1.5,
-    borderColor: colors.danger,
-    backgroundColor: colors.dangerSoft,
-    marginBottom: 16,
-  },
-  errorText: { ...type.bodyStrong, color: '#FF8A96', flex: 1 },
+  logo: { marginTop: 32, marginBottom: 56 },
+  title: { ...typeV2.titleScreen, color: palette.paper, marginBottom: 24 },
+  error: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingLeft: 20, marginBottom: 16 },
+  errorText: { ...typeV2.bodyStrong, color: palette.dangerText, flex: 1 },
   form: { gap: 16 },
   submit: { marginTop: 32 },
   footer: { flexDirection: 'row', justifyContent: 'center', marginTop: 48 },
-  footerText: { ...type.body, color: colors.textSecondary },
-  footerLink: { ...type.bodyStrong, fontFamily: fonts.bold, color: colors.accent },
+  footerText: { ...typeV2.body, color: palette.textSecondary },
+  footerLink: { ...typeV2.bodyStrong, color: palette.paper, textDecorationLine: 'underline' },
 });

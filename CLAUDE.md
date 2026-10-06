@@ -9,6 +9,11 @@ Prioridad absoluta: correcto, estable y EXPLICABLE antes que grande o bonito. Na
 3. Trabaja SOLO en la fase que te indique el usuario. Si dice "Fase N", la definición está en la sección "Fase N" de `PROMPTS.md`: léela de ahí (no dependas de un texto pegado en el chat, puede llegar cortado).
 4. Al terminar la fase, usa la skill `cerrar-fase`. Ese cierre mueve a `docs/progress-archive.md` todo menos las 2 últimas fases de PROGRESS.md.
 
+## Ramas y diseño vigente (actualizado 2026-10-05, tras las Fases 12 y 13)
+- **Diseño vigente: v2** (dirección A, transmisión de TV): `docs/design/design-system-v2.md` (tokens, componentes, movimiento) y `docs/design/screens-v2.md` (plan por pantalla). Está implementado en `mobile/src/theme/` y `mobile/src/components/`. `docs/design/design-system.md` y `screens.md` son la v1 (historial). Los tokens v1 (`colors`, `type`, `shadows` en `tokens.ts`) siguen existiendo solo para la `Wheel` y `ClubCrest`: no los uses en pantallas nuevas.
+- **Ramas:** `master` = app v1 probada (etiqueta `app-v1-estable`) + backend con las estadísticas de jugador, y es lo que despliega Render. `redesign-v2` (Fase 12) y `plantilla-detalle` (Fase 13, contiene todo lo anterior) están en GitHub SIN mezclar en `master`. Trabaja en `plantilla-detalle` salvo que el usuario diga otra cosa. No hagas merge a `master`, push de `master` ni redespliegues sin que el usuario lo pida expresamente: `master` es la versión defendible.
+- Qué está hecho y qué falta probar en el teléfono: `docs/PROGRESS.md` (Fases 12 y 13).
+
 ## Peligros conocidos (aprendidos en fases anteriores)
 - Los tests `-m integration` escriben en el Supabase REAL (el mismo de desarrollo). Deben borrar lo que crean en un `finally`, y cada paso del borrado independiente: si uno falla, los demás deben seguir. Antes de dar una fase por cerrada, comprueba 0 torneos y 0 usuarios `it-*` huérfanos.
 - "Torneo actual" = el creado más recientemente. Un torneo de prueba huérfano cambia el comportamiento de TODOS los endpoints siguientes.
@@ -92,5 +97,4 @@ Capas del backend: router (HTTP) -> service (reglas de negocio) -> domain (funci
 - `backend-fastapi`: convenciones del backend Python.
 - `supabase-sql`: migraciones, RLS y funciones SQL.
 - `mobile-expo`: convenciones de la app.
-- `sistema-diseno`: tokens y estilo visual.
 - `cerrar-fase`: reporte, PROGRESS.md y ficha de defensa.

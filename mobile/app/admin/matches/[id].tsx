@@ -8,17 +8,17 @@ import type { MatchDetail } from '@/api/types';
 import { BackHeader } from '@/components/BackHeader';
 import { Button } from '@/components/Button';
 import { Card, Eyebrow } from '@/components/Card';
-import { ClubCrest } from '@/components/ClubCrest';
 import { MatchStatusBadge } from '@/components/MatchStatusBadge';
 import { QueryBoundary } from '@/components/QueryBoundary';
 import { Screen } from '@/components/Screen';
+import { Scorebug } from '@/components/Scorebug';
 import { Skeleton } from '@/components/StateViews';
 import { parseScore, recordedGoals } from '@/features/admin/derive';
 import { useResolveMatch } from '@/features/admin/hooks';
 import { useMatch } from '@/features/match/hooks';
 import { useConnectionStore } from '@/stores/connectionStore';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, fonts, radii, type } from '@/theme';
+import { clubColor, fontsV2, palette, radius, typeV2 } from '@/theme';
 
 const NOTE_MAX = 500;
 
@@ -32,13 +32,14 @@ export default function ResolveMatch() {
 function Resolve({ id }: { id: string }) {
   const match = useMatch(id);
   return (
-    <Screen glow="red" bottomInset>
+    <Screen bottomInset>
       <BackHeader label="Administración" title="Resolver partido" fallback="/admin" />
       <QueryBoundary
         queries={[match]}
         skeleton={
           <View style={styles.stack}>
-            <Skeleton height={160} />
+            <Skeleton height={20} style={styles.skLabel} />
+            <Skeleton height={56} />
             <Skeleton height={120} />
           </View>
         }
@@ -82,22 +83,22 @@ function Form({ match }: { match: MatchDetail }) {
 
   return (
     <View style={styles.stack}>
-      <Card variant={match.status === 'DISPUTED' ? 'danger' : 'raised'} style={styles.head}>
+      <View style={styles.head}>
         <View style={styles.row}>
-          <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : 'info'}>Fecha {match.round}</Eyebrow>
+          <Eyebrow tone={match.status === 'DISPUTED' ? 'danger' : undefined}>Fecha {match.round}</Eyebrow>
           <MatchStatusBadge status={match.status} />
         </View>
-        <View style={styles.versus}>
-          <Side name={match.home.name} crestUrl={match.home.crestUrl} tag="Local" />
-          <Text style={styles.calc}>
-            {goals.home} - {goals.away}
-          </Text>
-          <Side name={match.away.name} crestUrl={match.away.crestUrl} tag="Visitante" />
-        </View>
-        <Text style={styles.caption}>Marcador calculado con los goles registrados.</Text>
-      </Card>
+        <Scorebug
+          variant="compact"
+          home={{ code: match.home.shortName, name: match.home.name, crestUrl: match.home.crestUrl, color: clubColor(match.home.shortName), score: goals.home }}
+          away={{ code: match.away.shortName, name: match.away.name, crestUrl: match.away.crestUrl, color: clubColor(match.away.shortName), score: goals.away }}
+        />
+        <Text style={styles.caption}>
+          Local: {match.home.name} · Visitante: {match.away.name}. Marcador calculado con los goles registrados.
+        </Text>
+      </View>
 
-      <Card style={styles.claims}>
+      <View style={styles.claims}>
         <Claim
           icon="home"
           title="Local"
@@ -121,17 +122,17 @@ function Form({ match }: { match: MatchDetail }) {
           }
           danger={match.status === 'DISPUTED'}
         />
-      </Card>
+      </View>
 
       {done ? (
-        <Card variant="dashed" style={styles.empty}>
+        <Card style={styles.empty}>
           <Text style={styles.resolvedTitle}>
             Resuelto: {match.homeScore} - {match.awayScore}
           </Text>
           {match.resolutionNote ? <Text style={styles.caption}>Nota: {match.resolutionNote}</Text> : null}
         </Card>
       ) : !resolvable ? (
-        <Card variant="dashed" style={styles.empty}>
+        <Card style={styles.empty}>
           <Text style={styles.caption}>Este partido aún no se puede resolver: el estado actual no lo permite.</Text>
         </Card>
       ) : (
@@ -142,15 +143,15 @@ function Form({ match }: { match: MatchDetail }) {
             <Text style={styles.dash}>-</Text>
             <ScoreInput label={match.away.shortName} value={away} onChange={setAway} />
           </View>
-          {!valid ? <Text style={[styles.caption, { color: colors.danger }]}>Escribe un entero entre 0 y 99 en cada casilla.</Text> : null}
+          {!valid ? <Text style={[styles.caption, { color: palette.dangerText }]}>Escribe un entero entre 0 y 99 en cada casilla.</Text> : null}
 
-          <Eyebrow tone="info">Nota (opcional)</Eyebrow>
+          <Eyebrow>Nota (opcional)</Eyebrow>
           <TextInput
             value={note}
             onChangeText={(t) => setNote(t.slice(0, NOTE_MAX))}
             placeholder="Motivo de la decisión"
-            placeholderTextColor={colors.textSecondary}
-            selectionColor={colors.accent}
+            placeholderTextColor={palette.textTertiary}
+            selectionColor={palette.signal}
             multiline
             style={styles.note}
             accessibilityLabel="Nota"
@@ -161,7 +162,7 @@ function Form({ match }: { match: MatchDetail }) {
 
           {resolve.error ? (
             <Card variant="danger" style={styles.errorCard}>
-              <Feather name="alert-triangle" size={20} color={colors.danger} />
+              <Feather name="alert-triangle" size={20} color={palette.dangerText} />
               <Text style={styles.errorText}>{errorMessage(resolve.error)}</Text>
             </Card>
           ) : null}
@@ -179,18 +180,6 @@ function Form({ match }: { match: MatchDetail }) {
   );
 }
 
-function Side({ name, crestUrl, tag }: { name: string; crestUrl: string; tag: string }) {
-  return (
-    <View style={styles.side}>
-      <ClubCrest crestUrl={crestUrl} name={name} size={56} />
-      <Text style={styles.sideName} numberOfLines={2}>
-        {name}
-      </Text>
-      <Text style={styles.tag}>{tag}</Text>
-    </View>
-  );
-}
-
 function Claim({
   icon,
   title,
@@ -204,10 +193,10 @@ function Claim({
 }) {
   return (
     <View style={styles.claim}>
-      <Feather name={icon} size={20} color={danger ? colors.danger : colors.textSecondary} />
+      <Feather name={icon} size={20} color={danger ? palette.dangerText : palette.textSecondary} />
       <View style={{ flex: 1 }}>
         <Text style={styles.claimTitle}>{title}</Text>
-        <Text style={[styles.caption, danger && { color: colors.danger }]}>{text}</Text>
+        <Text style={[styles.caption, danger && { color: palette.dangerText }]}>{text}</Text>
       </View>
     </View>
   );
@@ -222,7 +211,7 @@ function ScoreInput({ label, value, onChange }: { label: string; value: string; 
         keyboardType="number-pad"
         maxLength={2}
         selectTextOnFocus
-        selectionColor={colors.accent}
+        selectionColor={palette.signal}
         style={styles.scoreInput}
         accessibilityLabel={`Goles de ${label}`}
       />
@@ -234,47 +223,46 @@ function ScoreInput({ label, value, onChange }: { label: string; value: string; 
 }
 
 const styles = StyleSheet.create({
-  stack: { gap: 12 },
+  stack: { gap: 16 },
+  skLabel: { width: 160 },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 8 },
-  head: { gap: 14 },
-  versus: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  side: { flex: 1, alignItems: 'center', gap: 6 },
-  sideName: { ...type.bodyStrong, fontFamily: fonts.bold, color: colors.textPrimary, textAlign: 'center' },
-  tag: { ...type.eyebrow, color: colors.textSecondary },
-  calc: { ...type.scoreDigit, color: colors.textPrimary, paddingHorizontal: 8, paddingTop: 10 },
-  caption: { ...type.caption, color: colors.textSecondary },
-  claims: { gap: 14 },
+  head: { gap: 12 },
+  caption: { ...typeV2.caption, color: palette.textSecondary },
+  claims: { gap: 12, paddingVertical: 12, borderTopWidth: 1, borderBottomWidth: 1, borderColor: palette.line },
   claim: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
-  claimTitle: { ...type.bodyStrong, fontFamily: fonts.bold, color: colors.textPrimary },
+  claimTitle: { ...typeV2.bodyStrong, color: palette.paper },
   empty: { alignItems: 'center', gap: 6, paddingVertical: 20 },
-  resolvedTitle: { ...type.titleCard, color: colors.textPrimary },
+  resolvedTitle: { ...typeV2.titleClub, color: palette.paper },
   scoreRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 16 },
   scoreCol: { alignItems: 'center', gap: 6 },
+  // Only colours differ between focused and not: no border width, shadow or elevation changes (Android focus bug).
   scoreInput: {
-    ...type.scoreDigit,
+    fontFamily: fontsV2.display,
+    fontSize: 48,
+    lineHeight: 54,
     width: 84,
     height: 80,
     textAlign: 'center',
-    color: colors.textPrimary,
-    backgroundColor: colors.surfaceSunken,
-    borderRadius: radii.input,
+    color: palette.paper,
+    backgroundColor: palette.panel,
+    borderRadius: radius.input,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: palette.line,
   },
-  scoreLabel: { ...type.caption, color: colors.textSecondary, maxWidth: 90 },
-  dash: { ...type.scoreDigit, color: colors.textSecondary, marginBottom: 24 },
+  scoreLabel: { ...typeV2.caption, color: palette.textSecondary, maxWidth: 90 },
+  dash: { fontFamily: fontsV2.display, fontSize: 48, color: palette.textSecondary, marginBottom: 24 },
   note: {
-    ...type.body,
+    ...typeV2.body,
     minHeight: 96,
     textAlignVertical: 'top',
-    color: colors.textPrimary,
-    backgroundColor: colors.surfaceSunken,
-    borderRadius: radii.input,
+    color: palette.paper,
+    backgroundColor: palette.panel,
+    borderRadius: radius.input,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: palette.line,
     padding: 14,
   },
-  counter: { ...type.caption, color: colors.textSecondary, textAlign: 'right' },
-  errorCard: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  errorText: { ...type.bodyStrong, color: colors.danger, flex: 1 },
+  counter: { ...typeV2.caption, color: palette.textSecondary, textAlign: 'right' },
+  errorCard: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingLeft: 20 },
+  errorText: { ...typeV2.bodyStrong, color: palette.dangerText, flex: 1 },
 });

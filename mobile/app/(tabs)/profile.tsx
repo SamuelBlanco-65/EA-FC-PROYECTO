@@ -2,13 +2,12 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/Button';
-import { Card, Eyebrow } from '@/components/Card';
-import { ClubCrest } from '@/components/ClubCrest';
+import { initials, ClubCrest } from '@/components/ClubCrest';
 import { Screen } from '@/components/Screen';
 import { signOut } from '@/features/auth/useAuth';
 import { useMyParticipation } from '@/features/participation/useMyParticipation';
 import { useSessionStore } from '@/stores/sessionStore';
-import { colors, type } from '@/theme';
+import { palette, typeV2 } from '@/theme';
 
 // Minimal on purpose: the full profile screen belongs to a later phase. Sign-out is needed now to switch accounts.
 export default function Profile() {
@@ -17,36 +16,45 @@ export default function Profile() {
   const router = useRouter();
 
   return (
-    <Screen glow="blue">
-      <Eyebrow>Cuenta</Eyebrow>
+    <Screen>
       <Text style={styles.title}>Perfil</Text>
-      <Card style={styles.card}>
-        <Text style={styles.name}>{user?.displayName}</Text>
-        <Text style={styles.meta}>{user?.email}</Text>
-        <Text style={styles.meta}>{user?.role === 'admin' ? 'Administrador' : 'Participante'}</Text>
-      </Card>
+
+      <View style={styles.identity}>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>{initials(user?.displayName ?? '?')}</Text>
+        </View>
+        <View style={styles.identityText}>
+          <Text style={styles.name} numberOfLines={1}>
+            {user?.displayName}
+          </Text>
+          <Text style={styles.meta} numberOfLines={1}>
+            {user?.email}
+          </Text>
+          <Text style={styles.role}>{user?.role === 'admin' ? 'Administrador' : 'Participante'}</Text>
+        </View>
+      </View>
+
       {participation.data ? (
-        <Card variant="raised" style={styles.club}>
-          <ClubCrest crestUrl={participation.data.club.crestUrl} name={participation.data.club.name} size={64} />
+        <View style={styles.club}>
+          <ClubCrest crestUrl={participation.data.club.crestUrl} name={participation.data.club.name} size={56} />
           <View style={styles.clubText}>
-            <Eyebrow>Mi club</Eyebrow>
-            <Text style={styles.clubName}>{participation.data.club.name}</Text>
+            <Text style={styles.label}>Mi club</Text>
+            <Text style={styles.clubName} numberOfLines={2}>
+              {participation.data.club.name}
+            </Text>
             <Text style={styles.meta}>
               {participation.data.club.league} · {participation.data.club.country}
             </Text>
           </View>
-        </Card>
-      ) : null}
-      {participation.data ? (
-        <View style={styles.tactics}>
-          <Button label="Pizarra táctica" variant="secondary" icon="target" onPress={() => router.push('/tactics')} />
         </View>
       ) : null}
-      {user?.role === 'admin' ? (
-        <View style={styles.tactics}>
+
+      <View style={styles.actions}>
+        {user?.role === 'admin' ? (
           <Button label="Administración" variant="secondary" icon="shield" onPress={() => router.push('/admin')} />
-        </View>
-      ) : null}
+        ) : null}
+      </View>
+
       <View style={styles.logout}>
         <Button label="Cerrar sesión" variant="dangerOutline" icon="log-out" onPress={() => void signOut()} />
       </View>
@@ -55,13 +63,28 @@ export default function Profile() {
 }
 
 const styles = StyleSheet.create({
-  title: { ...type.titleScreen, fontSize: 36, color: colors.textPrimary, marginTop: 6, marginBottom: 16 },
-  card: { gap: 6 },
-  name: { ...type.titleCard, color: colors.textPrimary },
-  meta: { ...type.body, color: colors.textSecondary },
-  club: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 12 },
-  clubText: { flex: 1, gap: 4 },
-  clubName: { ...type.titleCard, color: colors.textPrimary },
-  tactics: { marginTop: 12 },
-  logout: { marginTop: 24 },
+  title: { ...typeV2.titleScreen, color: palette.paper, marginBottom: 24 },
+  identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  avatar: { width: 64, height: 64, borderRadius: 32, backgroundColor: palette.panelRaised, borderWidth: 2, borderColor: palette.signal, alignItems: 'center', justifyContent: 'center' },
+  avatarText: { ...typeV2.statBig, color: palette.paper },
+  identityText: { flex: 1, gap: 2 },
+  name: { ...typeV2.titleClub, color: palette.paper },
+  meta: { ...typeV2.caption, color: palette.textSecondary },
+  role: { ...typeV2.label, color: palette.textSecondary, marginTop: 4 },
+  club: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: palette.line,
+    backgroundColor: palette.panel,
+  },
+  clubText: { flex: 1, gap: 2 },
+  label: { ...typeV2.label, color: palette.textSecondary },
+  clubName: { ...typeV2.titleClub, color: palette.paper },
+  actions: { marginTop: 24, gap: 12 },
+  logout: { marginTop: 32 },
 });

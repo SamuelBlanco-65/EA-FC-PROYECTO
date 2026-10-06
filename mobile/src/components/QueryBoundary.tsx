@@ -21,7 +21,6 @@ export function QueryBoundary({ queries, skeleton, children }: PropsWithChildren
   if (queries.some((q) => q.isPending && q.fetchStatus === 'paused')) {
     return (
       <EmptyState
-        icon="wifi-off"
         title="Sin conexión"
         message="Todavía no hay datos guardados en este teléfono. Conéctate para cargarlos."
       />

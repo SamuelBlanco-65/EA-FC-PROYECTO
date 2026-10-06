@@ -2,7 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { forwardRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, TextInputProps, View } from 'react-native';
 
-import { colors, radii, type } from '@/theme';
+import { metrics, palette, radius, typeV2 } from '@/theme';
 
 type FeatherName = React.ComponentProps<typeof Feather>['name'];
 
@@ -11,9 +11,9 @@ interface TextFieldProps extends Omit<TextInputProps, 'style'> {
   icon?: FeatherName;
   error?: string | null;
   helper?: string;
-  /** Green check on the right (inline validation passed). */
+  /** Check on the right (inline validation passed). */
   valid?: boolean;
-  /** Password field with the "Mostrar" toggle. */
+  /** Password field with the eye toggle. */
   password?: boolean;
   /** Error colour without a message under the field (e.g. the login form shows one banner instead). */
   invalid?: boolean;
@@ -33,18 +33,19 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
       <View
         style={[
           styles.field,
-          // No shadow/elevation here: adding it on focus made Android drop the focus right after the keyboard opened.
+          // Only the border COLOUR changes on focus/error: no shadow, elevation or width change
+          // (a shadow on focus made Android drop the focus right after the keyboard opened).
           focused && !hasError && styles.focused,
           hasError && styles.errored,
         ]}
       >
-        {icon ? <Feather name={icon} size={20} color={colors.textSecondary} /> : null}
+        {icon ? <Feather name={icon} size={20} color={palette.textSecondary} /> : null}
         <TextInput
           ref={ref}
           {...input}
           secureTextEntry={password && !revealed}
-          placeholderTextColor={colors.textSecondary}
-          selectionColor={colors.accent}
+          placeholderTextColor={palette.textTertiary}
+          selectionColor={palette.signal}
           style={styles.input}
           onFocus={(e) => {
             setFocused(true);
@@ -57,50 +58,41 @@ export const TextField = forwardRef<TextInput, TextFieldProps>(function TextFiel
           accessibilityLabel={label}
         />
         {password ? (
-          <Pressable onPress={() => setRevealed((v) => !v)} style={styles.reveal} accessibilityRole="button">
-            <Feather name={revealed ? 'eye-off' : 'eye'} size={20} color={colors.textPrimary} />
-            <Text style={styles.revealText}>{revealed ? 'Ocultar' : 'Mostrar'}</Text>
+          <Pressable
+            onPress={() => setRevealed((v) => !v)}
+            hitSlop={12}
+            accessibilityRole="button"
+            accessibilityLabel={revealed ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+          >
+            <Feather name={revealed ? 'eye-off' : 'eye'} size={22} color={palette.textSecondary} />
           </Pressable>
         ) : hasError ? (
-          <Feather name="alert-circle" size={22} color={colors.danger} />
+          <Feather name="alert-circle" size={22} color={palette.cardRed} />
         ) : valid ? (
-          <Feather name="check" size={22} color={colors.accent} />
+          <Feather name="check" size={22} color={palette.positive} />
         ) : null}
       </View>
-      {error ? <Text style={[styles.note, { color: colors.danger }]}>{error}</Text> : null}
-      {!error && helper ? <Text style={[styles.note, { color: colors.textSecondary }]}>{helper}</Text> : null}
+      {error ? <Text style={[styles.note, { color: palette.dangerText }]}>{error}</Text> : null}
+      {!error && helper ? <Text style={[styles.note, { color: palette.textSecondary }]}>{helper}</Text> : null}
     </View>
   );
 });
 
 const styles = StyleSheet.create({
-  label: { ...type.label, color: colors.textPrimary, marginBottom: 8 },
+  label: { ...typeV2.label, color: palette.textSecondary, marginBottom: 8 },
   field: {
-    height: 56,
-    borderRadius: radii.input,
-    backgroundColor: colors.surface,
+    height: metrics.inputHeight,
+    borderRadius: radius.input,
+    backgroundColor: palette.panel,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: palette.line,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
   },
-  focused: { borderColor: colors.accent, borderWidth: 1.5 },
-  errored: { borderColor: colors.danger, borderWidth: 1.5 },
-  input: { ...type.body, flex: 1, color: colors.textPrimary, paddingVertical: 0 },
-  reveal: {
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1,
-    borderColor: colors.border,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginRight: -8,
-  },
-  revealText: { ...type.bodyStrong, color: colors.textPrimary },
-  note: { ...type.caption, marginTop: 6 },
+  focused: { borderColor: palette.paper },
+  errored: { borderColor: palette.cardRed },
+  input: { ...typeV2.body, flex: 1, color: palette.paper, paddingVertical: 0 },
+  note: { ...typeV2.caption, marginTop: 6 },
 });

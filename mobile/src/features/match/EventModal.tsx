@@ -1,12 +1,12 @@
 import { Feather } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, FlatList, Modal, Pressable, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { EventType, Player } from '@/api/types';
+import { Button } from '@/components/Button';
 import { PlayerAvatar } from '@/components/ClubCrest';
-import { colors, fonts, radii, shadows, type } from '@/theme';
+import { fontsV2, palette, radius, typeV2 } from '@/theme';
 
 import { EventIcon, EVENT_COLOR } from './EventIcon';
 import { clampMinute, EVENT_LABEL, MAX_MINUTE, MIN_MINUTE, positionLabel, sortSquad } from './derive';
@@ -44,7 +44,7 @@ export function EventModal({ type: kind, clubName, squad, squadLoading, startMin
 
   const sorted = useMemo(() => sortSquad(squad ?? []), [squad]);
   const minute = clampMinute(parseInt(minuteText, 10));
-  const tone = kind ? EVENT_COLOR[kind] : colors.accent;
+  const tone = kind ? EVENT_COLOR[kind] : palette.signal;
 
   const submit = async () => {
     if (!kind || !playerId || saving) return;
@@ -72,7 +72,7 @@ export function EventModal({ type: kind, clubName, squad, squadLoading, startMin
           <View style={[styles.sheet, { height: Math.min(height - 16, 420), width: Math.min(width - 24, 760) }]}>
             <View style={styles.header}>
               <View style={[styles.badge, { backgroundColor: tone }]}>
-                <EventIcon type={kind} size={24} color={kind === 'GOAL' ? colors.textOnAccent : colors.textOnAccent} />
+                <EventIcon type={kind} size={24} color={palette.onSignal} />
               </View>
               <View style={styles.headerText}>
                 <Text style={styles.title}>{TITLE[kind]}</Text>
@@ -81,7 +81,7 @@ export function EventModal({ type: kind, clubName, squad, squadLoading, startMin
                 </Text>
               </View>
               <Pressable onPress={onClose} style={styles.close} accessibilityRole="button" accessibilityLabel="Cerrar">
-                <Feather name="x" size={18} color={colors.textPrimary} />
+                <Feather name="x" size={18} color={palette.paper} />
                 <Text style={styles.closeText}>Cerrar</Text>
               </Pressable>
             </View>
@@ -90,7 +90,7 @@ export function EventModal({ type: kind, clubName, squad, squadLoading, startMin
               <View style={styles.playersCol}>
                 <Text style={styles.sectionLabel}>Jugador de mi plantilla</Text>
                 {squadLoading ? (
-                  <ActivityIndicator color={colors.accent} style={styles.loader} />
+                  <ActivityIndicator color={palette.signal} style={styles.loader} />
                 ) : sorted.length === 0 ? (
                   <Text style={styles.empty}>
                     No hay plantilla guardada en este teléfono. Conéctate para cargarla.
@@ -130,26 +130,13 @@ export function EventModal({ type: kind, clubName, squad, squadLoading, startMin
                   <Chip label="90'" active={minute === 90} onPress={() => setMinute(90)} />
                 </View>
 
-                <Pressable
-                  onPress={submit}
-                  disabled={!playerId || saving}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: !playerId || saving, busy: saving }}
-                  style={({ pressed }) => [styles.submitWrap, playerId && !saving && shadows.glowAccent, pressed && { opacity: 0.85 }]}
-                >
-                  <LinearGradient
-                    colors={playerId ? (kind === 'GOAL' ? [colors.accentGradientTop, colors.accentGradientBottom] : [tone, tone]) : [colors.accentDisabled, colors.accentDisabled]}
-                    style={styles.submit}
-                  >
-                    {saving ? (
-                      <ActivityIndicator color={colors.textOnAccent} />
-                    ) : (
-                      <Text style={[type.button, { color: playerId ? colors.textOnAccent : 'rgba(242,244,255,0.8)' }]}>
-                        {playerId ? `Registrar ${EVENT_LABEL[kind].singular}` : 'Elige un jugador'}
-                      </Text>
-                    )}
-                  </LinearGradient>
-                </Pressable>
+                <Button
+                  label={playerId ? `Registrar ${EVENT_LABEL[kind].singular}` : 'Elige un jugador'}
+                  loading={saving}
+                  disabled={!playerId}
+                  onPress={() => void submit()}
+                  style={styles.submit}
+                />
                 <Pressable onPress={onClose} accessibilityRole="button" style={styles.cancel}>
                   <Text style={styles.cancelText}>Cancelar</Text>
                 </Pressable>
@@ -170,13 +157,14 @@ function PlayerRow({ player, selected, onPress }: { player: Player; selected: bo
       accessibilityState={{ selected }}
       style={[styles.player, selected && styles.playerSelected]}
     >
+      {selected ? <View style={styles.playerBar} /> : null}
       <PlayerAvatar photoUrl={player.photoUrl} name={player.name} size={34} />
-      <Text style={[styles.shirt, selected && { color: colors.accent }]}>{player.shirtNumber ?? '–'}</Text>
+      <Text style={[styles.shirt, selected && { color: palette.paper }]}>{player.shirtNumber ?? '–'}</Text>
       <Text style={styles.playerName} numberOfLines={1}>
         {player.name}
       </Text>
       <Text style={styles.position}>{positionLabel(player.position)}</Text>
-      {selected ? <Feather name="check" size={20} color={colors.accent} /> : <View style={{ width: 20 }} />}
+      {selected ? <Feather name="check" size={20} color={palette.paper} /> : <View style={{ width: 20 }} />}
     </Pressable>
   );
 }
@@ -200,7 +188,7 @@ function StepButton({
       accessibilityLabel={label}
       style={[styles.step, disabled && { opacity: 0.4 }]}
     >
-      <Feather name={icon} size={22} color={colors.textPrimary} />
+      <Feather name={icon} size={22} color={palette.paper} />
     </Pressable>
   );
 }
@@ -208,86 +196,80 @@ function StepButton({
 function Chip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
   return (
     <Pressable onPress={onPress} accessibilityRole="button" style={[styles.chip, active && styles.chipActive]}>
-      <Text style={[styles.chipText, active && { color: colors.accent }]}>{label}</Text>
+      <Text style={[styles.chipText, active && { color: palette.ink }]}>{label}</Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: colors.overlay, alignItems: 'center', justifyContent: 'center' },
+  backdrop: { flex: 1, backgroundColor: palette.overlay, alignItems: 'center', justifyContent: 'center' },
   sheet: {
-    backgroundColor: colors.surface,
-    borderRadius: radii.modal,
+    backgroundColor: palette.panelRaised,
+    borderRadius: radius.modal,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: palette.signalBorder,
     padding: 14,
     gap: 10,
   },
   header: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  badge: { width: 46, height: 46, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
+  badge: { width: 46, height: 46, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center' },
   headerText: { flex: 1 },
-  title: { ...type.titleCard, fontSize: 24, lineHeight: 26, color: colors.textPrimary },
-  subtitle: { ...type.body, fontSize: 14, lineHeight: 18, color: colors.textSecondary },
+  title: { ...typeV2.titleClub, color: palette.paper },
+  subtitle: { ...typeV2.caption, color: palette.textSecondary },
   close: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    height: 40,
+    height: 44,
     paddingHorizontal: 12,
-    borderRadius: 12,
+    borderRadius: radius.button,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: palette.lineStrong,
   },
-  closeText: { ...type.bodyStrong, fontSize: 14, color: colors.textPrimary },
+  closeText: { ...typeV2.bodyStrong, color: palette.paper },
   body: { flexDirection: 'row', gap: 14, flex: 1 },
   playersCol: { flex: 1.5, gap: 6 },
   minuteCol: { flex: 1, gap: 8 },
-  sectionLabel: { ...type.eyebrow, color: colors.textSecondary },
+  sectionLabel: { ...typeV2.label, color: palette.textSecondary },
   loader: { marginTop: 24 },
-  empty: { ...type.body, fontSize: 14, color: colors.textSecondary, marginTop: 12 },
+  empty: { ...typeV2.body, color: palette.textSecondary, marginTop: 12 },
   playerList: { gap: 4, paddingBottom: 4 },
   player: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
     height: 46,
-    borderRadius: 12,
+    borderRadius: 4,
     paddingHorizontal: 8,
-    backgroundColor: colors.surfaceRaised,
-    borderWidth: 1.5,
-    borderColor: 'transparent',
+    backgroundColor: palette.panel,
   },
-  playerSelected: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  shirt: { fontFamily: fonts.displayItalic, fontSize: 22, lineHeight: 24, color: colors.textSecondary, width: 30, textAlign: 'center' },
-  playerName: { ...type.bodyStrong, fontSize: 16, color: colors.textPrimary, flex: 1 },
-  position: { ...type.badge, color: colors.textSecondary, width: 34, textAlign: 'right' },
+  playerSelected: { backgroundColor: palette.ink },
+  playerBar: { position: 'absolute', left: 0, top: 0, bottom: 0, width: 4, backgroundColor: palette.paper },
+  shirt: { fontFamily: fontsV2.display, fontSize: 22, lineHeight: 24, color: palette.textSecondary, width: 30, textAlign: 'center' },
+  playerName: { ...typeV2.bodyStrong, color: palette.paper, flex: 1 },
+  position: { ...typeV2.badge, color: palette.textSecondary, width: 34, textAlign: 'right' },
   stepper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: colors.surfaceSunken,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: palette.ink,
+    borderRadius: radius.input,
     padding: 6,
   },
-  step: { width: 52, height: 52, borderRadius: 12, backgroundColor: colors.surfaceRaised, alignItems: 'center', justifyContent: 'center' },
-  minuteInput: { fontFamily: fonts.display, fontSize: 40, lineHeight: 46, color: colors.textPrimary, minWidth: 70, textAlign: 'center', padding: 0 },
+  step: { width: 52, height: 52, borderRadius: radius.button, backgroundColor: palette.panelRaised, alignItems: 'center', justifyContent: 'center' },
+  minuteInput: { fontFamily: fontsV2.display, fontSize: 40, lineHeight: 46, color: palette.paper, minWidth: 70, textAlign: 'center', padding: 0 },
   chips: { flexDirection: 'row', gap: 6 },
   chip: {
     flex: 1,
-    height: 40,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.surfaceRaised,
+    height: 44,
+    borderRadius: radius.button,
+    backgroundColor: palette.panel,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  chipActive: { borderColor: colors.accent, backgroundColor: colors.accentSoft },
-  chipText: { ...type.bodyStrong, fontSize: 15, color: colors.textPrimary },
-  submitWrap: { borderRadius: radii.button, marginTop: 4 },
-  submit: { height: 52, borderRadius: radii.button, alignItems: 'center', justifyContent: 'center' },
+  chipActive: { backgroundColor: palette.paper },
+  chipText: { ...typeV2.bodyStrong, color: palette.paper },
+  submit: { marginTop: 4 },
   cancel: { alignItems: 'center', paddingVertical: 6 },
-  cancelText: { ...type.bodyStrong, fontSize: 15, color: colors.textPrimary },
+  cancelText: { ...typeV2.bodyStrong, color: palette.paper },
 });
