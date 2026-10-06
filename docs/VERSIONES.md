@@ -87,7 +87,6 @@ Propuesta original (descartada): **expo-sqlite** para la cola de eventos. Motivo
 
 ## Otros pendientes detectados
 
-- Skill `sistema-diseno` no existe en `.claude/skills/` (CLAUDE.md la menciona). Los tokens quedan en `docs/design/design-system.md`.
 - `npm audit` reporta hallazgos en dependencias transitivas de la plantilla; no se ejecutó `npm audit fix` (podría romper versiones fijadas por Expo).
 - `mobile/app.json` tiene `orientation: "portrait"`; la sala en vivo necesita landscape. Fase 9: la sala usa `lockAsync(OrientationLock.LANDSCAPE)` y vuelve con `PORTRAIT_UP` (nombres confirmados en la doc de Expo). La doc NO aclara si `orientation: "portrait"` del `app.json` impide el bloqueo en tiempo de ejecución en Expo Go: NO PROBADO hasta abrir la sala en el teléfono. Plan B si no gira: poner `"orientation": "default"` en `app.json` y bloquear portrait en el layout raíz.
 - El QR de `npx expo start` no se pudo imprimir en un terminal sin TTY: se verificó el manifiesto y el bundle por HTTP. Ver el QR y escanearlo lo hace el usuario.

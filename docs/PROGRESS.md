@@ -1,7 +1,7 @@
 # Progreso del proyecto
 
 Fases 0-13 cerradas (0 PARCIAL: faltan QR y Expo Go). Fases 12 y 13: código y tests VERIFICADOS por mí; falta que el usuario pruebe en el teléfono lo marcado como NO probado.
-Aquí solo las 2 últimas fases; las anteriores están en `docs/progress-archive.md`.
+Aquí solo las 2 últimas fases; el detalle de las anteriores quedó en la bitácora de trabajo (no incluida en el repositorio) y en `docs/defense/`.
 
 ## Cambios posteriores a la Fase 13 (solo app, 2026-10-06) – rama `plantilla-detalle`
 Estado: hechos y comprobados con `tsc` limpio, `npm run test:logic` 112 passed (+5 de `seasonTrail.test.ts`) y `expo export` OK; NO probados en el teléfono. Backend sin cambios.

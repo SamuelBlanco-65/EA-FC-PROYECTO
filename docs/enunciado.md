@@ -1,6 +1,6 @@
 # Enunciado del profesor (copia literal)
 
-Texto pegado por el usuario el 2026-10-03. Es la referencia para comprobar que el proyecto cubre lo pedido. Las reglas cerradas del proyecto están en `CLAUDE.md`; el estado, en `docs/PROGRESS.md`; la cobertura punto por punto, en `docs/defense/INDEX.md`.
+Texto pegado por el usuario el 2026-10-03. Es la referencia para comprobar que el proyecto cubre lo pedido. Las reglas de negocio están resumidas en `README.md` y `docs/defense/INDEX.md`; el estado, en `docs/PROGRESS.md`; la cobertura punto por punto, en `docs/defense/INDEX.md`.
 
 ---
 

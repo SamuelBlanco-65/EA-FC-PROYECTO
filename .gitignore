@@ -40,3 +40,13 @@ Thumbs.db
 
 # Demo account passwords (local only)
 scripts/demo/demo.env
+
+# Working scaffolding kept locally, not part of the delivered repository
+PROMPTS.md
+CLAUDE.md
+.claude/
+docs/progress-archive.md
+docs/design/player-cards-plan.md
+docs/design/design-system.md
+docs/design/screens.md
+design/

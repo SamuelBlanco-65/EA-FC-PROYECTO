@@ -49,8 +49,7 @@ App móvil (Expo, TypeScript) --HTTPS REST + WSS--> Backend propio (Python, Fast
 - [`docs/PROGRESS.md`](docs/PROGRESS.md): estado real, qué está verificado y qué falta.
 - [`docs/defense/INDEX.md`](docs/defense/INDEX.md): arquitectura en una página, recorrido de un evento de punta a punta y preguntas probables de la defensa (más una ficha por módulo).
 - [`docs/architecture/`](docs/architecture/), [`docs/database/`](docs/database/), [`docs/domain/`](docs/domain/), [`docs/scraping/scraping.md`](docs/scraping/scraping.md): decisiones técnicas.
-- [`docs/design/`](docs/design/): sistema de diseño (v2 vigente; v1 es historial).
-- [`CLAUDE.md`](CLAUDE.md): reglas de negocio y convenciones del proyecto.
+- [`docs/design/`](docs/design/): sistema de diseño v2 (tokens, componentes, plan por pantalla).
 
 ## Aviso sobre datos e imágenes
 
@@ -171,7 +170,6 @@ scraper/    parsers, normalización, validación y seed
 supabase/   migrations/*.sql
 scripts/    db/ (migraciones y comprobaciones)  demo/ (cuentas, torneo de demo, bots)  deploy/ (verificación del despliegue)
 config/     tournament-clubs.json (los 25 clubes)
-design/     reference/ (capturas de referencia del diseño)
 docs/       PROGRESS.md  enunciado.md  defense/  design/  architecture/  database/  domain/  scraping/  performance/
-render.yaml (despliegue del backend en Render)   CLAUDE.md / PROMPTS.md (reglas y fases del proyecto)
+render.yaml (despliegue del backend en Render)
 ```
